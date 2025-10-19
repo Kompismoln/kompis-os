@@ -142,12 +142,12 @@ grants = [
 
 [service.egress-proxy]
 grants = [
-  "host:server",
+  "host:webserver",
 ]
 
 [service.reverse-tunnel]
 grants = [
-  "host:server",
+  "host:webserver",
 ]
 
 [service.nix-build]
