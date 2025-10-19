@@ -15,7 +15,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.preserve;
+  cfg = config.kompis-os.preserve;
 
   # Piggyback on preservation's options for files and directories
   preserveAtOptions = options.preservation.preserveAt.type.nestedTypes.elemType.getSubOptions [ ];
@@ -25,7 +25,7 @@ in
     inputs.preservation.nixosModules.preservation
   ];
 
-  options.my-nixos.preserve = rec {
+  options.kompis-os.preserve = rec {
     inherit (preserveAtOptions) files directories;
     databases = directories;
     enable = mkEnableOption ''ephemeral root on this host'';

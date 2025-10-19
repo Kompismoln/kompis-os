@@ -14,11 +14,11 @@ let
     types
     ;
 
-  cfg = config.my-nixos.glesys.updaterecord;
+  cfg = config.kompis-os.glesys.updaterecord;
 in
 {
 
-  options.my-nixos.glesys.updaterecord = with types; {
+  options.kompis-os.glesys.updaterecord = with types; {
     enable = mkEnableOption "updating DNS-record on glesys";
     recordid = mkOption {
       description = "The glesys id of the record";

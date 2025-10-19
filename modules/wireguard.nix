@@ -15,7 +15,7 @@ let
     mapAttrsToList
     ;
 
-  cfg = config.my-nixos.wireguard;
+  cfg = config.kompis-os.wireguard;
 
   enabledSubnets = filterAttrs (iface: cfg: cfg.enable) org.subnet;
 
@@ -58,7 +58,7 @@ let
     );
 in
 {
-  options.my-nixos.wireguard.enable = lib.mkOption {
+  options.kompis-os.wireguard.enable = lib.mkOption {
     description = "enable wireguard subnets on this host";
     type = lib.types.bool;
     default = lib.elem "peer" host.roles;

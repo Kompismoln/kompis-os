@@ -11,11 +11,11 @@ let
     types
     ;
 
-  tls-certs = config.my-nixos.tls-certs;
+  tls-certs = config.kompis-os.tls-certs;
 
 in
 {
-  options.my-nixos.tls-certs = mkOption {
+  options.kompis-os.tls-certs = mkOption {
     type = types.listOf types.str;
     default = [ ];
     description = "List of self signed certificates to accept and expose";

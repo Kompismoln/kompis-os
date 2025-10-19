@@ -16,10 +16,10 @@ let
     mkOption
     ;
 
-  cfg = config.my-nixos.desktop-env;
+  cfg = config.kompis-os.desktop-env;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
   eachHMUser = filterAttrs (
-    user: cfg: hasAttr user config.my-nixos.hm && config.my-nixos.hm.${user}.enable
+    user: cfg: hasAttr user config.kompis-os.hm && config.kompis-os.hm.${user}.enable
   ) eachUser;
 
   userOpts = {
@@ -27,7 +27,7 @@ let
   };
 in
 {
-  options.my-nixos.desktop-env = mkOption {
+  options.kompis-os.desktop-env = mkOption {
     type = types.attrsOf (types.submodule userOpts);
     description = "Definition of per-user desktop environment.";
     default = { };
@@ -36,7 +36,7 @@ in
   config = mkIf (eachUser != { }) {
 
     home-manager.users = mapAttrs (user: cfg: {
-      my-nixos-hm.desktop-env = {
+      kompis-os-hm.desktop-env = {
         enable = true;
       };
     }) eachHMUser;
@@ -49,7 +49,7 @@ in
       ];
     }) eachUser;
 
-    #my-nixos.backup.km.paths = flatten (
+    #kompis-os.backup.km.paths = flatten (
     #  mapAttrsToList (user: cfg: [ "/home/${user}/.local/share/qutebrowser/history.sqlite" ]) eachUser
     #);
 

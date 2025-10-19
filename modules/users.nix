@@ -8,7 +8,7 @@
 }:
 
 let
-  cfg = config.my-nixos.users;
+  cfg = config.kompis-os.users;
   eachUser = lib.filterAttrs (user: cfg: cfg.enable) cfg;
 
   userOpts =
@@ -53,7 +53,7 @@ let
     };
 in
 {
-  options.my-nixos.users = lib.mkOption {
+  options.kompis-os.users = lib.mkOption {
     description = "Set of users to be configured.";
     type = with lib.types; attrsOf (submodule userOpts);
     default = { };

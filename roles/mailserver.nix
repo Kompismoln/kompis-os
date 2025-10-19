@@ -3,7 +3,7 @@
   imports = [
     ../modules/mailserver.nix
   ];
-  my-nixos.mailserver = {
+  kompis-os.mailserver = {
     enable = true;
     domain = org.domain;
     dkimSelector = "k1";

@@ -17,7 +17,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.sendmail;
+  cfg = config.kompis-os.sendmail;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
 
   userOpts = {
@@ -29,7 +29,7 @@ let
   };
 in
 {
-  options.my-nixos.sendmail =
+  options.kompis-os.sendmail =
     with types;
     mkOption {
       description = "Set of users to be configured with sendmail.";

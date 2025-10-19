@@ -15,11 +15,11 @@ let
     types
     ;
 
-  cfg = config.my-nixos.postgresql;
+  cfg = config.kompis-os.postgresql;
   eachCfg = filterAttrs (user: cfg: cfg.ensure) cfg;
 in
 {
-  options.my-nixos.postgresql = mkOption {
+  options.kompis-os.postgresql = mkOption {
     type = types.attrsOf (
       types.submodule (
         { config, ... }:
@@ -47,7 +47,7 @@ in
   };
 
   config = lib.mkIf (eachCfg != { }) {
-    my-nixos.preserve.databases = [
+    kompis-os.preserve.databases = [
       {
         directory = "/var/lib/postgresql";
         user = "postgres";

@@ -11,15 +11,15 @@ let
     mkIf
     mkForce
     ;
-  cfg = config.my-nixos.reverse-tunnel;
+  cfg = config.kompis-os.reverse-tunnel;
 in
 {
-  options.my-nixos.reverse-tunnel = {
+  options.kompis-os.reverse-tunnel = {
     enable = mkEnableOption "respond to phone home from stranded clients";
   };
 
   config = mkIf (cfg.enable) {
-    my-nixos.users.reverse-tunnel = {
+    kompis-os.users.reverse-tunnel = {
       class = "service";
       passwd = true;
     };

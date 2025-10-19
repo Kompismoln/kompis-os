@@ -10,10 +10,10 @@ let
     mkIf
     ;
 
-  cfg = config.my-nixos.fail2ban;
+  cfg = config.kompis-os.fail2ban;
 in
 {
-  options.my-nixos.fail2ban = {
+  options.kompis-os.fail2ban = {
     enable = mkEnableOption "the jails configured with `services.fail2ban.jails`";
   };
 

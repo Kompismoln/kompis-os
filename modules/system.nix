@@ -11,10 +11,10 @@ let
     mkMerge
     mkForce
     ;
-  cfg = config.my-nixos.sysadm;
+  cfg = config.kompis-os.sysadm;
 in
 {
-  options.my-nixos.sysadm = {
+  options.kompis-os.sysadm = {
     rescueMode = mkEnableOption "insecure rescue mode.";
   };
 

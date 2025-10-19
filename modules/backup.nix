@@ -14,7 +14,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.backup;
+  cfg = config.kompis-os.backup;
   eachTarget = filterAttrs (user: cfg: cfg.enable) cfg;
   repoOptions =
     { config, ... }:
@@ -38,7 +38,7 @@ let
     };
 in
 {
-  options.my-nixos.backup = {
+  options.kompis-os.backup = {
     km = mkOption {
       type = types.submodule repoOptions;
       default = { };

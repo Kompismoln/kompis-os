@@ -40,7 +40,7 @@
   services.blueman.enable = true;
   programs.light.brightnessKeys.enable = true;
 
-  my-nixos = {
+  kompis-os = {
     sysadm.rescueMode = true;
 
     users = {

@@ -20,7 +20,7 @@
     };
   };
 
-  my-nixos = {
+  kompis-os = {
     nix.facter = false;
     sysadm.rescueMode = true;
   };

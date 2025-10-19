@@ -6,7 +6,7 @@
   ...
 }:
 let
-  cfg = config.my-nixos.redis;
+  cfg = config.kompis-os.redis;
 
   mkValueString =
     value:
@@ -27,7 +27,7 @@ let
     );
 
   redisName = name: "${name}-redis";
-  enabledServers = lib.filterAttrs (name: conf: conf.enable) config.my-nixos.redis.servers;
+  enabledServers = lib.filterAttrs (name: conf: conf.enable) config.kompis-os.redis.servers;
 
 in
 {
@@ -37,8 +37,8 @@ in
 
   options = rec {
 
-    services.redis = my-nixos.redis;
-    my-nixos.redis = {
+    services.redis = kompis-os.redis;
+    kompis-os.redis = {
       package = lib.mkPackageOption pkgs "redis" { };
 
       vmOverCommit =

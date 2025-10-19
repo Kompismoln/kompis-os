@@ -16,10 +16,10 @@ let
     types
     ;
 
-  cfg = config.my-nixos-hm.user;
+  cfg = config.kompis-os-hm.user;
 in
 {
-  options.my-nixos-hm.user = {
+  options.kompis-os-hm.user = {
     enable = mkEnableOption "home-manager for this user";
     uid = mkOption {
       description = "User id.";

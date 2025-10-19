@@ -19,7 +19,7 @@ let
     mkOption
     ;
 
-  cfg = config.my-nixos.mailserver;
+  cfg = config.kompis-os.mailserver;
   relayDomains = filterAttrs (domain: cfg: !cfg.mailbox) cfg.domains;
   mailboxDomains = filterAttrs (domain: cfg: cfg.mailbox) cfg.domains;
 in
@@ -28,7 +28,7 @@ in
     inputs.nixos-mailserver.nixosModules.default
   ];
 
-  options.my-nixos.mailserver = {
+  options.kompis-os.mailserver = {
     enable = mkEnableOption "mailserver on this host";
     domain = mkOption {
       description = "The domain name of this mailserver.";
@@ -86,9 +86,9 @@ in
   config = mkMerge [
     (mkIf cfg.enable {
 
-      my-nixos.redis.servers.rspamd.enable = true;
+      kompis-os.redis.servers.rspamd.enable = true;
 
-      my-nixos.preserve.directories = with config.mailserver; [
+      kompis-os.preserve.directories = with config.mailserver; [
         dkimKeyDirectory
         mailDirectory
         sieveDirectory

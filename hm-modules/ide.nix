@@ -15,11 +15,11 @@ let
     ;
 
   inherit (org.theme) colors;
-  cfg = config.my-nixos-hm.ide;
+  cfg = config.kompis-os-hm.ide;
 
 in
 {
-  options.my-nixos-hm.ide = with types; {
+  options.kompis-os-hm.ide = with types; {
     enable = mkEnableOption "IDE for this user";
     name = mkOption {
       description = "Name for git.";

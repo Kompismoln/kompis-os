@@ -13,13 +13,13 @@ let
     optionalString
     ;
 
-  cfg = config.my-nixos.nginx;
+  cfg = config.kompis-os.nginx;
   subnet = org.subnet.wg0;
   hostname = "${host.name}.${subnet.namespace}";
-  endpoint = "${config.my-nixos.monitor.endpoint}.${subnet.namespace}";
+  endpoint = "${config.kompis-os.monitor.endpoint}.${subnet.namespace}";
 in
 {
-  options.my-nixos.nginx = {
+  options.kompis-os.nginx = {
     enable = mkEnableOption "nginx web server.";
     monitor = mkEnableOption "nginx web server.";
   };

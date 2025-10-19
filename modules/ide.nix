@@ -15,9 +15,9 @@ let
     types
     ;
 
-  cfg = config.my-nixos.ide;
+  cfg = config.kompis-os.ide;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
-  eachHMUser = filterAttrs (user: cfg: config.my-nixos.hm.${user}.enable) eachUser;
+  eachHMUser = filterAttrs (user: cfg: config.kompis-os.hm.${user}.enable) eachUser;
 
   userOpts = {
     options = {
@@ -29,7 +29,7 @@ let
   };
 in
 {
-  options.my-nixos.ide =
+  options.kompis-os.ide =
     with types;
     mkOption {
       description = "Set of users to be configured with IDE.";
@@ -39,10 +39,10 @@ in
 
   config = mkIf (eachUser != { }) {
     home-manager.users = mapAttrs (user: cfg: {
-      my-nixos-hm.ide = {
+      kompis-os-hm.ide = {
         enable = true;
-        name = config.my-nixos.users.${user}.description;
-        inherit (config.my-nixos.users.${user}) email;
+        name = config.kompis-os.users.${user}.description;
+        inherit (config.kompis-os.users.${user}) email;
       };
     }) eachHMUser;
 
@@ -73,7 +73,7 @@ in
       ];
     }) eachUser;
 
-    my-nixos.postgresql = mapAttrs (user: cfg: { ensure = cfg.postgresql; }) eachUser;
-    my-nixos.mysql = mapAttrs (user: cfg: { ensure = cfg.mysql; }) eachUser;
+    kompis-os.postgresql = mapAttrs (user: cfg: { ensure = cfg.postgresql; }) eachUser;
+    kompis-os.mysql = mapAttrs (user: cfg: { ensure = cfg.mysql; }) eachUser;
   };
 }

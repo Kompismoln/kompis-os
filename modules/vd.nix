@@ -15,7 +15,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.vd;
+  cfg = config.kompis-os.vd;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
 
   userOpts = {
@@ -23,7 +23,7 @@ let
   };
 in
 {
-  options.my-nixos.vd =
+  options.kompis-os.vd =
     with types;
     mkOption {
       description = "Set of users to be configured with visual design tools.";
@@ -32,7 +32,7 @@ in
     };
 
   config = mkIf (eachUser != { }) {
-    home-manager.users = mapAttrs (user: cfg: { my-nixos-hm.vd.enable = true; }) eachUser;
+    home-manager.users = mapAttrs (user: cfg: { kompis-os-hm.vd.enable = true; }) eachUser;
 
     # Mirror at web.archive.org has stopped working, fix at some point
     #nixpkgs.config.allowUnfreePredicate =

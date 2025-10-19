@@ -21,7 +21,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.fastapi;
+  cfg = config.kompis-os.fastapi;
 
   eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
   stateDir = hostname: "/var/lib/${hostname}/fastapi";
@@ -75,7 +75,7 @@ let
 in
 {
 
-  options.my-nixos.fastapi = with types; {
+  options.kompis-os.fastapi = with types; {
     sites = mkOption {
       type = attrsOf (submodule siteOpts);
       default = { };
@@ -94,7 +94,7 @@ in
       };
     }) eachSite;
 
-    my-nixos.users = lib.mapAttrs' (
+    kompis-os.users = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair "${cfg.appname}-fastapi" {
         class = "service";
@@ -102,7 +102,7 @@ in
       }
     ) eachSite;
 
-    my-nixos.postgresql = mapAttrs (name: cfg: { ensure = true; }) eachSite;
+    kompis-os.postgresql = mapAttrs (name: cfg: { ensure = true; }) eachSite;
 
     systemd.tmpfiles.rules = flatten (
       mapAttrsToList (name: cfg: [

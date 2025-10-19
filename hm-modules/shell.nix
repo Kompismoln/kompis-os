@@ -10,11 +10,11 @@ let
   inherit (lib) getExe mkEnableOption mkIf;
 
   inherit (org.theme) colors;
-  cfg = config.my-nixos-hm.shell;
+  cfg = config.kompis-os-hm.shell;
 in
 
 {
-  options.my-nixos-hm.shell = {
+  options.kompis-os-hm.shell = {
     enable = mkEnableOption "Enable shell for this user";
   };
 

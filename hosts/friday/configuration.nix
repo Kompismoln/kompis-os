@@ -5,7 +5,7 @@
     ./hardware-configuration.nix
   ];
 
-  my-nixos = {
+  kompis-os = {
     nix.facter = false;
     users = {
       johanna = {

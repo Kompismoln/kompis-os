@@ -18,7 +18,7 @@
       secrets."/luks-key" = config.sops.secrets.luks-key.path;
     };
   };
-  my-nixos = {
+  kompis-os = {
     locksmith.luksDevice = "/dev/sda3";
     preserve = {
       enable = true;

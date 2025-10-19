@@ -15,7 +15,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.mysql;
+  cfg = config.kompis-os.mysql;
   eachCfg = filterAttrs (user: cfg: cfg.ensure) cfg;
   userOpts = {
     options = with types; {
@@ -28,14 +28,14 @@ let
   };
 in
 {
-  options.my-nixos.mysql = mkOption {
+  options.kompis-os.mysql = mkOption {
     type = with lib.types; attrsOf (submodule userOpts);
     default = { };
     description = "Specification of one or more mysql user/database pair to setup";
   };
 
   config = mkIf (eachCfg != { }) {
-    my-nixos.preserve.databases = [
+    kompis-os.preserve.databases = [
       {
         directory = "/var/lib/postgresql";
         user = "postgres";

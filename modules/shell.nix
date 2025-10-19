@@ -17,10 +17,10 @@ let
     types
     ;
 
-  cfg = config.my-nixos.shell;
+  cfg = config.kompis-os.shell;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
   eachHMUser = filterAttrs (
-    user: cfg: hasAttr user config.my-nixos.hm && config.my-nixos.hm.${user}.enable
+    user: cfg: hasAttr user config.kompis-os.hm && config.kompis-os.hm.${user}.enable
   ) eachUser;
 
   userOpts = {
@@ -32,7 +32,7 @@ in
     inputs.nixos-cli.nixosModules.nixos-cli
   ];
 
-  options.my-nixos.shell =
+  options.kompis-os.shell =
     with types;
     mkOption {
       description = "Set of users to be configured with shell";
@@ -42,7 +42,7 @@ in
 
   config = mkIf (eachUser != { }) {
 
-    home-manager.users = mapAttrs (user: cfg: { my-nixos-hm.shell.enable = true; }) eachHMUser;
+    home-manager.users = mapAttrs (user: cfg: { kompis-os-hm.shell.enable = true; }) eachHMUser;
 
     environment.sessionVariables = {
       SOPS_AGE_KEY_FILE = "/keys/user-$USER";

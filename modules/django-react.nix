@@ -11,7 +11,7 @@ let
     ;
 
   inherit (builtins) elemAt;
-  cfg = config.my-nixos.django-react;
+  cfg = config.kompis-os.django-react;
   eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
 
   siteOpts = {
@@ -41,7 +41,7 @@ let
   };
 in
 {
-  options.my-nixos.django-react = with types; {
+  options.kompis-os.django-react = with types; {
     sites = mkOption {
       description = "Definition of per-domain Django+React apps to serve.";
       type = attrsOf (submodule siteOpts);
@@ -51,7 +51,7 @@ in
 
   config = mkIf (eachSite != { }) {
 
-    my-nixos.django.sites = mapAttrs (name: cfg: {
+    kompis-os.django.sites = mapAttrs (name: cfg: {
       enable = cfg.enable;
       appname = cfg.appname;
       hostname = cfg.hostname;
@@ -59,7 +59,7 @@ in
       ssl = cfg.ssl;
     }) eachSite;
 
-    my-nixos.react.sites = mapAttrs (name: cfg: {
+    kompis-os.react.sites = mapAttrs (name: cfg: {
       enable = cfg.enable;
       ssl = cfg.ssl;
       api = "${if cfg.ssl then "https" else "http"}://${cfg.hostname}/api";

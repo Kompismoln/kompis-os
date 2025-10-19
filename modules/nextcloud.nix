@@ -22,7 +22,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.nextcloud;
+  cfg = config.kompis-os.nextcloud;
   webserver = config.services.nginx;
 
   eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
@@ -74,7 +74,7 @@ let
 in
 {
   options = {
-    my-nixos.nextcloud = {
+    kompis-os.nextcloud = {
       sites = mkOption {
         type = types.attrsOf (types.submodule siteOpts);
         default = { };
@@ -96,7 +96,7 @@ in
       ) cfg.mounts
     ) eachSite;
 
-    my-nixos.users = lib.mapAttrs' (
+    kompis-os.users = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair "${cfg.appname}" {
         class = "service";
@@ -107,7 +107,7 @@ in
       }
     ) eachSite;
 
-    my-nixos.preserve.directories = mapAttrsToList (name: cfg: {
+    kompis-os.preserve.directories = mapAttrsToList (name: cfg: {
       directory = stateDir cfg.appname;
       user = cfg.appname;
       group = cfg.appname;
@@ -128,7 +128,7 @@ in
       };
     }) eachSite;
 
-    my-nixos.postgresql = mapAttrs (name: cfg: {
+    kompis-os.postgresql = mapAttrs (name: cfg: {
       ensure = true;
       name = cfg.appname;
     }) eachSite;

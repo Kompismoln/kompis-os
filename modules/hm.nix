@@ -19,7 +19,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.hm;
+  cfg = config.kompis-os.hm;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
 
   userOpts = {
@@ -31,7 +31,7 @@ in
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  options.my-nixos.hm =
+  options.kompis-os.hm =
     with types;
     mkOption {
       description = "Set of users to be configured with home-manager.";
@@ -50,8 +50,8 @@ in
       users = mapAttrs (user: cfg: {
         home.stateVersion = host.stateVersion;
         home.username = user;
-        my-nixos-hm.user = {
-          enable = config.my-nixos.hm.${user}.enable;
+        kompis-os-hm.user = {
+          enable = config.kompis-os.hm.${user}.enable;
           name = user;
           uid = lib'.ids.${user}.uid;
         };

@@ -18,7 +18,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.react;
+  cfg = config.kompis-os.react;
 
   eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
 
@@ -63,7 +63,7 @@ in
 {
 
   options = {
-    my-nixos.react = {
+    kompis-os.react = {
       sites = mkOption {
         type = types.attrsOf (types.submodule siteOpts);
         default = { };

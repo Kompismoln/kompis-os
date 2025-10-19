@@ -69,7 +69,7 @@
           modules = [
             { home.stateVersion = cfg.stateVersion; }
             ./hm-modules/all.nix
-            { inherit (cfg) my-nixos-hm; }
+            { inherit (cfg) kompis-os-hm; }
           ];
         }
       ) (import ./hm-modules/hosts.nix);

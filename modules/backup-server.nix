@@ -12,10 +12,10 @@ let
     mkOption
     types
     ;
-  cfg = config.my-nixos.backup-server;
+  cfg = config.kompis-os.backup-server;
 in
 {
-  options.my-nixos.backup-server = {
+  options.kompis-os.backup-server = {
     enable = mkEnableOption ''a restic rest server on this host'';
     port = mkOption {
       type = types.port;

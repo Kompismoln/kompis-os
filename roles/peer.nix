@@ -10,7 +10,7 @@
     ../modules/wireguard.nix
   ];
 
-  my-nixos = {
+  kompis-os = {
     users.admin = {
       class = "user";
       groups = [ "wheel" ];

@@ -11,7 +11,7 @@ let
     mkIf
     types
     ;
-  cfg = config.my-nixos.locksmith;
+  cfg = config.kompis-os.locksmith;
 
   locksmithPkg =
     pkgs.runCommand "locksmith"
@@ -35,7 +35,7 @@ let
       '';
 in
 {
-  options.my-nixos.locksmith = {
+  options.kompis-os.locksmith = {
     enable = mkEnableOption "user locksmith";
     luksDevice = mkOption {
       type = types.str;
@@ -45,7 +45,7 @@ in
 
   config = mkIf (cfg.enable) {
     environment.systemPackages = [ locksmithPkg ];
-    my-nixos.users.locksmith = {
+    kompis-os.users.locksmith = {
       class = "service";
       shell = true;
     };

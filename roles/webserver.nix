@@ -27,7 +27,7 @@
   nixpkgs.overlays = [
     (import ../overlays/webserver.nix { inherit inputs; })
   ];
-  my-nixos = {
+  kompis-os = {
     reverse-tunnel.enable = true;
     egress-proxy.enable = true;
     fail2ban.enable = true;

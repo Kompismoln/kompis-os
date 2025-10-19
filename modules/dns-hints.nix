@@ -6,7 +6,7 @@
   ...
 }:
 let
-  cfg = config.my-nixos.dns-hints;
+  cfg = config.kompis-os.dns-hints;
   subnet = org.subnet.${cfg.subnet};
   listen = peerAddress subnet host;
   hints = lib.mapAttrsToList hint org.host;
@@ -18,7 +18,7 @@ let
     hostname: hostconf: "hints['${hostname}.${subnet.namespace}'] = '${peerAddress subnet hostconf}'";
 in
 {
-  options.my-nixos.dns-hints = {
+  options.kompis-os.dns-hints = {
     enable = lib.mkEnableOption "dns hints on this host";
     subnet = lib.mkOption {
       type = lib.types.str;

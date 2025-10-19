@@ -16,11 +16,11 @@ let
 
   inherit (org.theme) colors fonts;
   unhashedHexes = lib.mapAttrs (n: c: substring 1 6 c) colors;
-  cfg = config.my-nixos-hm.desktop-env;
+  cfg = config.kompis-os-hm.desktop-env;
 in
 
 {
-  options.my-nixos-hm.desktop-env = {
+  options.kompis-os-hm.desktop-env = {
     enable = mkEnableOption "Desktop Environment for this user";
   };
 
@@ -403,7 +403,7 @@ in
         exec-once =
           let
             start-waybar = pkgs.writeShellScriptBin "start-waybar" ''
-              while [ ! -S "/run/user/${toString config.my-nixos-hm.user.uid}/hypr/''${HYPRLAND_INSTANCE_SIGNATURE}/.socket.sock" ]; do
+              while [ ! -S "/run/user/${toString config.kompis-os-hm.user.uid}/hypr/''${HYPRLAND_INSTANCE_SIGNATURE}/.socket.sock" ]; do
                 sleep 0.1
               done
               sleep 0.5

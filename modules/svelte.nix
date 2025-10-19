@@ -20,7 +20,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.svelte;
+  cfg = config.kompis-os.svelte;
   eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
 
   siteOpts =
@@ -79,7 +79,7 @@ in
 {
 
   options = {
-    my-nixos.svelte = {
+    kompis-os.svelte = {
       sites = mkOption {
         type = types.attrsOf (types.submodule siteOpts);
         default = { };
@@ -89,7 +89,7 @@ in
   };
 
   config = mkIf (eachSite != { }) {
-    my-nixos.users = lib.mapAttrs' (
+    kompis-os.users = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair "${cfg.appname}-svelte" {
         class = "service";

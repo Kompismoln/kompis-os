@@ -7,7 +7,7 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.my-nixos.monitor;
+  cfg = config.kompis-os.monitor;
   blackboxConfig = {
     modules = {
       http_2xx = {
@@ -56,7 +56,7 @@ let
   };
 in
 {
-  options.my-nixos.monitor = {
+  options.kompis-os.monitor = {
     enable = mkEnableOption "gathering metrics";
     endpoint = lib.mkOption {
       type = lib.types.str;
@@ -293,7 +293,7 @@ in
       };
     };
 
-    my-nixos.users.loki = {
+    kompis-os.users.loki = {
       class = "system";
     };
   };

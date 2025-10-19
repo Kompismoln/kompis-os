@@ -22,7 +22,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.nextcloud-rolf;
+  cfg = config.kompis-os.nextcloud-rolf;
   eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
 
   serverName = cfg: if cfg.www == "yes" then "www.${cfg.hostname}" else cfg.hostname;
@@ -79,7 +79,7 @@ let
 in
 {
   options = {
-    my-nixos.nextcloud-rolf = {
+    kompis-os.nextcloud-rolf = {
       sites = mkOption {
         type = types.attrsOf (types.submodule siteOpts);
         default = { };

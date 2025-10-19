@@ -3,7 +3,7 @@
     name = "alex@debian";
     system = "x86_64-linux";
     stateVersion = "23.11";
-    my-nixos-hm = {
+    kompis-os-hm = {
       ide = {
         enable = true;
         name = "Alexander Holmbäck";
@@ -20,7 +20,7 @@
     name = "alex@arch";
     system = "x86_64-linux";
     stateVersion = "24.05";
-    my-nixos-hm = {
+    kompis-os-hm = {
       ide = {
         enable = true;
         name = "Alexander Holmbäck";

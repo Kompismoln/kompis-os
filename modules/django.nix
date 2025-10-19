@@ -23,7 +23,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.django;
+  cfg = config.kompis-os.django;
 
   eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
   eachCelery = filterAttrs (name: cfg: cfg.celery.enable) eachSite;
@@ -110,7 +110,7 @@ let
 in
 {
 
-  options.my-nixos.django = {
+  options.kompis-os.django = {
     sites = mkOption {
       type = types.attrsOf (types.submodule siteOpts);
       default = { };
@@ -122,7 +122,7 @@ in
 
     environment.systemPackages = mapAttrsToList (name: bin: bin) bins;
 
-    my-nixos.preserve.directories = mapAttrsToList (name: cfg: {
+    kompis-os.preserve.directories = mapAttrsToList (name: cfg: {
       directory = stateDir cfg.appname;
       how = "symlink";
       user = "${cfg.appname}-django";
@@ -138,11 +138,11 @@ in
       }
     ) eachSite;
 
-    my-nixos.redis.servers = lib.mapAttrs (name: cfg: {
+    kompis-os.redis.servers = lib.mapAttrs (name: cfg: {
       enable = true;
     }) eachCelery;
 
-    my-nixos.users = lib.mapAttrs' (
+    kompis-os.users = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair "${cfg.appname}-django" {
         class = "service";
@@ -150,7 +150,7 @@ in
       }
     ) eachSite;
 
-    my-nixos.postgresql = mapAttrs' (
+    kompis-os.postgresql = mapAttrs' (
       name: cfg: nameValuePair "${name}-django" { ensure = true; }
     ) eachSite;
 

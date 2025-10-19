@@ -10,14 +10,14 @@ let
     mkOption
     mkIf
     ;
-  cfg = config.my-nixos.sops;
+  cfg = config.kompis-os.sops;
 in
 {
   imports = [
     inputs.sops-nix.nixosModules.sops
   ];
 
-  options.my-nixos.sops = {
+  options.kompis-os.sops = {
     enable = mkOption {
       description = "enable sops-nix";
       type = lib.types.bool;

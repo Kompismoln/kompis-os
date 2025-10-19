@@ -1,5 +1,5 @@
 # Options
-## my-nixos\.backup
+## kompis-os\.backup
 
 
 
@@ -16,11 +16,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
 
 
 
-## my-nixos\.backup\.\<name>\.enable
+## kompis-os\.backup\.\<name>\.enable
 
 
 
@@ -42,11 +42,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
 
 
 
-## my-nixos\.backup\.\<name>\.exclude
+## kompis-os\.backup\.\<name>\.exclude
 
 
 
@@ -73,11 +73,11 @@ list of string
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
 
 
 
-## my-nixos\.backup\.\<name>\.paths
+## kompis-os\.backup\.\<name>\.paths
 
 
 
@@ -105,16 +105,16 @@ list of string
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
 
 
 
-## my-nixos\.backup\.\<name>\.privateKeyFile
+## kompis-os\.backup\.\<name>\.privateKeyFile
 
 
 
 Location of the private key file used to connect with target\.
-Match with a public key in ` my-nixos.users.backup.keys `\.
+Match with a public key in ` kompis-os.users.backup.keys `\.
 
 
 
@@ -127,11 +127,11 @@ string
 ` "/home/backup/.ssh/id_ed25519" `
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
 
 
 
-## my-nixos\.backup\.\<name>\.pruneOpts
+## kompis-os\.backup\.\<name>\.pruneOpts
 
 
 
@@ -159,11 +159,11 @@ list of string
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
 
 
 
-## my-nixos\.backup\.\<name>\.timerConfig
+## kompis-os\.backup\.\<name>\.timerConfig
 
 
 
@@ -188,11 +188,11 @@ anything
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
 
 
 
-## my-nixos\.desktop-env
+## kompis-os\.desktop-env
 
 
 
@@ -209,11 +209,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/desktop-env\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/desktop-env.nix)
+ - [modules/desktop-env\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/desktop-env.nix)
 
 
 
-## my-nixos\.desktop-env\.\<name>\.enable
+## kompis-os\.desktop-env\.\<name>\.enable
 
 
 
@@ -235,11 +235,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/desktop-env\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/desktop-env.nix)
+ - [modules/desktop-env\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/desktop-env.nix)
 
 
 
-## my-nixos\.django\.sites
+## kompis-os\.django\.sites
 
 
 
@@ -256,11 +256,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
 
 
 
-## my-nixos\.django\.sites\.\<name>\.enable
+## kompis-os\.django\.sites\.\<name>\.enable
 
 
 
@@ -282,11 +282,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
 
 
 
-## my-nixos\.django\.sites\.\<name>\.locationProxy
+## kompis-os\.django\.sites\.\<name>\.locationProxy
 
 
 
@@ -308,11 +308,11 @@ string
 ` "~ ^/(api|admin)" `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
 
 
 
-## my-nixos\.django\.sites\.\<name>\.locationStatic
+## kompis-os\.django\.sites\.\<name>\.locationStatic
 
 
 
@@ -329,11 +329,11 @@ string
 ` "/static/" `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
 
 
 
-## my-nixos\.django\.sites\.\<name>\.port
+## kompis-os\.django\.sites\.\<name>\.port
 
 
 
@@ -350,11 +350,11 @@ Listening port\.
 ` 8000 `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
 
 
 
-## my-nixos\.django\.sites\.\<name>\.ssl
+## kompis-os\.django\.sites\.\<name>\.ssl
 
 
 
@@ -366,11 +366,11 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
 
 
 
-## my-nixos\.django\.sites\.\<name>\.user
+## kompis-os\.django\.sites\.\<name>\.user
 
 
 
@@ -382,11 +382,11 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
 
 
 
-## my-nixos\.django-react\.sites
+## kompis-os\.django-react\.sites
 
 
 
@@ -403,11 +403,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
 
 
 
-## my-nixos\.django-react\.sites\.\<name>\.enable
+## kompis-os\.django-react\.sites\.\<name>\.enable
 
 
 
@@ -429,11 +429,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
 
 
 
-## my-nixos\.django-react\.sites\.\<name>\.ports
+## kompis-os\.django-react\.sites\.\<name>\.ports
 
 
 
@@ -456,11 +456,11 @@ list of 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 ```
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
 
 
 
-## my-nixos\.django-react\.sites\.\<name>\.ssl
+## kompis-os\.django-react\.sites\.\<name>\.ssl
 
 
 
@@ -472,11 +472,11 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
 
 
 
-## my-nixos\.django-react\.sites\.\<name>\.user
+## kompis-os\.django-react\.sites\.\<name>\.user
 
 
 
@@ -488,11 +488,11 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
 
 
 
-## my-nixos\.django-svelte\.sites
+## kompis-os\.django-svelte\.sites
 
 
 
@@ -509,11 +509,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
-## my-nixos\.django-svelte\.sites\.\<name>\.enable
+## kompis-os\.django-svelte\.sites\.\<name>\.enable
 
 
 
@@ -535,11 +535,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
-## my-nixos\.django-svelte\.sites\.\<name>\.ports
+## kompis-os\.django-svelte\.sites\.\<name>\.ports
 
 
 
@@ -562,11 +562,11 @@ list of 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 ```
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
-## my-nixos\.django-svelte\.sites\.\<name>\.ssl
+## kompis-os\.django-svelte\.sites\.\<name>\.ssl
 
 
 
@@ -578,11 +578,11 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
-## my-nixos\.django-svelte\.sites\.\<name>\.user
+## kompis-os\.django-svelte\.sites\.\<name>\.user
 
 
 
@@ -594,11 +594,11 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
-## my-nixos\.fail2ban\.enable
+## kompis-os\.fail2ban\.enable
 
 
 
@@ -620,11 +620,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/fail2ban\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fail2ban.nix)
+ - [modules/fail2ban\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fail2ban.nix)
 
 
 
-## my-nixos\.fail2ban\.ignoreIP
+## kompis-os\.fail2ban\.ignoreIP
 
 
 
@@ -652,11 +652,11 @@ list of string
 ```
 
 *Declared by:*
- - [modules/fail2ban\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fail2ban.nix)
+ - [modules/fail2ban\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fail2ban.nix)
 
 
 
-## my-nixos\.fastapi\.sites
+## kompis-os\.fastapi\.sites
 
 
 
@@ -673,11 +673,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
-## my-nixos\.fastapi\.sites\.\<name>\.enable
+## kompis-os\.fastapi\.sites\.\<name>\.enable
 
 
 
@@ -699,11 +699,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
-## my-nixos\.fastapi\.sites\.\<name>\.port
+## kompis-os\.fastapi\.sites\.\<name>\.port
 
 
 
@@ -720,11 +720,11 @@ Listening port\.
 ` 8000 `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
-## my-nixos\.fastapi\.sites\.\<name>\.ssl
+## kompis-os\.fastapi\.sites\.\<name>\.ssl
 
 
 
@@ -736,11 +736,11 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
-## my-nixos\.fastapi\.sites\.\<name>\.user
+## kompis-os\.fastapi\.sites\.\<name>\.user
 
 
 
@@ -757,11 +757,11 @@ string
 ` null `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
-## my-nixos\.fastapi-svelte\.sites
+## kompis-os\.fastapi-svelte\.sites
 
 
 
@@ -778,11 +778,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
-## my-nixos\.fastapi-svelte\.sites\.\<name>\.enable
+## kompis-os\.fastapi-svelte\.sites\.\<name>\.enable
 
 
 
@@ -804,11 +804,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
-## my-nixos\.fastapi-svelte\.sites\.\<name>\.ports
+## kompis-os\.fastapi-svelte\.sites\.\<name>\.ports
 
 
 
@@ -831,11 +831,11 @@ list of 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 ```
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
-## my-nixos\.fastapi-svelte\.sites\.\<name>\.ssl
+## kompis-os\.fastapi-svelte\.sites\.\<name>\.ssl
 
 
 
@@ -847,11 +847,11 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
-## my-nixos\.fastapi-svelte\.sites\.\<name>\.user
+## kompis-os\.fastapi-svelte\.sites\.\<name>\.user
 
 
 
@@ -863,11 +863,11 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
-## my-nixos\.glesys\.updaterecord\.enable
+## kompis-os\.glesys\.updaterecord\.enable
 
 
 
@@ -889,11 +889,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
-## my-nixos\.glesys\.updaterecord\.cloudaccount
+## kompis-os\.glesys\.updaterecord\.cloudaccount
 
 
 
@@ -905,11 +905,11 @@ Glesys account id\.
 string
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
-## my-nixos\.glesys\.updaterecord\.device
+## kompis-os\.glesys\.updaterecord\.device
 
 
 
@@ -926,11 +926,11 @@ string
 ` "enp3s0" `
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
-## my-nixos\.glesys\.updaterecord\.recordid
+## kompis-os\.glesys\.updaterecord\.recordid
 
 
 
@@ -942,11 +942,11 @@ The glesys id of the record
 string
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
-## my-nixos\.hm
+## kompis-os\.hm
 
 
 
@@ -963,11 +963,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/hm\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/hm.nix)
+ - [modules/hm\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/hm.nix)
 
 
 
-## my-nixos\.hm\.\<name>\.enable
+## kompis-os\.hm\.\<name>\.enable
 
 
 
@@ -989,11 +989,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/hm\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/hm.nix)
+ - [modules/hm\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/hm.nix)
 
 
 
-## my-nixos\.ide
+## kompis-os\.ide
 
 
 
@@ -1010,11 +1010,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
 
 
 
-## my-nixos\.ide\.\<name>\.enable
+## kompis-os\.ide\.\<name>\.enable
 
 
 
@@ -1036,11 +1036,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
 
 
 
-## my-nixos\.ide\.\<name>\.mysql
+## kompis-os\.ide\.\<name>\.mysql
 
 
 
@@ -1062,11 +1062,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
 
 
 
-## my-nixos\.ide\.\<name>\.postgresql
+## kompis-os\.ide\.\<name>\.postgresql
 
 
 
@@ -1088,11 +1088,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
 
 
 
-## my-nixos\.mailserver\.enable
+## kompis-os\.mailserver\.enable
 
 
 
@@ -1114,11 +1114,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
-## my-nixos\.mailserver\.domains
+## kompis-os\.mailserver\.domains
 
 
 
@@ -1130,11 +1130,11 @@ List of domains to manage\.
 attribute set of (submodule)
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
-## my-nixos\.mailserver\.domains\.\<name>\.relay
+## kompis-os\.mailserver\.domains\.\<name>\.relay
 
 
 
@@ -1146,11 +1146,11 @@ Enable if this host is the domain’s final destination\.
 boolean
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
-## my-nixos\.mailserver\.users
+## kompis-os\.mailserver\.users
 
 
 
@@ -1162,11 +1162,11 @@ Configure user accounts\.
 attribute set of (submodule)
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
-## my-nixos\.mailserver\.users\.\<name>\.enable
+## kompis-os\.mailserver\.users\.\<name>\.enable
 
 
 
@@ -1188,11 +1188,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
-## my-nixos\.mailserver\.users\.\<name>\.catchAll
+## kompis-os\.mailserver\.users\.\<name>\.catchAll
 
 
 
@@ -1209,11 +1209,11 @@ list of string
 ` [ ] `
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
-## my-nixos\.mysql
+## kompis-os\.mysql
 
 
 
@@ -1230,11 +1230,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/mysql\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mysql.nix)
+ - [modules/mysql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mysql.nix)
 
 
 
-## my-nixos\.mysql\.\<name>\.ensure
+## kompis-os\.mysql\.\<name>\.ensure
 
 
 
@@ -1251,11 +1251,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/mysql\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/mysql.nix)
+ - [modules/mysql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mysql.nix)
 
 
 
-## my-nixos\.postgresql
+## kompis-os\.postgresql
 
 
 
@@ -1272,11 +1272,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/postgresql\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/postgresql.nix)
+ - [modules/postgresql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/postgresql.nix)
 
 
 
-## my-nixos\.postgresql\.\<name>\.ensure
+## kompis-os\.postgresql\.\<name>\.ensure
 
 
 
@@ -1293,11 +1293,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/postgresql\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/postgresql.nix)
+ - [modules/postgresql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/postgresql.nix)
 
 
 
-## my-nixos\.react\.sites
+## kompis-os\.react\.sites
 
 
 
@@ -1314,11 +1314,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
 
 
 
-## my-nixos\.react\.sites\.\<name>\.enable
+## kompis-os\.react\.sites\.\<name>\.enable
 
 
 
@@ -1340,11 +1340,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
 
 
 
-## my-nixos\.react\.sites\.\<name>\.api
+## kompis-os\.react\.sites\.\<name>\.api
 
 
 
@@ -1356,11 +1356,11 @@ URL for the API endpoint
 string
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
 
 
 
-## my-nixos\.react\.sites\.\<name>\.location
+## kompis-os\.react\.sites\.\<name>\.location
 
 
 
@@ -1377,11 +1377,11 @@ string
 ` "/" `
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
 
 
 
-## my-nixos\.react\.sites\.\<name>\.ssl
+## kompis-os\.react\.sites\.\<name>\.ssl
 
 
 
@@ -1393,11 +1393,11 @@ Whether the react-app can assume https or not\.
 boolean
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
 
 
 
-## my-nixos\.sendmail
+## kompis-os\.sendmail
 
 
 
@@ -1414,11 +1414,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/sendmail\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/sendmail.nix)
+ - [modules/sendmail\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/sendmail.nix)
 
 
 
-## my-nixos\.sendmail\.\<name>\.enable
+## kompis-os\.sendmail\.\<name>\.enable
 
 
 
@@ -1440,11 +1440,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/sendmail\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/sendmail.nix)
+ - [modules/sendmail\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/sendmail.nix)
 
 
 
-## my-nixos\.shell
+## kompis-os\.shell
 
 
 
@@ -1461,11 +1461,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/shell\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/shell.nix)
+ - [modules/shell\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/shell.nix)
 
 
 
-## my-nixos\.shell\.\<name>\.enable
+## kompis-os\.shell\.\<name>\.enable
 
 
 
@@ -1487,11 +1487,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/shell\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/shell.nix)
+ - [modules/shell\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/shell.nix)
 
 
 
-## my-nixos\.svelte\.sites
+## kompis-os\.svelte\.sites
 
 
 
@@ -1508,11 +1508,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.svelte\.sites\.\<name>\.enable
+## kompis-os\.svelte\.sites\.\<name>\.enable
 
 
 
@@ -1534,11 +1534,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.svelte\.sites\.\<name>\.api
+## kompis-os\.svelte\.sites\.\<name>\.api
 
 
 
@@ -1550,11 +1550,11 @@ URL for the API endpoint
 string
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.svelte\.sites\.\<name>\.api_ssr
+## kompis-os\.svelte\.sites\.\<name>\.api_ssr
 
 
 
@@ -1566,11 +1566,11 @@ Server side URL for the API endpoint
 string
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.svelte\.sites\.\<name>\.location
+## kompis-os\.svelte\.sites\.\<name>\.location
 
 
 
@@ -1587,11 +1587,11 @@ string
 ` "/" `
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.svelte\.sites\.\<name>\.port
+## kompis-os\.svelte\.sites\.\<name>\.port
 
 
 
@@ -1603,11 +1603,11 @@ Port to serve the application\.
 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.svelte\.sites\.\<name>\.ssl
+## kompis-os\.svelte\.sites\.\<name>\.ssl
 
 
 
@@ -1619,11 +1619,11 @@ Whether the svelte-app can assume https or not\.
 boolean
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.svelte\.sites\.\<name>\.user
+## kompis-os\.svelte\.sites\.\<name>\.user
 
 
 
@@ -1635,11 +1635,11 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
 
 
 
-## my-nixos\.users
+## kompis-os\.users
 
 
 
@@ -1656,11 +1656,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.users\.\<name>\.enable
+## kompis-os\.users\.\<name>\.enable
 
 
 
@@ -1682,11 +1682,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.users\.\<name>\.aliases
+## kompis-os\.users\.\<name>\.aliases
 
 
 
@@ -1703,11 +1703,11 @@ list of string
 ` [ ] `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.users\.\<name>\.email
+## kompis-os\.users\.\<name>\.email
 
 
 
@@ -1719,11 +1719,11 @@ User email\.
 string
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.users\.\<name>\.groups
+## kompis-os\.users\.\<name>\.groups
 
 
 
@@ -1740,11 +1740,11 @@ list of string
 ` [ ] `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.users\.\<name>\.keys
+## kompis-os\.users\.\<name>\.keys
 
 
 
@@ -1761,11 +1761,11 @@ list of path
 ` [ ] `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.users\.\<name>\.name
+## kompis-os\.users\.\<name>\.name
 
 
 
@@ -1777,11 +1777,11 @@ User name\.
 string
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.users\.\<name>\.uid
+## kompis-os\.users\.\<name>\.uid
 
 
 
@@ -1793,11 +1793,11 @@ User id\.
 signed integer
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
 
 
 
-## my-nixos\.vd
+## kompis-os\.vd
 
 
 
@@ -1814,11 +1814,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/vd\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/vd.nix)
+ - [modules/vd\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/vd.nix)
 
 
 
-## my-nixos\.vd\.\<name>\.enable
+## kompis-os\.vd\.\<name>\.enable
 
 
 
@@ -1840,11 +1840,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/vd\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/vd.nix)
+ - [modules/vd\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/vd.nix)
 
 
 
-## my-nixos\.wireguard\.wg0\.enable
+## kompis-os\.wireguard\.wg0\.enable
 
 
 
@@ -1866,11 +1866,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/wireguard\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wireguard.nix)
+ - [modules/wireguard\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wireguard.nix)
 
 
 
-## my-nixos\.wireguard\.wg0\.keepalive
+## kompis-os\.wireguard\.wg0\.keepalive
 
 
 
@@ -1887,11 +1887,11 @@ signed integer
 ` 25 `
 
 *Declared by:*
- - [modules/wireguard\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wireguard.nix)
+ - [modules/wireguard\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wireguard.nix)
 
 
 
-## my-nixos\.wireguard\.wg0\.port
+## kompis-os\.wireguard\.wg0\.port
 
 
 
@@ -1908,11 +1908,11 @@ Listening port for establishing a connection\.
 ` 51820 `
 
 *Declared by:*
- - [modules/wireguard\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wireguard.nix)
+ - [modules/wireguard\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wireguard.nix)
 
 
 
-## my-nixos\.wordpress\.sites
+## kompis-os\.wordpress\.sites
 
 
 
@@ -1929,11 +1929,11 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
-## my-nixos\.wordpress\.sites\.\<name>\.enable
+## kompis-os\.wordpress\.sites\.\<name>\.enable
 
 
 
@@ -1955,11 +1955,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
-## my-nixos\.wordpress\.sites\.\<name>\.basicAuth
+## kompis-os\.wordpress\.sites\.\<name>\.basicAuth
 
 
 
@@ -1976,11 +1976,11 @@ attribute set of string
 ` { } `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
-## my-nixos\.wordpress\.sites\.\<name>\.ssl
+## kompis-os\.wordpress\.sites\.\<name>\.ssl
 
 Enable HTTPS\.
 
@@ -1990,11 +1990,11 @@ Enable HTTPS\.
 boolean
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
-## my-nixos\.wordpress\.sites\.\<name>\.www
+## kompis-os\.wordpress\.sites\.\<name>\.www
 
 
 
@@ -2011,11 +2011,11 @@ boolean
 ` false `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/my-nixos/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
-## my-nixos-hm\.desktop-env\.enable
+## kompis-os-hm\.desktop-env\.enable
 
 
 
@@ -2037,11 +2037,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/desktop-env\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/desktop-env.nix)
+ - [hm-modules/desktop-env\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/desktop-env.nix)
 
 
 
-## my-nixos-hm\.ide\.enable
+## kompis-os-hm\.ide\.enable
 
 
 
@@ -2063,11 +2063,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/ide\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/ide.nix)
+ - [hm-modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/ide.nix)
 
 
 
-## my-nixos-hm\.ide\.email
+## kompis-os-hm\.ide\.email
 
 
 
@@ -2079,11 +2079,11 @@ Email for git\.
 string
 
 *Declared by:*
- - [hm-modules/ide\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/ide.nix)
+ - [hm-modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/ide.nix)
 
 
 
-## my-nixos-hm\.ide\.name
+## kompis-os-hm\.ide\.name
 
 
 
@@ -2095,11 +2095,11 @@ Name for git\.
 string
 
 *Declared by:*
- - [hm-modules/ide\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/ide.nix)
+ - [hm-modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/ide.nix)
 
 
 
-## my-nixos-hm\.shell\.enable
+## kompis-os-hm\.shell\.enable
 
 
 
@@ -2121,11 +2121,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/shell\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/shell.nix)
+ - [hm-modules/shell\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/shell.nix)
 
 
 
-## my-nixos-hm\.user\.enable
+## kompis-os-hm\.user\.enable
 
 
 
@@ -2147,11 +2147,11 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/user\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/user.nix)
+ - [hm-modules/user\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/user.nix)
 
 
 
-## my-nixos-hm\.user\.name
+## kompis-os-hm\.user\.name
 
 
 
@@ -2163,11 +2163,11 @@ Name for the user\.
 string
 
 *Declared by:*
- - [hm-modules/user\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/user.nix)
+ - [hm-modules/user\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/user.nix)
 
 
 
-## my-nixos-hm\.vd\.enable
+## kompis-os-hm\.vd\.enable
 
 
 
@@ -2189,6 +2189,6 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/vd\.nix](https://github.com/ahbk/my-nixos/blob/master/hm-modules/vd.nix)
+ - [hm-modules/vd\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/vd.nix)
 
 

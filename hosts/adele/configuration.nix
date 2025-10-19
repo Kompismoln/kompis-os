@@ -7,7 +7,7 @@
   ...
 }:
 {
-  my-nixos = {
+  kompis-os = {
     sysadm.rescueMode = true;
 
     users.ami.enable = true;

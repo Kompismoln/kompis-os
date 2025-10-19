@@ -11,11 +11,11 @@ let
     mkOption
     types
     ;
-  cfg = config.my-nixos.collabora;
+  cfg = config.kompis-os.collabora;
 in
 {
   options = {
-    my-nixos.collabora = {
+    kompis-os.collabora = {
       enable = mkEnableOption "collabora-online on this server";
       subnet = mkOption {
         description = "Use self-signed certificates";
@@ -34,7 +34,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    my-nixos.tls-certs = [ "km" ];
+    kompis-os.tls-certs = [ "km" ];
 
     services.nginx.virtualHosts.${cfg.host} =
       let

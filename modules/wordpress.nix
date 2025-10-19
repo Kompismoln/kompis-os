@@ -20,7 +20,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.wordpress;
+  cfg = config.kompis-os.wordpress;
   webserver = config.services.nginx;
   eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
   stateDir = appname: "/var/lib/${appname}/wordpress";
@@ -84,7 +84,7 @@ let
 in
 {
   options = {
-    my-nixos.wordpress = {
+    kompis-os.wordpress = {
       sites = mkOption {
         type = types.attrsOf (types.submodule siteOpts);
         default = { };
@@ -95,17 +95,17 @@ in
 
   config = mkIf (eachSite != { }) {
 
-    my-nixos.preserve.directories = mapAttrsToList (name: cfg: {
+    kompis-os.preserve.directories = mapAttrsToList (name: cfg: {
       directory = stateDir cfg.appname;
       user = cfg.appname;
       group = cfg.appname;
     }) eachSite;
 
-    my-nixos.redis.servers = lib.mapAttrs (name: cfg: {
+    kompis-os.redis.servers = lib.mapAttrs (name: cfg: {
       enable = true;
     }) eachSite;
 
-    my-nixos.users = lib.mapAttrs' (
+    kompis-os.users = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair "${cfg.appname}" {
         class = "service";
@@ -212,7 +212,7 @@ in
       }
     ) eachSite;
 
-    my-nixos.mysql = mapAttrs' (name: cfg: nameValuePair cfg.appname { ensure = true; }) eachSite;
+    kompis-os.mysql = mapAttrs' (name: cfg: nameValuePair cfg.appname { ensure = true; }) eachSite;
 
     services.phpfpm.pools = mapAttrs' (
       name: cfg:

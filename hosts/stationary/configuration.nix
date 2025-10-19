@@ -3,7 +3,7 @@
     ../../modules/glesys-updaterecord.nix
   ];
 
-  my-nixos = {
+  kompis-os = {
     sysadm.rescueMode = true;
 
     dns-hints = {

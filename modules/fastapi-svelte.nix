@@ -11,7 +11,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.fastapi-svelte;
+  cfg = config.kompis-os.fastapi-svelte;
   eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
   siteOpts = {
     options = with types; {
@@ -40,7 +40,7 @@ let
   };
 in
 {
-  options.my-nixos.fastapi-svelte = with types; {
+  options.kompis-os.fastapi-svelte = with types; {
     sites = mkOption {
       description = "Definition of per-domain FastAPI+SvelteKit apps to serve.";
       type = attrsOf (submodule siteOpts);
@@ -49,7 +49,7 @@ in
   };
 
   config = mkIf (eachSite != { }) {
-    my-nixos.fastapi.sites = mapAttrs (name: cfg: {
+    kompis-os.fastapi.sites = mapAttrs (name: cfg: {
       enable = cfg.enable;
       appname = cfg.appname;
       hostname = cfg.hostname;
@@ -57,7 +57,7 @@ in
       ssl = cfg.ssl;
     }) eachSite;
 
-    my-nixos.svelte.sites = mapAttrs (name: cfg: {
+    kompis-os.svelte.sites = mapAttrs (name: cfg: {
       enable = cfg.enable;
       appname = cfg.appname;
       hostname = cfg.hostname;

@@ -23,7 +23,7 @@ let
     types
     ;
 
-  cfg = config.my-nixos.mobilizon;
+  cfg = config.kompis-os.mobilizon;
   settingsFormat = pkgs.formats.elixirConf { elixir = cfg.package.elixirPackage; };
 
   eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
@@ -124,7 +124,7 @@ let
 in
 {
   options = {
-    my-nixos.mobilizon = {
+    kompis-os.mobilizon = {
       sites = mkOption {
         type = types.attrsOf (types.submodule siteOpts);
         default = { };
@@ -135,13 +135,13 @@ in
 
   config = mkIf (eachSite != { }) {
 
-    my-nixos.preserve.directories = mapAttrsToList (name: cfg: {
+    kompis-os.preserve.directories = mapAttrsToList (name: cfg: {
       directory = stateDir cfg.appname;
       user = cfg.appname;
       group = cfg.appname;
     }) eachSite;
 
-    my-nixos.users = lib.mapAttrs' (
+    kompis-os.users = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair cfg.appname {
         class = "service";

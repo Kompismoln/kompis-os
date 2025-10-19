@@ -11,7 +11,7 @@
 
 let
   inherit (lib) mkDefault mkForce;
-  cfg = config.my-nixos.nix;
+  cfg = config.kompis-os.nix;
 
   nixservicePkg =
     pkgs.runCommand "nixservice"
@@ -39,7 +39,7 @@ in
     inputs.nixos-facter-modules.nixosModules.facter
   ];
 
-  options.my-nixos.nix = {
+  options.kompis-os.nix = {
     serveStore = lib.mkOption {
       description = "enable nix-serve on this host";
       type = lib.types.bool;
@@ -51,7 +51,7 @@ in
     repo = lib.mkOption {
       description = "repo for this config";
       type = lib.types.str;
-      default = "github:ahbk/my-nixos";
+      default = "github:ahbk/kompis-os";
     };
     buildHost = lib.mkOption {
       description = "default BUILD_HOST";
@@ -85,14 +85,14 @@ in
       package = mkDefault pkgs.lix;
       registry = {
         self.flake = inputs.self;
-        my-nixos = {
+        kompis-os = {
           from = {
-            id = "my-nixos";
+            id = "kompis-os";
             type = "indirect";
           };
           to = {
             owner = "ahbk";
-            repo = "my-nixos";
+            repo = "kompis-os";
             type = "github";
           };
         };
@@ -129,18 +129,18 @@ in
       "nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
     };
 
-    my-nixos.users.nix-build = {
+    kompis-os.users.nix-build = {
       class = "service";
       shell = true;
       home = true;
     };
 
-    my-nixos.users.nix-switch = {
+    kompis-os.users.nix-switch = {
       class = "service";
       shell = true;
     };
 
-    my-nixos.users.nix-push = {
+    kompis-os.users.nix-push = {
       class = "service";
       shell = true;
     };

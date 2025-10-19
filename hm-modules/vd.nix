@@ -8,10 +8,10 @@
 let
   inherit (lib) mkEnableOption mkIf;
 
-  cfg = config.my-nixos-hm.vd;
+  cfg = config.kompis-os-hm.vd;
 in
 {
-  options.my-nixos-hm.vd = {
+  options.kompis-os-hm.vd = {
     enable = mkEnableOption "Enable visual design tools for this user";
   };
 

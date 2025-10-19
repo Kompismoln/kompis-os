@@ -9,10 +9,10 @@ let
     mkEnableOption
     mkIf
     ;
-  cfg = config.my-nixos.ssh;
+  cfg = config.kompis-os.ssh;
 in
 {
-  options.my-nixos.ssh = {
+  options.kompis-os.ssh = {
     enable = mkEnableOption "ssh server";
   };
 

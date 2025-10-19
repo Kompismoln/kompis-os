@@ -6,15 +6,15 @@
 }:
 let
   inherit (lib) mkEnableOption mkIf;
-  cfg = config.my-nixos.egress-proxy;
+  cfg = config.kompis-os.egress-proxy;
 in
 {
-  options.my-nixos.egress-proxy = {
+  options.kompis-os.egress-proxy = {
     enable = mkEnableOption "SOCKS proxy service";
   };
 
   config = mkIf (cfg.enable) {
-    my-nixos.users.egress-proxy = {
+    kompis-os.users.egress-proxy = {
       class = "service";
     };
 
