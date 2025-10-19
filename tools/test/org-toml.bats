@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# tests/id-entities.bats
+# tools/tests/org-toml.bats
 
 set -eu
 
@@ -127,14 +127,17 @@ setup() {
   run org-toml.sh "expand-entity-group" "host-*"
   expect 0 "host-testhost" 2
 
-  run org-toml.sh "expand-entity-group" "host:testrole"
-  expect 0 "host-testhost" 2
-
   run org-toml.sh "expand-entity-group" "host:lorem"
   expect 0 "host-lorem" 1
 
+  run org-toml.sh "expand-entity-group" "host:testrole"
+  expect 0 "host-testhost" 2
+
   run org-toml.sh "expand-entity-group" "host:trol"
   expect 0 "" 1
+
+  run org-toml.sh "expand-entity-group" "host:testrole+lorem"
+  expect 0 "host-lorem" 1
 }
 
 @test "org-toml search" {

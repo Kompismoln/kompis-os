@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# libexec/org-toml.sh
+# tools/bin/org-toml.sh
 # shellcheck disable=SC2016
 # - Yes, we know expressions wont expand in single quotes.
 
@@ -165,17 +165,18 @@ ids-by-substring:() {
 
 ids-by-roles:() {
     local r_class=$1
+    IFS='+' read -r -a args <<<"$2"
     if [[ $1 == "*" ]]; then
         org-toml "class-list" | while read -r r_class; do
-            ids-by-roles "$r_class" "${@:2}"
+            ids-by-roles "$r_class" "${args[@]}"
         done
     else
-        ids-by-roles "$r_class" "${@:2}"
+        ids-by-roles "$r_class" "${args[@]}"
     fi
 }
 
 ids-by-roles() {
-    query=".$1"' | to_entries | .[] | select((.value.roles // []) | any(. as $role | $role | IN($ARGS.positional[]))) | "'"$1-"'"+.key'
+    query=".$1"' | to_entries[] | . as $entry | select(all($ARGS.positional[]; IN($entry.value.roles[]))) | "'"$1-"'"+.key'
     shift && as-json | try jq -r --args "$query" "$@"
 }
 

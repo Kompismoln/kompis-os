@@ -1,3 +1,4 @@
+# roles/mailserver.nix
 { inputs, ... }:
 {
   imports = [
