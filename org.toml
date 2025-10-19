@@ -21,6 +21,11 @@ namespaces = [
   "kompismoln.se",
 ]
 
+[flake]
+type = "github"
+owner = "Kompismoln"
+repo = "kompis-os"
+
 [site."kompismoln.se"]
 mailbox = true
 

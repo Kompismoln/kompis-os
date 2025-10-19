@@ -16,7 +16,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/backup.nix)
 
 
 
@@ -42,7 +42,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/backup.nix)
 
 
 
@@ -73,7 +73,7 @@ list of string
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/backup.nix)
 
 
 
@@ -105,7 +105,7 @@ list of string
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/backup.nix)
 
 
 
@@ -127,7 +127,7 @@ string
 ` "/home/backup/.ssh/id_ed25519" `
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/backup.nix)
 
 
 
@@ -159,7 +159,7 @@ list of string
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/backup.nix)
 
 
 
@@ -188,7 +188,7 @@ anything
 ```
 
 *Declared by:*
- - [modules/backup\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/backup.nix)
+ - [modules/backup\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/backup.nix)
 
 
 
@@ -209,7 +209,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/desktop-env\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/desktop-env.nix)
+ - [modules/desktop-env\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/desktop-env.nix)
 
 
 
@@ -235,7 +235,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/desktop-env\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/desktop-env.nix)
+ - [modules/desktop-env\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/desktop-env.nix)
 
 
 
@@ -256,7 +256,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django.nix)
 
 
 
@@ -282,7 +282,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django.nix)
 
 
 
@@ -308,7 +308,7 @@ string
 ` "~ ^/(api|admin)" `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django.nix)
 
 
 
@@ -329,7 +329,7 @@ string
 ` "/static/" `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django.nix)
 
 
 
@@ -350,7 +350,7 @@ Listening port\.
 ` 8000 `
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django.nix)
 
 
 
@@ -366,7 +366,7 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django.nix)
 
 
 
@@ -382,7 +382,7 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/django\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django.nix)
+ - [modules/django\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django.nix)
 
 
 
@@ -403,7 +403,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-react.nix)
 
 
 
@@ -429,7 +429,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-react.nix)
 
 
 
@@ -456,7 +456,7 @@ list of 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 ```
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-react.nix)
 
 
 
@@ -472,7 +472,7 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-react.nix)
 
 
 
@@ -488,7 +488,7 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/django-react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-react.nix)
+ - [modules/django-react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-react.nix)
 
 
 
@@ -509,7 +509,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
@@ -535,7 +535,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
@@ -562,7 +562,7 @@ list of 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 ```
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
@@ -578,7 +578,7 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
@@ -594,7 +594,7 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/django-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/django-svelte.nix)
+ - [modules/django-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/django-svelte.nix)
 
 
 
@@ -620,7 +620,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/fail2ban\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fail2ban.nix)
+ - [modules/fail2ban\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fail2ban.nix)
 
 
 
@@ -652,7 +652,7 @@ list of string
 ```
 
 *Declared by:*
- - [modules/fail2ban\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fail2ban.nix)
+ - [modules/fail2ban\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fail2ban.nix)
 
 
 
@@ -673,7 +673,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
@@ -699,7 +699,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
@@ -720,7 +720,7 @@ Listening port\.
 ` 8000 `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
@@ -736,7 +736,7 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
@@ -757,7 +757,7 @@ string
 ` null `
 
 *Declared by:*
- - [modules/fastapi\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi.nix)
+ - [modules/fastapi\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi.nix)
 
 
 
@@ -778,7 +778,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
@@ -804,7 +804,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
@@ -831,7 +831,7 @@ list of 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 ```
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
@@ -847,7 +847,7 @@ Whether to enable SSL (https) support\.
 boolean
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
@@ -863,7 +863,7 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/fastapi-svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/fastapi-svelte.nix)
+ - [modules/fastapi-svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/fastapi-svelte.nix)
 
 
 
@@ -889,7 +889,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
@@ -905,7 +905,7 @@ Glesys account id\.
 string
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
@@ -926,7 +926,7 @@ string
 ` "enp3s0" `
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
@@ -942,7 +942,7 @@ The glesys id of the record
 string
 
 *Declared by:*
- - [modules/glesys-updaterecord\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/glesys-updaterecord.nix)
+ - [modules/glesys-updaterecord\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/glesys-updaterecord.nix)
 
 
 
@@ -963,7 +963,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/hm\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/hm.nix)
+ - [modules/hm\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/hm.nix)
 
 
 
@@ -989,7 +989,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/hm\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/hm.nix)
+ - [modules/hm\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/hm.nix)
 
 
 
@@ -1010,7 +1010,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/ide.nix)
 
 
 
@@ -1036,7 +1036,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/ide.nix)
 
 
 
@@ -1062,7 +1062,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/ide.nix)
 
 
 
@@ -1088,7 +1088,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/ide.nix)
+ - [modules/ide\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/ide.nix)
 
 
 
@@ -1114,7 +1114,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
@@ -1130,7 +1130,7 @@ List of domains to manage\.
 attribute set of (submodule)
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
@@ -1146,7 +1146,7 @@ Enable if this host is the domain’s final destination\.
 boolean
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
@@ -1162,7 +1162,7 @@ Configure user accounts\.
 attribute set of (submodule)
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
@@ -1188,7 +1188,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
@@ -1209,7 +1209,7 @@ list of string
 ` [ ] `
 
 *Declared by:*
- - [modules/mailserver\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mailserver.nix)
+ - [modules/mailserver\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mailserver.nix)
 
 
 
@@ -1230,7 +1230,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/mysql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mysql.nix)
+ - [modules/mysql\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mysql.nix)
 
 
 
@@ -1251,7 +1251,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/mysql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/mysql.nix)
+ - [modules/mysql\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/mysql.nix)
 
 
 
@@ -1272,7 +1272,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/postgresql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/postgresql.nix)
+ - [modules/postgresql\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/postgresql.nix)
 
 
 
@@ -1293,7 +1293,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/postgresql\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/postgresql.nix)
+ - [modules/postgresql\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/postgresql.nix)
 
 
 
@@ -1314,7 +1314,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/react.nix)
 
 
 
@@ -1340,7 +1340,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/react.nix)
 
 
 
@@ -1356,7 +1356,7 @@ URL for the API endpoint
 string
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/react.nix)
 
 
 
@@ -1377,7 +1377,7 @@ string
 ` "/" `
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/react.nix)
 
 
 
@@ -1393,7 +1393,7 @@ Whether the react-app can assume https or not\.
 boolean
 
 *Declared by:*
- - [modules/react\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/react.nix)
+ - [modules/react\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/react.nix)
 
 
 
@@ -1414,7 +1414,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/sendmail\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/sendmail.nix)
+ - [modules/sendmail\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/sendmail.nix)
 
 
 
@@ -1440,7 +1440,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/sendmail\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/sendmail.nix)
+ - [modules/sendmail\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/sendmail.nix)
 
 
 
@@ -1461,7 +1461,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/shell\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/shell.nix)
+ - [modules/shell\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/shell.nix)
 
 
 
@@ -1487,7 +1487,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/shell\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/shell.nix)
+ - [modules/shell\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/shell.nix)
 
 
 
@@ -1508,7 +1508,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1534,7 +1534,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1550,7 +1550,7 @@ URL for the API endpoint
 string
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1566,7 +1566,7 @@ Server side URL for the API endpoint
 string
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1587,7 +1587,7 @@ string
 ` "/" `
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1603,7 +1603,7 @@ Port to serve the application\.
 16 bit unsigned integer; between 0 and 65535 (both inclusive)
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1619,7 +1619,7 @@ Whether the svelte-app can assume https or not\.
 boolean
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1635,7 +1635,7 @@ Username for app owner
 string
 
 *Declared by:*
- - [modules/svelte\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/svelte.nix)
+ - [modules/svelte\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/svelte.nix)
 
 
 
@@ -1656,7 +1656,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1682,7 +1682,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1703,7 +1703,7 @@ list of string
 ` [ ] `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1719,7 +1719,7 @@ User email\.
 string
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1740,7 +1740,7 @@ list of string
 ` [ ] `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1761,7 +1761,7 @@ list of path
 ` [ ] `
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1777,7 +1777,7 @@ User name\.
 string
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1793,7 +1793,7 @@ User id\.
 signed integer
 
 *Declared by:*
- - [modules/users\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/users.nix)
+ - [modules/users\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/users.nix)
 
 
 
@@ -1814,7 +1814,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/vd\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/vd.nix)
+ - [modules/vd\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/vd.nix)
 
 
 
@@ -1840,7 +1840,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/vd\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/vd.nix)
+ - [modules/vd\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/vd.nix)
 
 
 
@@ -1866,7 +1866,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/wireguard\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wireguard.nix)
+ - [modules/wireguard\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wireguard.nix)
 
 
 
@@ -1887,7 +1887,7 @@ signed integer
 ` 25 `
 
 *Declared by:*
- - [modules/wireguard\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wireguard.nix)
+ - [modules/wireguard\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wireguard.nix)
 
 
 
@@ -1908,7 +1908,7 @@ Listening port for establishing a connection\.
 ` 51820 `
 
 *Declared by:*
- - [modules/wireguard\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wireguard.nix)
+ - [modules/wireguard\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wireguard.nix)
 
 
 
@@ -1929,7 +1929,7 @@ attribute set of (submodule)
 ` { } `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
@@ -1955,7 +1955,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
@@ -1976,7 +1976,7 @@ attribute set of string
 ` { } `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
@@ -1990,7 +1990,7 @@ Enable HTTPS\.
 boolean
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
@@ -2011,7 +2011,7 @@ boolean
 ` false `
 
 *Declared by:*
- - [modules/wordpress\.nix](https://github.com/ahbk/kompis-os/blob/master/modules/wordpress.nix)
+ - [modules/wordpress\.nix](https://github.com/Kompismoln/kompis-os/blob/master/modules/wordpress.nix)
 
 
 
@@ -2037,7 +2037,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/desktop-env\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/desktop-env.nix)
+ - [hm-modules/desktop-env\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/desktop-env.nix)
 
 
 
@@ -2063,7 +2063,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/ide.nix)
+ - [hm-modules/ide\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/ide.nix)
 
 
 
@@ -2079,7 +2079,7 @@ Email for git\.
 string
 
 *Declared by:*
- - [hm-modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/ide.nix)
+ - [hm-modules/ide\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/ide.nix)
 
 
 
@@ -2095,7 +2095,7 @@ Name for git\.
 string
 
 *Declared by:*
- - [hm-modules/ide\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/ide.nix)
+ - [hm-modules/ide\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/ide.nix)
 
 
 
@@ -2121,7 +2121,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/shell\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/shell.nix)
+ - [hm-modules/shell\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/shell.nix)
 
 
 
@@ -2147,7 +2147,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/user\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/user.nix)
+ - [hm-modules/user\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/user.nix)
 
 
 
@@ -2163,7 +2163,7 @@ Name for the user\.
 string
 
 *Declared by:*
- - [hm-modules/user\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/user.nix)
+ - [hm-modules/user\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/user.nix)
 
 
 
@@ -2189,6 +2189,6 @@ boolean
 ` true `
 
 *Declared by:*
- - [hm-modules/vd\.nix](https://github.com/ahbk/kompis-os/blob/master/hm-modules/vd.nix)
+ - [hm-modules/vd\.nix](https://github.com/Kompismoln/kompis-os/blob/master/hm-modules/vd.nix)
 
 

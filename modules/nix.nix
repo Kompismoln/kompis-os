@@ -51,7 +51,7 @@ in
     repo = lib.mkOption {
       description = "repo for this config";
       type = lib.types.str;
-      default = "github:ahbk/kompis-os";
+      default = with org.flake; "${type}:${owner}/${repo}";
     };
     buildHost = lib.mkOption {
       description = "default BUILD_HOST";
@@ -90,11 +90,7 @@ in
             id = "kompis-os";
             type = "indirect";
           };
-          to = {
-            owner = "ahbk";
-            repo = "kompis-os";
-            type = "github";
-          };
+          to = org.flake;
         };
         nixpkgs.flake = inputs.nixpkgs;
       };
