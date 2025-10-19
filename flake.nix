@@ -60,34 +60,35 @@
     in
     {
       homeConfigurations = lib.mapAttrs (
-        target: cfg:
+        homeManagerName: homeManagerCfg:
         homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${cfg.system};
-          extraSpecialArgs = {
-            inherit inputs lib';
-          };
-          modules = [
-            { home.stateVersion = cfg.stateVersion; }
-            ./hm-modules/all.nix
-            { inherit (cfg) kompis-os-hm; }
-          ];
+          pkgs = nixpkgs.legacyPackages.${homeManagerCfg.system};
+          extraSpecialArgs =
+            let
+              userhost = lib.splitString "@" homeManagerName;
+              username = builtins.elemAt userhost 0;
+              hostname = builtins.elemAt userhost 1;
+            in
+            {
+              hmHost = homeManagerCfg // {
+                inherit username hostname;
+              };
+              inherit inputs org lib';
+            };
+          modules = map (role: ./home-manager/roles/${role}.nix) homeManagerCfg.roles;
         }
-      ) (import ./hm-modules/hosts.nix);
+      ) org.home-manager;
 
       nixosConfigurations = lib.mapAttrs (
-        hostname: hostconf:
+        hostname: hostCfg:
         lib.nixosSystem {
           specialArgs = {
-            host = hostconf // {
+            host = hostCfg // {
               name = hostname;
             };
-            inherit
-              inputs
-              org
-              lib'
-              ;
+            inherit inputs org lib';
           };
-          modules = map (role: ./roles/${role}.nix) hostconf.roles;
+          modules = map (role: ./roles/${role}.nix) hostCfg.roles;
         }
       ) (lib.filterAttrs (_: cfg: lib.elem "nixos" cfg.roles) org.host);
 

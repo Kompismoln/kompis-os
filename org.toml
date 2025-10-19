@@ -296,6 +296,20 @@ roles = []
 system = "x86_64-linux"
 stateVersion = "25.11"
 
+[home-manager."alex@debian"]
+system = "x86_64-linux"
+stateVersion = "23.11"
+roles = [
+  "workstation",
+]
+
+[home-manager."alex@arch"]
+system = "x86_64-linux"
+stateVersion = "24.05"
+roles = [
+  "workstation",
+]
+
 [user.admin]
 grants = [
   "host-*",
@@ -307,6 +321,8 @@ grants = [
 ]
 
 [user.alex]
+description = "Alexander Holmbäck"
+email = "alex@kompismoln.se"
 inboxes = [
   "alex@ahbk.se",
   "alex@klimatkalendern.nu",

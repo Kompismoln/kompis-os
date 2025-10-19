@@ -1,7 +1,4 @@
 {
-  config,
-  inputs,
-  host,
   lib,
   pkgs,
   ...
@@ -11,7 +8,7 @@
     sysadm.rescueMode = true;
 
     users.ami.enable = true;
-    hm.ami.enable = true;
+    home-manager.ami.enable = true;
     shell.ami.enable = true;
   };
 

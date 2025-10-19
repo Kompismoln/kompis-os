@@ -5,7 +5,6 @@
   lib,
   lib',
   org,
-
   ...
 }:
 
@@ -19,7 +18,7 @@ let
     types
     ;
 
-  cfg = config.kompis-os.hm;
+  cfg = config.kompis-os.home-manager;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
 
   userOpts = {
@@ -31,7 +30,7 @@ in
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  options.kompis-os.hm =
+  options.kompis-os.home-manager =
     with types;
     mkOption {
       description = "Set of users to be configured with home-manager.";
@@ -46,12 +45,19 @@ in
       extraSpecialArgs = {
         inherit inputs lib' org;
       };
-      sharedModules = [ ../hm-modules/all.nix ];
+      sharedModules = [
+        inputs.nixvim.homeModules.nixvim
+        ../home-manager/desktop-env.nix
+        ../home-manager/ide.nix
+        ../home-manager/shell.nix
+        ../home-manager/user.nix
+        ../home-manager/vd.nix
+      ];
       users = mapAttrs (user: cfg: {
         home.stateVersion = host.stateVersion;
         home.username = user;
         kompis-os-hm.user = {
-          enable = config.kompis-os.hm.${user}.enable;
+          enable = config.kompis-os.home-manager.${user}.enable;
           name = user;
           uid = lib'.ids.${user}.uid;
         };

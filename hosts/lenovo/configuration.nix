@@ -1,3 +1,4 @@
+{ org, ... }:
 {
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/fcd9e077-268d-4561-bc4c-fc97b01511d7";
@@ -45,8 +46,7 @@
 
     users = {
       alex = {
-        description = "Alexander Holmbäck";
-        class = "user";
+        description = org.user.alex.description;
         groups = [ "wheel" ];
       };
     };
@@ -58,7 +58,7 @@
       postgresql = true;
       redis = true;
     };
-    hm.alex.enable = true;
+    home-manager.alex.enable = true;
     desktop-env.alex.enable = true;
 
   };

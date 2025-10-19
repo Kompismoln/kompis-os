@@ -2,7 +2,7 @@
 {
   imports = [
     ../modules/desktop-env.nix
-    ../modules/hm.nix
+    ../modules/home-manager.nix
     ../modules/ide.nix
     ../modules/mysql.nix
     ../modules/postgresql.nix

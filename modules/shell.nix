@@ -20,7 +20,8 @@ let
   cfg = config.kompis-os.shell;
   eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
   eachHMUser = filterAttrs (
-    user: cfg: hasAttr user config.kompis-os.hm && config.kompis-os.hm.${user}.enable
+    user: cfg:
+    hasAttr user config.kompis-os.home-manager && config.kompis-os.home-manager.${user}.enable
   ) eachUser;
 
   userOpts = {
