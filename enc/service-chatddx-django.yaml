@@ -1,4 +1,4 @@
-identity: ENC[AES256_GCM,data:K/NQg0Vq0ha7xJulktrV,iv:j2tM5iybLYLN4Hl951dVTaBWDknhTv+COh2Sw/vR7j4=,tag:Y1StHGFtIymHV7wn1ezi9Q==,type:str]
+identity: ENC[AES256_GCM,data:4wCz6nt/XXAooOH2imV0kIQnVU5wUQ==,iv:G3LHdMbZ+/eLpyhyY2U+GyGtm/PT47xhzvu4Y/NlE14=,tag:NV4dD0z/26N/nPdpUWeNwQ==,type:str]
 chatddx-django:
     age-key: ENC[AES256_GCM,data:zoOmA9k3sM/yAWo4jgYhE6OlGh3Z0VE1QCaoydjR1RhMW+UzBg+xtQCZuEHV7O3RaIKFWfPQUiVtrXnVGa0QfvfDzfGqGqYS7Unu,iv:viZJwBGk1xMZI6Oc3BU5frWA2c7FYHJjWKMe46dL+1Q=,tag:V5VMEGpgR0eE1J93iH+uXA==,type:str]
     secret-key: ENC[AES256_GCM,data:0/Z5AxUZHbL74nzfuOiSZkEjC+l0CYvqaHmDoqUIAX8=,iv:9jqJjcNuuoRsw72SZFaasm0EqKZHgx56b8xGIZ4/blQ=,tag:CKBL49nIY5yWS0NK+AUrfA==,type:str]
@@ -40,7 +40,7 @@ sops:
             eVA3am9MOVlvcUpIT1VUTDYzL3ArMXMKm9ebLY7DcJC7beBVe2paOZbj42ndftQp
             I7oGLWMq7EskIP4VhC3o+aCrzINzz9yC69Kjz4Lqtv4PwnXvESxbFw==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-10-16T18:37:15Z"
-    mac: ENC[AES256_GCM,data:m2hIXrEIqjHjphXLpS3YJpB5EB9+yMYpDZv0lo00DtX3BR+lAIotoNtPv8pktv0w1/BX9gSOLZuI2/m/2IkEF7f5oG4DHv3xMk/Crrab3lomHmzBrVPq+9yunQEmlAY+itOR1Xzi+ICAcJRNxssPq17FfBk6p2mJjkUvHYhCYmI=,iv:XfmAat15mt0IjzlGo+R0GbcH2h+IEAUOC07CWEIp4/U=,tag:RSo4zN7PE1kanctEfNhbOQ==,type:str]
+    lastmodified: "2025-10-20T17:09:01Z"
+    mac: ENC[AES256_GCM,data:Z6pypiTMlxWD+82TI9eLvuPdtXrFjRoCJ00LSxmjnyG+iVwcacYkSFHXzcW82Na3dhWD/KzzZvEJbFUA/0Cv/wdmhUMa1V0YmEg+FFQwCK1kTyk1i0Za3upksrtL9pjY8EQF20lbJh3sMcaWPlm1XVybDnCwOAwz96+s5yYqccY=,iv:AySt2J0ALNpTOpISD7Fql3xCuHKDqNu/M9cOoW6JegU=,tag:lO1kDcphK3AyUVHtseZnPw==,type:str]
     unencrypted_suffix: _unencrypted
     version: 3.11.0

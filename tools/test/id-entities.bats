@@ -122,7 +122,7 @@ setup() {
   expect 1 "entities are not allowed to rotate their own identity"
 
   SOPS_AGE_KEY_FILE=$TESTROOT/keys/root-2
-  run "$test_cmd" -u testuser verify age-key
+  run "$test_cmd" -u testuser cat-secret age-key
   expect 1 "no identity found in '$TESTROOT/keys/root-2'"
 
   SOPS_AGE_KEY_FILE=$TESTROOT/keys/root-1
@@ -272,7 +272,7 @@ setup() {
   expect 0 "main"
 
   run "$test_cmd" -h testhost check luks-key 2
-  expect 1 "locksmith -> empty payload"
+  expect 0 "no secret to check"
 
   run "$test_cmd" -h testhost check luks-key 1
   expect 0 "main"

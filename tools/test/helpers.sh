@@ -17,7 +17,7 @@ setup-testenv() {
 
     cd "$root" || exit 1
 
-    export PATH="$root/bin:$root/test/bin:$PATH"
+    export PATH="$root/test/bin:$root/bin:$PATH"
 }
 
 declare -g output status

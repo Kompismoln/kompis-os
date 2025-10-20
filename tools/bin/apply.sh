@@ -12,7 +12,7 @@ declare -x \
     BUILD_HOST=${BUILD_HOST:-$(org-toml.sh "build-hosts" | head -n1)}
 
 apply() {
-    target_address=$(org-toml.sh "find-route" "$target")
+    target_address=$(find-route.sh "$target")
 
     log info "use $BUILD_HOST to build $target (at $target_address)"
 
@@ -23,7 +23,7 @@ apply() {
         "$km_root/bin/as.sh" nix-push nix copy --to "ssh://nix-push@$target_address" "$build"
     else
         local build_host
-        build_host="http://$(org-toml.sh "find-route" "$BUILD_HOST" 5000):5000"
+        build_host="http://$(find-route.sh "$BUILD_HOST" 5000):5000"
         "$km_root/bin/as.sh" nix-build ssh "nix-build@$target_address" "pull $build $build_host"
     fi
 

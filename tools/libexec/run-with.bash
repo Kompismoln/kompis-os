@@ -145,10 +145,6 @@ trailing-newline() {
     [[ $(tail -c1 "$1" | hexdump -C) == *"0a"* ]]
 }
 
-ping-port() {
-    nc -z -w2 "$1" "$2" &>/dev/null
-}
-
 declare -g repo_root
 repo_root() {
     local repo_root=${REPO_ROOT:-$(pwd)}

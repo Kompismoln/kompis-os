@@ -100,7 +100,7 @@ keys = [
 "host:luks+server" = [
   "check:luks-key",
 ]
-"host:server" = [
+"host:webserver" = [
   "check:age-key",
   "check:ssh-key",
 ]
@@ -109,18 +109,25 @@ keys = [
   "check:ssh-key",
 ]
 
-[ops.verify]
+[ops.verify-identities]
 "*" = [
   "verify:age-key",
 ]
+
+[ops.verify-users]
 "user-*" = [
   "verify:ssh-key",
   "verify:passwd",
   "verify:mail",
 ]
+
+[ops.verify-hosts]
 "host-*" = [
-  "verify:wg-key",
+  "verify:wg0-key",
+  "verify:wg1-key",
 ]
+
+[ops.verify-services]
 "service-*" = [
   "verify:ssh-key",
   "verify:tls-cert",

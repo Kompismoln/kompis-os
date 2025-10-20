@@ -103,6 +103,10 @@ preflight-backend() {
     [[ $prefix == "init" || -f "$backend_path" ]] ||
         die 1 "'$backend_path' doesn't exist, did you spell '$entity' correctly?"
 
+    if [[ $prefix =~ ^(verify|align|check)$ ]]; then
+        (with secret_file) || die 0 "no secret to $prefix"
+    fi
+
     log info "$backend_path"
 }
 
@@ -664,9 +668,7 @@ exact_key() {
 }
 
 fqdn() {
-    [[ $class == "host" ]] || die 1 "only hosts can have fqdn"
-    echo -n "$entity."
-    org-toml.sh "namespaces" | head -n1
+    find-route.sh "$entity"
 }
 
 id() {
