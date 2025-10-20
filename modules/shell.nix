@@ -61,7 +61,7 @@ in
     environment.systemPackages = with pkgs; [
       envsubst
       jq
-      yq-go
+      libxml2
       ssh-to-age
       sops
       age

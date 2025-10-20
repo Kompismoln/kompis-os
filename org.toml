@@ -197,6 +197,13 @@ grants = [
   "host-stationary",
 ]
 
+[service.glesys-api]
+account = "cl44748"
+endpoint = "https://api.glesys.com"
+grants = [
+  "host-stationary",
+]
+
 [host.stationary]
 id = 1
 roles = [

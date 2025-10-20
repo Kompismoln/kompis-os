@@ -240,16 +240,16 @@ find-route:() {
     fi
 
     local fqdn
-    org-toml.sh "namespaces" | while IFS= read -r namespace; do
+    while IFS= read -r namespace; do
         fqdn="$host.$namespace"
         log info "trying $fqdn..."
         if ping-port "$fqdn" "$port"; then
             log success "$fqdn is up"
             echo "$fqdn"
-            exit 0
+            return 0
         fi
-        exit 1
-    done || die 1 "no contact with $host"
+    done < <(org-toml.sh "namespaces")
+    die 1 "no contact with $host"
 }
 
 org-toml "$@"

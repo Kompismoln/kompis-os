@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  org,
   ...
 }:
 
@@ -24,10 +25,6 @@ in
       description = "The glesys id of the record";
       type = str;
     };
-    cloudaccount = mkOption {
-      description = "Glesys account id.";
-      type = str;
-    };
     device = mkOption {
       description = "Device that should be watched.";
       example = "enp3s0";
@@ -37,26 +34,27 @@ in
 
   config = mkIf cfg.enable {
 
-    sops.secrets."api-key-glesys" = {
+    sops.secrets."glesys-api/secret-key" = {
+      sopsFile = ../enc/service-glesys-api.yaml;
       owner = "root";
       group = "root";
     };
 
     systemd.services."glesys-updaterecord" = {
-      description = "update A record for stationary.ahbk.se";
+      description = "update A record for stationary.kompismoln.se";
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig =
         let
-          user = "${cfg.cloudaccount}:$(<${config.sops.secrets."api-key-glesys".path})";
+          user = "${org.service.glesys-api.account}:$(<${config.sops.secrets."glesys-api/secret-key".path})";
           data = "recordid=${cfg.recordid}&data=$ipv4";
-          endpoint = "https://api.glesys.com/domain/updaterecord";
+          url = "${org.service.glesys-api.endpoint}/domain/updaterecord";
         in
         {
           ExecStart = pkgs.writeShellScript "glesys-updaterecord" ''
             ipv4="$(${pkgs.iproute2}/bin/ip -4 -o addr show ${cfg.device} | ${pkgs.gawk}/bin/awk '{split($4, a, "/"); print a[1]}')"
-            ${getExe pkgs.curl} -sSX POST -d "${data}" -u ${user} ${endpoint} | ${pkgs.util-linux}/bin/logger -t dhcpcd
+            ${getExe pkgs.curl} -sSX POST -d "${data}" -u ${user} ${url} | ${pkgs.util-linux}/bin/logger -t dhcpcd
           '';
         };
     };

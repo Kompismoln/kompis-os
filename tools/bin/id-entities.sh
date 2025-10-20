@@ -289,7 +289,8 @@ create-secret:ssh-key() {
 }
 
 create-secret:nix-sign() {
-    nix key generate-secret --key-name "nix-sign"
+    with id
+    nix key generate-secret --key-name "$id"
 }
 
 create-secret:wg0-key() {
@@ -349,8 +350,8 @@ validate:mail() {
     validate:passwd
 }
 
-# this key 'passwd-sha512' is actually artifact for 'passwd', so it is banned
-# from deriving artifacts and we terminate the callchain with a trailing colon
+# this key 'passwd-sha512' is actually artifact for 'passwd', so it should not be
+# deriving artifacts and we terminate the callchain with a trailing colon
 validate:passwd-sha512:() {
     validate-sha512
 }
@@ -554,7 +555,7 @@ rebuild:() {
 
 next-slot:() {
     local slot=0
-    while (LOG_LEVEL=trace run decrypt >/dev/null); do
+    while (LOG_LEVEL=off run decrypt >/dev/null); do
         ((slot++)) || true
     done
     echo "$slot"
@@ -635,7 +636,7 @@ backend_enabled() {
     rc=$?
 
     [[ $identity == "$class-$entity" ]] ||
-        die 1 "identity $identity don't match $class-$entity"
+        die 1 "identity $identity doesn't match $class-$entity"
 
     case $rc in
     0) echo true ;;

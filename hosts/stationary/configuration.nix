@@ -13,8 +13,7 @@
 
     glesys.updaterecord = {
       enable = true;
-      recordid = "3357682";
-      cloudaccount = "cl44748";
+      recordid = "3754970";
       device = "enp3s0";
     };
 
