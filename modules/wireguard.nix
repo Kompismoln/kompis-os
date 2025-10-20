@@ -3,7 +3,6 @@
   config,
   host,
   lib,
-  lib',
   pkgs,
   org,
   ...
@@ -17,9 +16,7 @@ let
 
   cfg = config.kompis-os.wireguard;
 
-  enabledSubnets = filterAttrs (iface: cfg: cfg.enable) org.subnet;
-
-  isServer = hostCfg: lib.hasAttr "endpoint" hostCfg;
+  eachSubnet = filterAttrs (iface: cfg: cfg.enable) org.subnet;
 
   peerAddress =
     subnet: peer: builtins.replaceStrings [ "x" ] [ (toString peer.id) ] subnet.peerAddress;
@@ -40,22 +37,18 @@ let
         PersistentKeepalive = subnet.keepalive;
       };
     in
-    base // (if isServer peerCfg then serverConfig else clientConfig);
+    base // (if peerName == subnet.gateway then serverConfig else clientConfig);
 
   peers =
-    iface:
+    iface: subnet:
     filterAttrs (
-      _: otherHost:
-      lib.elem "peer" otherHost.roles
-      && lib.elem iface otherHost.subnets
-      && (isServer otherHost || isServer host)
+      otherHostName: otherHostCfg:
+      otherHostName != host.name
+      && lib.elem "peer" otherHostCfg.roles
+      && lib.elem iface otherHostCfg.subnets
+      && (otherHostName == subnet.gateway || host.name == subnet.gateway)
     ) org.host;
 
-  resetOnRebuilds =
-    subnets:
-    lib.mapAttrsToList (iface: cfg: "${pkgs.iproute2}/bin/ip link delete ${iface}") (
-      lib.filterAttrs (iface: cfg: cfg.resetOnRebuild) enabledSubnets
-    );
 in
 {
   options.kompis-os.wireguard.enable = lib.mkOption {
@@ -67,19 +60,21 @@ in
   config = lib.mkIf (cfg.enable) {
 
     systemd.services."systemd-networkd".preStop = lib.concatStringsSep "\n" (
-      resetOnRebuilds enabledSubnets
+      lib.mapAttrsToList (iface: _: "${pkgs.iproute2}/bin/ip link delete ${iface}") (
+        lib.filterAttrs (_: cfg: cfg.resetOnRebuild) eachSubnet
+      )
     );
 
     networking = {
       wireguard.enable = true;
-      networkmanager.unmanaged = map (iface: "interface-name:${iface}") (lib.attrNames enabledSubnets);
+      networkmanager.unmanaged = map (iface: "interface-name:${iface}") (lib.attrNames eachSubnet);
       firewall.interfaces = lib.mapAttrs (_: subnet: {
         inherit (subnet) allowedTCPPortRanges;
-      }) enabledSubnets;
-      firewall.allowedUDPPorts = lib.optionals (isServer host) (
-        lib.mapAttrsToList (iface: cfg: cfg.port) enabledSubnets
+      }) eachSubnet;
+      firewall.allowedUDPPorts = lib.mapAttrsToList (iface: cfg: cfg.port) (
+        lib.filterAttrs (iface: cfg: host.name == cfg.gateway) eachSubnet
       );
-      interfaces = lib.mapAttrs (_: _: { useDHCP = false; }) enabledSubnets;
+      interfaces = lib.mapAttrs (_: _: { useDHCP = false; }) eachSubnet;
     };
 
     sops.secrets = lib.mapAttrs' (
@@ -88,14 +83,15 @@ in
         owner = "systemd-network";
         group = "systemd-network";
       }
-    ) enabledSubnets;
+    ) eachSubnet;
 
-    boot.kernel.sysctl."net.ipv4.ip_forward" = lib.elem host.name (
-      mapAttrsToList (_: cfg: cfg.gateway) enabledSubnets
+    boot.kernel.sysctl."net.ipv4.ip_forward" = lib.any (cfg: host.name == cfg.gateway) (
+      lib.attrValues eachSubnet
     );
 
     systemd.network = {
       enable = true;
+
       netdevs = lib.mapAttrs' (
         iface: cfg:
         lib.nameValuePair "10-${iface}" {
@@ -105,28 +101,28 @@ in
           };
           wireguardConfig = {
             PrivateKeyFile = config.sops.secrets."${iface}-key".path;
-            ListenPort = if isServer host then cfg.port else null;
+            ListenPort = lib.mkIf (host.name == cfg.gateway) cfg.port;
           };
-          wireguardPeers = mapAttrsToList (createPeer iface cfg) (peers iface);
+          wireguardPeers = mapAttrsToList (createPeer iface cfg) (peers iface cfg);
         }
-      ) enabledSubnets;
+      ) eachSubnet;
 
-      networks = lib'.mergeAttrs (iface: cfg: {
-        "10-${iface}" = {
+      networks = lib.mapAttrs' (
+        iface: cfg:
+        lib.nameValuePair "10-${iface}" {
           matchConfig.Name = iface;
           address = [ "${peerAddress cfg host}/24" ];
           dns = map (dns: peerAddress cfg org.host.${dns}) cfg.dns;
-        };
-
-        "40-${iface}" = {
-          matchConfig.Name = iface;
+          routes = lib.optional (host.name == cfg.gateway) {
+            Destination = cfg.address;
+            Scope = "link";
+          };
           networkConfig = {
-            Description = "snapshot from nixos-facter hardware detection";
             DHCP = "no";
             IPv6PrivacyExtensions = "kernel";
           };
-        };
-      }) enabledSubnets;
+        }
+      ) eachSubnet;
     };
   };
 }

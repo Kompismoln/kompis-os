@@ -239,6 +239,7 @@ roles = [
 ]
 subnets = [
   "wg0",
+  "wg1",
 ]
 system = "aarch64-linux"
 stateVersion = ""
