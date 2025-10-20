@@ -159,6 +159,10 @@ in
         users = [ "nix-switch" ];
         commands = [
           {
+            command = "${nixservicePkg}/bin/nixservice switch";
+            options = [ "NOPASSWD" ];
+          }
+          {
             command = "${nixservicePkg}/bin/nixservice switch *";
             options = [ "NOPASSWD" ];
           }

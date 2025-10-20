@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 # tools/remote/nixservice.sh
+set -euo pipefail
 
 main() {
     case $1 in
     build)
-        host=$2
+        host=${2:?"host required"}
         refresh=${3:-}
         ;;
     pull)
-        closure=$2
+        closure=${2:?"closure required"}
         build_host=${3:-$BUILD_HOST}
         ;;
     switch)
-        closure=$2
+        generation=${2:-}
         ;;
     *) exit 1 ;;
     esac
@@ -32,8 +33,17 @@ pull() {
 }
 
 switch() {
-    sudo nix-env -p /nix/var/nix/profiles/system --set "$closure"
-    sudo "$closure/bin/switch-to-configuration" switch
+    if [[ $generation =~ ^/nix/store/ ]]; then
+        nix-env -p /nix/var/nix/profiles/system --set "$generation"
+    elif [[ -n "$generation" ]]; then
+        nix-env -p /nix/var/nix/profiles/system --switch-generation "$generation"
+    fi
+
+    nix-env -p /nix/var/nix/profiles/system --list-generations
+
+    if [[ -n "$generation" ]]; then
+        /nix/var/nix/profiles/system/bin/switch-to-configuration switch
+    fi
 }
 
 main "$@"
