@@ -108,8 +108,6 @@ in
         lib'.mergeAttrs (user: _: {
           "${user}/mail-sha512" = {
             sopsFile = ../enc/user-${user}.yaml;
-            owner = user;
-            group = user;
             restartUnits = [
               "dovecot2.service"
               "postfix.service"
