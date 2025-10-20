@@ -101,7 +101,7 @@ in
       lib.nameValuePair "${cfg.appname}" {
         class = "service";
         publicKey = false;
-        groups = [
+        members = [
           webserver.user
         ];
       }

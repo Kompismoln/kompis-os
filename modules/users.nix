@@ -49,6 +49,11 @@ let
           type = with lib.types; listOf str;
           default = [ ];
         };
+        members = lib.mkOption {
+          description = "user's extra groups";
+          type = with lib.types; listOf str;
+          default = [ ];
+        };
       };
     };
 in
@@ -91,8 +96,9 @@ in
       }
     ) eachUser;
 
-    users.groups = lib.mapAttrs (name: _: {
-      gid = lib'.ids.${name}.uid;
+    users.groups = lib.mapAttrs (user: userCfg: {
+      gid = lib'.ids.${user}.uid;
+      members = [ user ] ++ userCfg.members;
     }) eachUser;
   };
 }
