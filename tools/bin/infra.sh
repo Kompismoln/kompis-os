@@ -10,6 +10,11 @@ km_root="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 . "$km_root/libexec/run-with.bash"
 
 for-all-identities() {
+    if [[ $1 == "updatekeys" ]]; then
+        org-toml.sh "sops-yaml" "*" >.sops.yaml
+        sops updatekeys -y enc/*
+        return
+    fi
     org-toml.sh "ops" "[\"$1\"]" | while IFS=" " read -r id op; do
         [[ "$id" != "root-"* ]] || continue
         IFS=':' read -r prefix key <<<"$op"
