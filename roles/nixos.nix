@@ -1,10 +1,14 @@
+# roles/nixos.nix
 {
-  host,
-  ...
-}:
-{
-  imports = [
-    ../hosts/${host.name}/configuration.nix
-    ../modules/system.nix
-  ];
+  flake.nixosModules.nixos =
+    {
+      host,
+      ...
+    }:
+    {
+      imports = [
+        ../hosts/${host.name}/configuration.nix
+        ../modules/system.nix
+      ];
+    };
 }

@@ -1,23 +1,23 @@
-{ org, lib, ... }:
+# roles/mailserver.nix
 {
-  imports = [
-    ../modules/mailserver.nix
-  ];
-  kompis-os.mailserver = {
-    enable = true;
-    domain = org.domain;
-    dkimSelector = "k1";
+  flake.nixosModules.mailserver =
+    { org, lib, ... }:
+    {
+      imports = [
+        ../modules/mailserver.nix
+      ];
+      kompis-os.mailserver = {
+        enable = true;
+        domain = org.domain;
+        dkimSelector = org.mailserver.dkimSelector;
 
-    users.admin = {
-      aliases = org.inboxes;
+        users = lib.mapAttrs (user: userCfg: { aliases = org.user.${user}.inboxes; }) (
+          lib.filterAttrs (user: userCfg: lib.hasAttr "mail" userCfg && userCfg.mail) org.user
+        );
+
+        domains = lib.mapAttrs (_: siteCfg: {
+          mailbox = siteCfg.mailbox;
+        }) org.site;
+      };
     };
-
-    users.alex = {
-      aliases = org.user.alex.inboxes;
-    };
-
-    domains = lib.mapAttrs (_: siteCfg: {
-      mailbox = siteCfg.mailbox;
-    }) org.site;
-  };
 }

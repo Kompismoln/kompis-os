@@ -1,23 +1,26 @@
+# roles/peer.nix
 {
-  imports = [
-    ../modules/locksmith.nix
-    ../modules/nix.nix
-    ../modules/preserve.nix
-    ../modules/sops.nix
-    ../modules/ssh.nix
-    ../modules/tls-certs.nix
-    ../modules/users.nix
-    ../modules/wireguard.nix
-  ];
+  flake.nixosModules.peer = {
+    imports = [
+      ../modules/locksmith.nix
+      ../modules/nix.nix
+      ../modules/preserve.nix
+      ../modules/sops.nix
+      ../modules/ssh.nix
+      ../modules/tls-certs.nix
+      ../modules/users.nix
+      ../modules/wireguard.nix
+    ];
 
-  kompis-os = {
-    users.admin = {
-      class = "user";
-      groups = [ "wheel" ];
+    kompis-os = {
+      users.admin = {
+        class = "user";
+        groups = [ "wheel" ];
+      };
+      tls-certs = [ "km" ];
+      locksmith.enable = true;
+      sops.enable = true;
+      ssh.enable = true;
     };
-    tls-certs = [ "km" ];
-    locksmith.enable = true;
-    sops.enable = true;
-    ssh.enable = true;
   };
 }

@@ -1,8 +1,11 @@
+# flake.nix
 {
-  description = "my nixos";
+  description = "Kompismoln";
 
   inputs = {
     nixpkgs.url = "github:kompismoln/nixpkgs/nixos-unstable";
+
+    flake-parts.url = "github:hercules-ci/flake-parts";
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -43,65 +46,31 @@
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }@inputs:
-    let
-      inherit (nixpkgs) lib;
-      inherit (home-manager.lib) homeManagerConfiguration;
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-
-      lib' = (import ./lib) nixpkgs.lib;
-
-      org-unwrapped = builtins.fromTOML (builtins.readFile ./org.toml);
-      org = lib.recursiveUpdate org-unwrapped {
-        theme.colors = lib'.semantic-colors org-unwrapped.theme.colors;
-      };
-
-    in
-    {
-      homeConfigurations = lib.mapAttrs (
-        homeManagerName: homeManagerCfg:
-        homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${homeManagerCfg.system};
-          extraSpecialArgs =
-            let
-              userhost = lib.splitString "@" homeManagerName;
-              username = builtins.elemAt userhost 0;
-              hostname = builtins.elemAt userhost 1;
-            in
-            {
-              hmHost = homeManagerCfg // {
-                inherit username hostname;
-              };
-              inherit inputs org lib';
-            };
-          modules = map (role: ./home-manager/roles/${role}.nix) homeManagerCfg.roles;
-        }
-      ) org.home-manager;
-
-      nixosConfigurations = lib.mapAttrs (
-        hostname: hostCfg:
-        lib.nixosSystem {
-          specialArgs = {
-            host = hostCfg // {
-              name = hostname;
-            };
-            inherit inputs org lib';
-          };
-          modules = map (role: ./roles/${role}.nix) hostCfg.roles;
-        }
-      ) (lib.filterAttrs (_: cfg: lib.elem "nixos" cfg.roles) org.host);
-
-      devShells.${system}.default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          toml2json
+    inputs:
+    inputs.flake-parts.lib.mkFlake
+      {
+        inputs = inputs // {
+          org = builtins.fromTOML (builtins.readFile ./org.toml);
+        };
+      }
+      {
+        systems = [ "x86_64-linux" ];
+        imports = [
+          ./lib/outputs.nix
         ];
-        shellHook = ''
-          export SOPS_AGE_KEY_FILE=/keys/root-1
-          export BUILD_HOST=./
-          PATH=$(pwd)/tools/bin:$PATH
-        '';
+        perSystem =
+          { pkgs, ... }:
+          {
+            devShells.default = pkgs.mkShell {
+              buildInputs = with pkgs; [
+                toml2json
+              ];
+              shellHook = ''
+                export SOPS_AGE_KEY_FILE=/keys/root-1
+                export BUILD_HOST=./
+                PATH=$(pwd)/tools/bin:$PATH
+              '';
+            };
+          };
       };
-
-    };
 }

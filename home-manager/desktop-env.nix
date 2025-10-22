@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  lib',
   org,
   pkgs,
   ...
@@ -14,7 +15,8 @@ let
     substring
     ;
 
-  inherit (org.theme) colors fonts;
+  inherit (org.theme) fonts;
+  colors = lib'.semantic-colors org.theme.colors;
   unhashedHexes = lib.mapAttrs (n: c: substring 1 6 c) colors;
   cfg = config.kompis-os-hm.desktop-env;
 in

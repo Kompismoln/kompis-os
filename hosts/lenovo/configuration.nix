@@ -60,6 +60,7 @@
     };
     home-manager.alex.enable = true;
     desktop-env.alex.enable = true;
+    vd.alex.enable = true;
 
   };
 }

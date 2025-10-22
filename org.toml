@@ -1,12 +1,6 @@
-# org.toml
 name = "Kompismoln"
 domain = "kompismoln.se"
 contact = "info@kompismoln.se"
-inboxes = [
-  "info@kompismoln.se",
-  "postmaster@kompismoln.se",
-  "abuse@kompismoln.se",
-]
 timezone = "Europe/Stockholm"
 locale = "en_US.UTF-8"
 build-hosts = [
@@ -20,6 +14,9 @@ namespaces = [
   "km1",
   "kompismoln.se",
 ]
+
+[mailserver]
+dkimSelector = "k1"
 
 [flake]
 type = "github"
@@ -320,6 +317,7 @@ stateVersion = "25.11"
 system = "x86_64-linux"
 stateVersion = "23.11"
 roles = [
+  "home-manager",
   "workstation",
 ]
 
@@ -327,12 +325,19 @@ roles = [
 system = "x86_64-linux"
 stateVersion = "24.05"
 roles = [
+  "home-manager",
   "workstation",
 ]
 
 [user.admin]
+mail = true
 grants = [
   "host-*",
+]
+inboxes = [
+  "info@kompismoln.se",
+  "postmaster@kompismoln.se",
+  "abuse@kompismoln.se",
 ]
 
 [user.ami]
@@ -341,6 +346,7 @@ grants = [
 ]
 
 [user.alex]
+mail = true
 description = "Alexander Holmbäck"
 email = "alex@kompismoln.se"
 inboxes = [

@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  lib',
   org,
   pkgs,
   ...
@@ -9,7 +10,7 @@
 let
   inherit (lib) getExe mkEnableOption mkIf;
 
-  inherit (org.theme) colors;
+  colors = lib'.semantic-colors org.theme.colors;
   cfg = config.kompis-os-hm.shell;
 in
 

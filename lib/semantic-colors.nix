@@ -1,4 +1,7 @@
-colors: with colors; rec {
+colors:
+with colors;
+colors
+// rec {
   base00 = black-900;
   base01 = red-400;
   base02 = green-400;
