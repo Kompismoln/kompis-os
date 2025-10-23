@@ -1,3 +1,4 @@
+# kompis-os/roles/home-manager.nix
 {
   flake.homeModules.home-manager =
     { home, ... }:

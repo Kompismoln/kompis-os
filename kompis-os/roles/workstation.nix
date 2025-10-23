@@ -1,4 +1,4 @@
-# roles/workstation.nix
+# kompis-os/roles/workstation.nix
 { inputs, ... }:
 {
   flake.homeModules.workstation =

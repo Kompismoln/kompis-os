@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  lib',
   host,
   ...
 }:
@@ -28,7 +29,7 @@ in
   config = mkIf (cfg.enable) {
 
     sops = {
-      defaultSopsFile = ../../enc/host-${host.name}.yaml;
+      defaultSopsFile = lib'.secrets "host" host.name;
       age = {
         keyFile = "/keys/host-${host.name}";
         sshKeyPaths = [ ];

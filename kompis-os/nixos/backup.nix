@@ -49,7 +49,7 @@ in
   config = mkIf (eachTarget != { }) {
 
     sops.secrets."backup/secret-key" = {
-      sopsFile = ../../enc/service-backup.yaml;
+      sopsFile = lib'.secrets "service" "backup";
     };
 
     services.restic.backups.km = {

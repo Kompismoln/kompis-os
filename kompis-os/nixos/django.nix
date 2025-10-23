@@ -132,7 +132,7 @@ in
     sops.secrets = mapAttrs' (
       name: cfg:
       nameValuePair "${cfg.appname}-django/secret-key" {
-        sopsFile = ../../enc/service-${cfg.appname}-django.yaml;
+        sopsFile = lib'.secrets "service" "${cfg.appname}-django";
         owner = "${cfg.appname}-django";
         group = "${cfg.appname}-django";
       }

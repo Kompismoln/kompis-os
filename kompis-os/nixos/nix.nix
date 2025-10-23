@@ -1,8 +1,9 @@
-# modules/nix.nix
+# kompis-os/nixos/nix.nix
 {
   config,
   inputs,
   lib,
+  lib',
   pkgs,
   host,
   org,
@@ -46,7 +47,7 @@ in
       default = lib.elem host.name org.build-hosts;
     };
     facter = (lib.mkEnableOption "facter hardware configuration") // {
-      default = true;
+      default = lib.hasAttr "facter" org.host.${host.name};
     };
     repo = lib.mkOption {
       description = "repo for this config";
@@ -62,10 +63,10 @@ in
 
   config = {
 
-    facter.reportPath = lib.mkIf cfg.facter ../../hosts/${host.name}/facter.json;
+    facter.reportPath = lib.mkIf cfg.facter "${inputs.self}/${org.host.${host.name}.facter}";
 
     sops.secrets."nix-serve/nix-sign" = {
-      sopsFile = ../../enc/service-nix-serve.yaml;
+      sopsFile = lib'.secrets "service" "nix-serve";
       restartUnits = [
         "nix-serve.service"
       ];
@@ -78,7 +79,7 @@ in
 
     programs.ssh.knownHosts.github = {
       hostNames = [ "github.com" ];
-      publicKeyFile = ../../public-keys/unmanaged-github-ssh-key.pub;
+      publicKeyFile = lib'.public-artifacts "unmanaged" "github" "ssh-key";
     };
 
     nix = {
@@ -115,7 +116,7 @@ in
         trusted-public-keys = [
           "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
           "cache.lix.systems:aBnZUw8zA7H35Cz2RyKFVs3H4PlGTLawyY5KRbvJR8o="
-          (builtins.readFile ../../public-keys/service-nix-serve-nix-sign.pub)
+          (builtins.readFile (lib'.public-artifacts "service" "nix-serve" "nix-sign"))
         ];
         use-xdg-base-directories = true;
       };

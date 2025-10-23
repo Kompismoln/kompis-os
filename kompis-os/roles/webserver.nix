@@ -1,4 +1,4 @@
-# roles/webserver.nix
+# kompis-os/roles/webserver.nix
 { inputs, ... }:
 {
   flake.nixosModules.webserver = {

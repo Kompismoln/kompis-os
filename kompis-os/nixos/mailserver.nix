@@ -1,3 +1,4 @@
+# kompis-os/nixos/mailserver.nix
 {
   config,
   inputs,
@@ -107,7 +108,7 @@ in
       sops.secrets =
         lib'.mergeAttrs (user: _: {
           "${user}/mail-sha512" = {
-            sopsFile = ../../enc/user-${user}.yaml;
+            sopsFile = lib'.secrets "user" user;
             restartUnits = [
               "dovecot2.service"
               "postfix.service"
@@ -116,7 +117,7 @@ in
         }) cfg.users
         // {
           "dmarc-reports/mail-sha512" = {
-            sopsFile = ../../enc/service-dmarc-reports.yaml;
+            sopsFile = lib'.secrets "service" "dmarc-reports";
             restartUnits = [
               "dovecot2.service"
               "postfix.service"

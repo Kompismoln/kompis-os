@@ -1,4 +1,4 @@
-# roles/peer.nix
+# kompis-os/roles/peer.nix
 {
   flake.nixosModules.peer = {
     imports = [

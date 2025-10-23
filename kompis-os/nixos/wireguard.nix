@@ -1,8 +1,9 @@
-# modules/wireguard.nix
+# kompis-os/nixos/wireguard.nix
 {
   config,
   host,
   lib,
+  lib',
   pkgs,
   org,
   ...
@@ -25,7 +26,7 @@ let
     iface: subnet: peerName: peerCfg:
     let
       base = {
-        PublicKey = builtins.readFile ../../public-keys/host-${peerName}-${iface}-key.pub;
+        PublicKey = builtins.readFile (lib'.public-artifacts "host" peerName "${iface}-key");
         AllowedIPs = [
           (if peerName == subnet.gateway then subnet.address else "${peerAddress subnet peerCfg}/32")
         ];

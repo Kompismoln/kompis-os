@@ -1,5 +1,9 @@
 { org, ... }:
 {
+  imports = [
+    ../../kompis-os/nixos/sendmail.nix
+  ];
+
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/fcd9e077-268d-4561-bc4c-fc97b01511d7";
     fsType = "ext4";
@@ -50,6 +54,8 @@
         groups = [ "wheel" ];
       };
     };
+
+    sendmail.alex.enable = true;
 
     shell.alex.enable = true;
 

@@ -1,4 +1,4 @@
-# lib/outputs.nix
+# kompis-os/outputs.nix
 {
   inputs,
   self,
@@ -6,7 +6,7 @@
   ...
 }:
 let
-  lib' = (import ./lib) lib;
+  lib' = (import ./lib) lib inputs;
 in
 {
   imports = [

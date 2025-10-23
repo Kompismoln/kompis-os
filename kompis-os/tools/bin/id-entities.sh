@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tools/bin/id-entities.sh
+# kompis-os/tools/bin/id-entities.sh
 
 # === section 0: setup
 

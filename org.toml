@@ -3,6 +3,7 @@ domain = "kompismoln.se"
 contact = "info@kompismoln.se"
 timezone = "Europe/Stockholm"
 locale = "en_US.UTF-8"
+host-config = "hosts/$host/configuration.nix"
 build-hosts = [
   "stationary",
 ]
@@ -17,6 +18,8 @@ namespaces = [
 
 [mailserver]
 dkimSelector = "k1"
+int = "helsinki.km"
+ext = "mail.kompismoln.se"
 
 [flake]
 type = "github"
@@ -209,6 +212,7 @@ grants = [
 ]
 
 [host.stationary]
+facter = "hosts/stationary/facter.json"
 id = 1
 roles = [
   "nixos",
@@ -249,13 +253,14 @@ system = "aarch64-linux"
 stateVersion = ""
 
 [host.helsinki]
+facter = "hosts/helsinki/facter.json"
 id = 5
 roles = [
   "nixos",
   "peer",
   "webserver",
   "mailserver",
-  "disko",
+  "disko-server",
 ]
 endpoint = "helsinki.kompismoln.se"
 subnets = [
@@ -279,6 +284,7 @@ system = "x86_64-linux"
 stateVersion = "20.03"
 
 [host.lenovo]
+facter = "hosts/lenovo/facter.json"
 id = 7
 roles = [
   "nixos",
@@ -293,12 +299,13 @@ system = "x86_64-linux"
 stateVersion = "24.11"
 
 [host.adele]
+facter = "hosts/adele/facter.json"
 id = 8
 roles = [
   "nixos",
   "peer",
   "workstation",
-  "disko",
+  "disko-workstation",
 ]
 subnets = [
   "wg0",
@@ -386,6 +393,9 @@ dns = ["stationary"]
 resetOnRebuild = true
 peerAddress = "10.0.1.x"
 allowedTCPPortRanges = [{ from = 0, to = 65535 }]
+
+[theme]
+wallpaper = "assets/wallpaper.jpg"
 
 [theme.fonts]
 monospace = "Source Code Pro"

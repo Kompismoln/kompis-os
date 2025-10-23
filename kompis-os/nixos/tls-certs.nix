@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  lib',
   ...
 }:
 
@@ -23,7 +24,7 @@ in
 
   config = mkIf (tls-certs != [ ]) {
     security.pki.certificates = builtins.map (
-      name: (builtins.readFile ../../public-keys/service-domain-${name}-tls-cert.pem)
+      name: builtins.readFile (lib'.public-artifacts "service" "domain-${name}" "tls-cert")
     ) tls-certs;
 
     users.groups.tls-cert = {
@@ -37,7 +38,7 @@ in
       builtins.map (name: {
         name = "domain-${name}/tls-cert";
         value = {
-          sopsFile = ../../enc/service-domain-${name}.yaml;
+          sopsFile = lib'.secrets "service" "domain-${name}";
           owner = "root";
           group = "tls-cert";
           mode = "0440";

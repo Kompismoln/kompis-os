@@ -1,13 +1,14 @@
-# roles/nixos.nix
+# kompis-os/roles/nixos.nix
 {
   flake.nixosModules.nixos =
     {
       host,
+      lib',
       ...
     }:
     {
       imports = [
-        ../../hosts/${host.name}/configuration.nix
+        "${lib'.host-config host.name}"
         ../nixos/system.nix
       ];
     };

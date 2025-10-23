@@ -1,10 +1,10 @@
-# roles/mailserver.nix
+# kompis-os/roles/mailserver.nix
 {
   flake.nixosModules.mailserver =
     { org, lib, ... }:
     {
       imports = [
-        ../modules/mailserver.nix
+        ../nixos/mailserver.nix
       ];
       kompis-os.mailserver = {
         enable = true;

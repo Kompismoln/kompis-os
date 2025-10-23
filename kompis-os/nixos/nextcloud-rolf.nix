@@ -124,8 +124,8 @@ in
       services.nginx.virtualHosts = lib'.mergeAttrs (name: cfg: {
         ${serverNameRedirect cfg} = {
           forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet ../../public-keys/service-domain-km-tls-cert.pem;
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
+          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
+          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."domain-km/tls-cert".path;
           useACMEHost = mkIf (cfg.ssl && !cfg.subnet) (serverName cfg);
           extraConfig = ''
             return 301 $scheme://${serverName cfg}$request_uri;
@@ -134,8 +134,8 @@ in
 
         ${serverName cfg} = {
           forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet ../../public-keys/service-domain-km-tls-cert.pem;
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
+          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
+          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."domain-km/tls-cert".path;
           enableACME = cfg.ssl && !cfg.subnet;
 
           root = cfg.siteRoot;

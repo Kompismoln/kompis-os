@@ -1,6 +1,8 @@
 {
   config,
   lib,
+  lib',
+  org,
   pkgs,
   ...
 }:
@@ -42,7 +44,7 @@ in
     sops.secrets = mapAttrs' (
       user: cfg:
       (nameValuePair "${user}/mail" {
-        sopsFile = ../../enc/user-${user}.yaml;
+        sopsFile = lib'.secrets "user" user;
         owner = user;
         group = user;
       })
@@ -52,15 +54,15 @@ in
       enable = true;
       defaults = {
         port = 587;
-        host = "helsinki.km";
+        host = org.mailserver.int;
         tls = true;
         logfile = "~/.msmtp.log";
       };
       accounts = mapAttrs (user: cfg: {
-        host = "mail.kompismoln.se";
+        host = org.mailserver.ext;
         auth = true;
-        user = "${user}@kompismoln.se";
-        from = "${user}@kompismoln.se";
+        user = "${user}@${org.domain}";
+        from = "${user}@${org.domain}";
         passwordeval = "${pkgs.coreutils}/bin/cat ${config.sops.secrets."${user}/mail".path}";
       }) eachUser;
     };

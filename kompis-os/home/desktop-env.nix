@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   lib',
   org,
@@ -45,7 +46,7 @@ in
     ];
 
     home.file.wallpaper = {
-      source = ../../assets/wallpaper.jpg;
+      source = "${inputs.self}/${org.theme.wallpaper}";
       target = ".config/hypr/wallpaper.jpg";
     };
 
