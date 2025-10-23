@@ -107,7 +107,7 @@ in
       sops.secrets =
         lib'.mergeAttrs (user: _: {
           "${user}/mail-sha512" = {
-            sopsFile = ../enc/user-${user}.yaml;
+            sopsFile = ../../enc/user-${user}.yaml;
             restartUnits = [
               "dovecot2.service"
               "postfix.service"
@@ -116,7 +116,7 @@ in
         }) cfg.users
         // {
           "dmarc-reports/mail-sha512" = {
-            sopsFile = ../enc/service-dmarc-reports.yaml;
+            sopsFile = ../../enc/service-dmarc-reports.yaml;
             restartUnits = [
               "dovecot2.service"
               "postfix.service"

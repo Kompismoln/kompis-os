@@ -31,7 +31,7 @@ in
       users.users.root = {
         hashedPassword = "$6$TeS3rgBzEDTxk7eb$PN0BjGcoZa1cb29HQJrOHGqVzIhUIs115eP01k.CkenNpi0fTnfxwHK9bFSXUC2zavxi5sEt.pwqcTy1rpCas1";
         openssh.authorizedKeys.keyFiles = [
-          ../public-keys/service-rescue-ssh-key.pub
+          ../../public-keys/service-rescue-ssh-key.pub
         ];
       };
       services.openssh = {

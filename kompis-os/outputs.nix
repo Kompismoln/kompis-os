@@ -6,13 +6,13 @@
   ...
 }:
 let
-  lib' = (import ./.) lib;
+  lib' = (import ./lib) lib;
 in
 {
   imports = [
     inputs.home-manager.flakeModules.home-manager
   ]
-  ++ (lib.mapAttrsToList (name: _: ../roles/${name}) (builtins.readDir ../roles));
+  ++ (lib.mapAttrsToList (name: _: ./roles/${name}) (builtins.readDir ./roles));
 
   flake.homeConfigurations = lib.mapAttrs (
     home: homeCfg:

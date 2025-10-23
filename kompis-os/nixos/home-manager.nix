@@ -45,14 +45,6 @@ in
       extraSpecialArgs = {
         inherit inputs lib' org;
       };
-      sharedModules = [
-        inputs.nixvim.homeModules.nixvim
-        ../home-manager/desktop-env.nix
-        ../home-manager/ide.nix
-        ../home-manager/shell.nix
-        ../home-manager/user.nix
-        ../home-manager/vd.nix
-      ];
       users = mapAttrs (user: cfg: {
         home.stateVersion = host.stateVersion;
         home.username = user;

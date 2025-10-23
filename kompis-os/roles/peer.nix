@@ -2,14 +2,14 @@
 {
   flake.nixosModules.peer = {
     imports = [
-      ../modules/locksmith.nix
-      ../modules/nix.nix
-      ../modules/preserve.nix
-      ../modules/sops.nix
-      ../modules/ssh.nix
-      ../modules/tls-certs.nix
-      ../modules/users.nix
-      ../modules/wireguard.nix
+      ../nixos/locksmith.nix
+      ../nixos/nix.nix
+      ../nixos/preserve.nix
+      ../nixos/sops.nix
+      ../nixos/ssh.nix
+      ../nixos/tls-certs.nix
+      ../nixos/users.nix
+      ../nixos/wireguard.nix
     ];
 
     kompis-os = {

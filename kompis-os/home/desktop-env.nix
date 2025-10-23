@@ -45,7 +45,7 @@ in
     ];
 
     home.file.wallpaper = {
-      source = ../assets/wallpaper.jpg;
+      source = ../../assets/wallpaper.jpg;
       target = ".config/hypr/wallpaper.jpg";
     };
 

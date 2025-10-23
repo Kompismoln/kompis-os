@@ -25,7 +25,7 @@ let
     iface: subnet: peerName: peerCfg:
     let
       base = {
-        PublicKey = builtins.readFile ../public-keys/host-${peerName}-${iface}-key.pub;
+        PublicKey = builtins.readFile ../../public-keys/host-${peerName}-${iface}-key.pub;
         AllowedIPs = [
           (if peerName == subnet.gateway then subnet.address else "${peerAddress subnet peerCfg}/32")
         ];
@@ -68,13 +68,18 @@ in
     networking = {
       wireguard.enable = true;
       networkmanager.unmanaged = map (iface: "interface-name:${iface}") (lib.attrNames eachSubnet);
+
+      interfaces = lib.mapAttrs (_: _: {
+        useDHCP = false;
+      }) eachSubnet;
+
       firewall.interfaces = lib.mapAttrs (_: subnet: {
         inherit (subnet) allowedTCPPortRanges;
       }) eachSubnet;
+
       firewall.allowedUDPPorts = lib.mapAttrsToList (iface: cfg: cfg.port) (
         lib.filterAttrs (iface: cfg: host.name == cfg.gateway) eachSubnet
       );
-      interfaces = lib.mapAttrs (_: _: { useDHCP = false; }) eachSubnet;
     };
 
     sops.secrets = lib.mapAttrs' (

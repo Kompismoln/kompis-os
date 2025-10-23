@@ -11,8 +11,8 @@
     {
       imports = [
         inputs.disko.nixosModules.disko
-        ../hosts/${host.name}/disko.nix
-        ../modules/preserve.nix
+        ../../hosts/${host.name}/disko.nix
+        ../nixos/preserve.nix
       ];
 
       sops.secrets.luks-key = { };

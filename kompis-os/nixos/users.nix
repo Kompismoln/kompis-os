@@ -71,7 +71,7 @@ in
       user: userCfg:
       lib.nameValuePair "${user}/passwd-sha512" {
         neededForUsers = true;
-        sopsFile = ../enc/${userCfg.class}-${user}.yaml;
+        sopsFile = ../../enc/${userCfg.class}-${user}.yaml;
       }
     ) (lib.filterAttrs (user: userCfg: userCfg.passwd) eachUser);
 
@@ -79,7 +79,7 @@ in
       user: userCfg:
       let
         isNormalUser = userCfg.class == "user";
-        publicKey = ../public-keys/${userCfg.class}-${user}-ssh-key.pub;
+        publicKey = ../../public-keys/${userCfg.class}-${user}-ssh-key.pub;
         passwordFile = config.sops.secrets."${user}/passwd-sha512".path;
       in
       {

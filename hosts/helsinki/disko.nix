@@ -1,3 +1,4 @@
+# hosts/helsinki/disko.nix
 { inputs, ... }:
 {
   imports = [

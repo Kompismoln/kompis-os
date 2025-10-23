@@ -49,24 +49,17 @@ in
       SOPS_AGE_KEY_FILE = "/keys/user-$USER";
     };
 
-    # This takes too long time to be worth it
-    # enable only when needed or update manually
-    #documentation.man.generateCaches = true;
-
-    services.nixos-cli = {
-      enable = true;
-    };
     programs.bash.promptInit = builtins.readFile ../tools/session/prompt-init.sh;
 
     environment.systemPackages = with pkgs; [
+      age
       envsubst
+      git
       jq
       libxml2
       ssh-to-age
       sops
-      age
       w3m
-      git
       vim
       tree
       neomutt

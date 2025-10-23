@@ -122,7 +122,7 @@ in
 
     sops.secrets = lib'.mergeAttrs (name: cfg: {
       "${cfg.appname}/secret-key" = {
-        sopsFile = ../enc/service-${cfg.appname}.yaml;
+        sopsFile = ../../enc/service-${cfg.appname}.yaml;
         owner = cfg.appname;
         group = cfg.appname;
       };
@@ -170,7 +170,7 @@ in
       name: cfg:
       nameValuePair cfg.hostname {
         forceSSL = cfg.ssl;
-        sslCertificate = mkIf cfg.subnet ../public-keys/service-domain-km-tls-cert.pem;
+        sslCertificate = mkIf cfg.subnet ../../public-keys/service-domain-km-tls-cert.pem;
         sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
         enableACME = !cfg.subnet;
         extraConfig = ''

@@ -62,10 +62,10 @@ in
 
   config = {
 
-    facter.reportPath = lib.mkIf cfg.facter ../hosts/${host.name}/facter.json;
+    facter.reportPath = lib.mkIf cfg.facter ../../hosts/${host.name}/facter.json;
 
     sops.secrets."nix-serve/nix-sign" = {
-      sopsFile = ../enc/service-nix-serve.yaml;
+      sopsFile = ../../enc/service-nix-serve.yaml;
       restartUnits = [
         "nix-serve.service"
       ];
@@ -78,7 +78,7 @@ in
 
     programs.ssh.knownHosts.github = {
       hostNames = [ "github.com" ];
-      publicKeyFile = ../public-keys/unmanaged-github-ssh-key.pub;
+      publicKeyFile = ../../public-keys/unmanaged-github-ssh-key.pub;
     };
 
     nix = {
@@ -115,7 +115,7 @@ in
         trusted-public-keys = [
           "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
           "cache.lix.systems:aBnZUw8zA7H35Cz2RyKFVs3H4PlGTLawyY5KRbvJR8o="
-          (builtins.readFile ../public-keys/service-nix-serve-nix-sign.pub)
+          (builtins.readFile ../../public-keys/service-nix-serve-nix-sign.pub)
         ];
         use-xdg-base-directories = true;
       };

@@ -55,9 +55,7 @@
       }
       {
         systems = [ "x86_64-linux" ];
-        imports = [
-          ./lib/outputs.nix
-        ];
+        imports = [ ./kompis-os/outputs.nix ];
         perSystem =
           { pkgs, ... }:
           {
@@ -68,7 +66,7 @@
               shellHook = ''
                 export SOPS_AGE_KEY_FILE=/keys/root-1
                 export BUILD_HOST=./
-                PATH=$(pwd)/tools/bin:$PATH
+                PATH=$(pwd)/kompis-os/tools/bin:$PATH
               '';
             };
           };

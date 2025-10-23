@@ -7,8 +7,8 @@
     }:
     {
       imports = [
-        ../hosts/${host.name}/configuration.nix
-        ../modules/system.nix
+        ../../hosts/${host.name}/configuration.nix
+        ../nixos/system.nix
       ];
     };
 }

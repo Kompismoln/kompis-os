@@ -1,4 +1,4 @@
-# ids.nix
+# lib/ids.nix
 {
   klimatkalendern = {
     uid = 700;

@@ -28,7 +28,7 @@ in
   config = mkIf (cfg.enable) {
 
     sops = {
-      defaultSopsFile = ../enc/host-${host.name}.yaml;
+      defaultSopsFile = ../../enc/host-${host.name}.yaml;
       age = {
         keyFile = "/keys/host-${host.name}";
         sshKeyPaths = [ ];

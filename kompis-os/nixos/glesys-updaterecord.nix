@@ -35,7 +35,7 @@ in
   config = mkIf cfg.enable {
 
     sops.secrets."glesys-api/secret-key" = {
-      sopsFile = ../enc/service-glesys-api.yaml;
+      sopsFile = ../../enc/service-glesys-api.yaml;
       owner = "root";
       group = "root";
     };
