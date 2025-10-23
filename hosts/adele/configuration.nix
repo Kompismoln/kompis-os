@@ -36,6 +36,28 @@
     drivers = [ pkgs.gutenprint ];
   };
 
+  services.pipewire.extraConfig.pipewire-pulse."99-echo-cancel" = {
+    "pulse.cmd" = [
+      {
+        cmd = "load-module";
+        args = "module-echo-cancel";
+      }
+    ];
+    "stream.properties" = {
+      "default.configured.audio.sink" = "echo-cancel-sink";
+      "default.configured.audio.source" = "echo-cancel-source";
+    };
+  };
+
+  powerManagement = {
+    cpuFreqGovernor = "ondemand";
+    powertop.enable = true;
+  };
+
+  boot.extraModprobeConfig = ''
+    options snd_hda_intel power_save=0
+  '';
+
   security = {
     rtkit.enable = true;
     polkit.enable = true;
@@ -50,6 +72,7 @@
   };
 
   nix.settings.trusted-users = [ "ami" ];
+
   home-manager.users.ami =
     { pkgs, ... }:
     {
