@@ -1,33 +1,18 @@
 {
   config,
-  lib,
   lib',
+  lib,
   ...
 }:
-
-let
-  inherit (lib)
-    mkIf
-    mkEnableOption
-    mkOption
-    types
-    ;
-  cfg = config.kompis-os.backup-server;
-in
 {
   options.kompis-os.backup-server = {
-    enable = mkEnableOption ''a restic rest server on this host'';
-    port = mkOption {
-      type = types.port;
-      default = lib'.ids.restic.port;
-    };
+    enable = lib.mkEnableOption "restic rest server";
   };
-  config = mkIf (cfg.enable) {
-
+  config = lib.mkIf (config.kompis-os.backup-server.enable) {
     services.restic.server = {
       enable = true;
       prometheus = true;
-      listenAddress = toString cfg.port;
+      listenAddress = toString lib'.ids.restic.port;
       extraFlags = [ "--no-auth" ];
     };
   };

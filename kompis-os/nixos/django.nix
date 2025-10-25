@@ -9,79 +9,65 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mapAttrs
-    mapAttrs'
-    mapAttrsToList
-    mkDefault
-    mkEnableOption
-    mkIf
-    mkOption
-    nameValuePair
-    optionalAttrs
-    types
-    ;
-
   cfg = config.kompis-os.django;
 
-  eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
-  eachCelery = filterAttrs (name: cfg: cfg.celery.enable) eachSite;
+  eachSite = lib.filterAttrs (name: cfg: cfg.enable) cfg.sites;
+  eachCelery = lib.filterAttrs (name: cfg: cfg.celery.enable) eachSite;
 
   stateDir = appname: "/var/lib/${appname}/django";
 
   siteOpts =
     { name, ... }:
     {
-      config.appname = mkDefault name;
+      config.appname = lib.mkDefault name;
       options = {
-        enable = mkEnableOption "Django app";
-        port = mkOption {
+        enable = lib.mkEnableOption "Django app";
+        port = lib.mkOption {
           description = "Listening port.";
           example = 8000;
-          type = types.port;
+          type = lib.types.port;
         };
-        ssl = mkOption {
+        ssl = lib.mkOption {
           description = "Whether to enable SSL (https) support.";
           default = true;
-          type = types.bool;
+          type = lib.types.bool;
         };
-        hostname = mkOption {
+        hostname = lib.mkOption {
           description = "Namespace identifying the service externally on the network.";
-          type = types.str;
+          type = lib.types.str;
         };
-        appname = mkOption {
+        appname = lib.mkOption {
           description = "Namespace identifying the app on the system (user, logging, database, paths etc.)";
-          type = types.str;
+          type = lib.types.str;
         };
-        packagename = mkOption {
+        packagename = lib.mkOption {
           description = "The python name of the django application";
-          type = types.str;
+          type = lib.types.str;
           default = "app";
         };
-        locationStatic = mkOption {
+        locationStatic = lib.mkOption {
           description = "Location pattern for static files, empty string -> no static";
-          type = types.str;
+          type = lib.types.str;
           default = "/static/";
         };
-        locationProxy = mkOption {
+        locationProxy = lib.mkOption {
           description = "Location pattern for proxy to django, empty string -> no proxy";
-          type = types.str;
+          type = lib.types.str;
           example = "~ ^/(api|admin)";
           default = "/";
         };
         celery = {
-          enable = mkEnableOption "Celery";
-          port = mkOption {
+          enable = lib.mkEnableOption "Celery";
+          port = lib.mkOption {
             description = "Listening port for message broker.";
-            type = types.nullOr types.port;
+            type = with lib.types; nullOr port;
             default = null;
           };
         };
       };
     };
 
-  envs = mapAttrs (
+  envs = lib.mapAttrs (
     name: cfg:
     {
       DB_NAME = "${cfg.appname}-django";
@@ -95,13 +81,13 @@ let
       SECRET_KEY_FILE = config.sops.secrets."${cfg.appname}-django/secret-key".path;
       STATE_DIR = stateDir cfg.appname;
     }
-    // (optionalAttrs cfg.celery.enable {
+    // (lib.optionalAttrs cfg.celery.enable {
       CELERY_BROKER_URL = "redis://127.0.0.1:${toString lib'.ids."${cfg.appname}-redis".port}/0";
       FLOWER_URL_PREFIX = "/flower";
     })
   ) eachSite;
 
-  bins = mapAttrs (
+  bins = lib.mapAttrs (
     name: cfg:
     inputs.${cfg.appname}.lib.${host.system}.mkDjangoManage {
       runtimeEnv = envs.${cfg.appname};
@@ -111,27 +97,27 @@ in
 {
 
   options.kompis-os.django = {
-    sites = mkOption {
-      type = types.attrsOf (types.submodule siteOpts);
+    sites = lib.mkOption {
+      type = with lib.types; attrsOf (submodule siteOpts);
       default = { };
       description = "Definition of per-domain Django apps to serve.";
     };
   };
 
-  config = mkIf (eachSite != { }) {
+  config = lib.mkIf (eachSite != { }) {
 
-    environment.systemPackages = mapAttrsToList (name: bin: bin) bins;
+    environment.systemPackages = lib.mapAttrsToList (name: bin: bin) bins;
 
-    kompis-os.preserve.directories = mapAttrsToList (name: cfg: {
+    kompis-os.preserve.directories = lib.mapAttrsToList (name: cfg: {
       directory = stateDir cfg.appname;
       how = "symlink";
       user = "${cfg.appname}-django";
       group = "${cfg.appname}-django";
     }) eachSite;
 
-    sops.secrets = mapAttrs' (
+    sops.secrets = lib.mapAttrs' (
       name: cfg:
-      nameValuePair "${cfg.appname}-django/secret-key" {
+      lib.nameValuePair "${cfg.appname}-django/secret-key" {
         sopsFile = lib'.secrets "service" "${cfg.appname}-django";
         owner = "${cfg.appname}-django";
         group = "${cfg.appname}-django";
@@ -150,28 +136,24 @@ in
       }
     ) eachSite;
 
-    kompis-os.postgresql = mapAttrs' (
-      name: cfg: nameValuePair "${name}-django" { ensure = true; }
-    ) eachSite;
-
-    services.nginx.virtualHosts = mapAttrs' (
+    services.nginx.virtualHosts = lib.mapAttrs' (
       name: cfg:
-      nameValuePair cfg.hostname {
+      lib.nameValuePair cfg.hostname {
         forceSSL = cfg.ssl;
         enableACME = cfg.ssl;
         locations =
-          optionalAttrs (cfg.locationProxy != "") {
+          lib.optionalAttrs (cfg.locationProxy != "") {
             ${cfg.locationProxy} = {
               recommendedProxySettings = true;
               proxyPass = "http://localhost:${toString lib'.ids."${cfg.appname}-django".port}";
             };
           }
-          // optionalAttrs (cfg.locationStatic != "") {
+          // lib.optionalAttrs (cfg.locationStatic != "") {
             ${cfg.locationStatic} = {
               alias = "${inputs.${cfg.appname}.packages.${host.system}.django-static}/";
             };
           }
-          // optionalAttrs (cfg.celery.enable) {
+          // lib.optionalAttrs (cfg.celery.enable) {
             "/auth" = {
               recommendedProxySettings = true;
               proxyPass = "http://localhost:${toString lib'.ids."${cfg.appname}-django".port}";
@@ -202,7 +184,7 @@ in
         wantedBy = [ "multi-user.target" ];
       };
 
-      "${cfg.appname}-celery" = mkIf cfg.celery.enable {
+      "${cfg.appname}-celery" = lib.mkIf cfg.celery.enable {
         description = "start ${cfg.appname}-celery";
         serviceConfig = {
           ExecStart = "${
@@ -215,7 +197,7 @@ in
         wantedBy = [ "multi-user.target" ];
       };
 
-      "${cfg.appname}-flower" = mkIf cfg.celery.enable {
+      "${cfg.appname}-flower" = lib.mkIf cfg.celery.enable {
         description = "start ${cfg.appname}-flower";
         serviceConfig = {
           ExecStart = "${

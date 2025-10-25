@@ -1,17 +1,5 @@
 # lib/ids.nix
 {
-  klimatkalendern = {
-    uid = 700;
-    port = 2700;
-  };
-  klimatkalendern-dev = {
-    uid = 701;
-    port = 2701;
-  };
-  nextcloud-kompismoln = {
-    uid = 702;
-    port = 2702;
-  };
   loki = {
     uid = 310;
     port = 3100;
@@ -47,29 +35,6 @@
     uid = 606;
     #port = 2606;
   };
-  esse = {
-    uid = 607;
-    #port = 2607;
-  };
-  esse-redis = {
-    uid = 608;
-    port = 2608;
-  };
-  collabora = {
-    port = 9980;
-  };
-  chatddx-django = {
-    uid = 609;
-    port = 2609;
-  };
-  chatddx-redis = {
-    uid = 610;
-    port = 2610;
-  };
-  chatddx-svelte = {
-    uid = 611;
-    port = 2611;
-  };
   rspamd-redis = {
     uid = 612;
     port = 2612;
@@ -78,8 +43,20 @@
     uid = 613;
     port = 2613;
   };
+  collabora = {
+    port = 9980;
+  };
   admin = {
     uid = 1000;
+  };
+
+  esse = {
+    uid = 607;
+    #port = 2607;
+  };
+  esse-redis = {
+    uid = 608;
+    port = 2608;
   };
   alex = {
     uid = 1001;
@@ -92,5 +69,33 @@
   };
   ami = {
     uid = 1104;
+  };
+  klimatkalendern = {
+    uid = 700;
+    port = 2700;
+  };
+  klimatkalendern-dev = {
+    uid = 701;
+    port = 2701;
+  };
+  nextcloud-kompismoln = {
+    uid = 702;
+    port = 2702;
+  };
+  chatddx-redis = {
+    uid = 610;
+    port = 2610;
+  };
+  chatddx-svelte = {
+    uid = 611;
+    port = 2611;
+  };
+  chatddx-django = {
+    uid = 609;
+    port = 2609;
+  };
+  test-redis = {
+    uid = 614;
+    port = 2614;
   };
 }

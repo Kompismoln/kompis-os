@@ -47,4 +47,17 @@ lib: inputs: {
       path = builtins.replaceStrings [ "$host" ] [ host ] inputs.org.host-config;
     in
     "${inputs.self}/${path}";
+
+  home-config =
+    home:
+    let
+      path = builtins.replaceStrings [ "$home" ] [ home ] inputs.org.home-config;
+    in
+    "${inputs.self}/${path}";
+
+  home-args = user: host: {
+    inherit (inputs.org.host.${host}) system stateVersion;
+    roles = inputs.org.host.${host}.home.${user}.roles or [ ];
+    username = user;
+  };
 }

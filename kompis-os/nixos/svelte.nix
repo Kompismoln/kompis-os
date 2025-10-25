@@ -9,56 +9,45 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mapAttrs
-    mapAttrs'
-    mkEnableOption
-    mkIf
-    mkOption
-    nameValuePair
-    types
-    ;
-
   cfg = config.kompis-os.svelte;
-  eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
 
   siteOpts =
     { name, config, ... }:
     {
-      options = with types; {
-        enable = mkEnableOption "svelte-app for this host.";
-        location = mkOption {
+      options = {
+        enable = lib.mkEnableOption "svelte-app for this host.";
+        location = lib.mkOption {
           description = "URL path to serve the application.";
           default = "/";
-          type = str;
+          type = lib.types.str;
         };
-        port = mkOption {
+        port = lib.mkOption {
           description = "Port to serve the application.";
           default = lib'.ids."${config.appname}-svelte".port;
-          type = port;
+          type = lib.types.port;
         };
-        ssl = mkOption {
+        ssl = lib.mkOption {
           description = "Whether the svelte-app can assume https or not.";
           default = true;
-          type = bool;
+          type = lib.types.bool;
         };
-        api = mkOption {
+        api = lib.mkOption {
           description = "URL for the API endpoint";
-          type = str;
+          type = lib.types.str;
         };
-        api_ssr = mkOption {
+        api_ssr = lib.mkOption {
           description = "Server side URL for the API endpoint";
-          type = str;
+          type = lib.types.str;
         };
-        appname = mkOption {
+        appname = lib.mkOption {
           description = "Internal namespace";
           default = name;
-          type = str;
+          type = lib.types.str;
         };
-        hostname = mkOption {
+        hostname = lib.mkOption {
           description = "Network namespace";
-          type = str;
+          type = lib.types.str;
         };
       };
     };
@@ -69,7 +58,7 @@ let
       env = envs.${appname};
     };
 
-  envs = mapAttrs (name: cfg: {
+  envs = lib.mapAttrs (name: cfg: {
     ORIGIN = "${if cfg.ssl then "https" else "http"}://${cfg.hostname}";
     PUBLIC_API = cfg.api;
     PUBLIC_API_SSR = cfg.api_ssr;
@@ -80,15 +69,15 @@ in
 
   options = {
     kompis-os.svelte = {
-      sites = mkOption {
-        type = types.attrsOf (types.submodule siteOpts);
+      sites = lib.mkOption {
+        type = with lib.types; attrsOf (submodule siteOpts);
         default = { };
         description = "Specification of one or more Svelte sites to serve";
       };
     };
   };
 
-  config = mkIf (eachSite != { }) {
+  config = lib.mkIf (eachSite != { }) {
     kompis-os.users = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair "${cfg.appname}-svelte" {
@@ -97,9 +86,9 @@ in
       }
     ) eachSite;
 
-    services.nginx.virtualHosts = mapAttrs' (
+    services.nginx.virtualHosts = lib.mapAttrs' (
       name: cfg:
-      nameValuePair cfg.hostname {
+      lib.nameValuePair cfg.hostname {
         forceSSL = cfg.ssl;
         enableACME = cfg.ssl;
         locations."${cfg.location}" = {
@@ -109,9 +98,9 @@ in
       }
     ) eachSite;
 
-    systemd.services = mapAttrs' (
+    systemd.services = lib.mapAttrs' (
       name: cfg:
-      (nameValuePair "${cfg.appname}-svelte" {
+      (lib.nameValuePair "${cfg.appname}-svelte" {
         description = "serve ${cfg.appname}-svelte";
         serviceConfig = {
           ExecStart = "${pkgs.nodejs_20}/bin/node ${sveltePkgs cfg.appname}/build";

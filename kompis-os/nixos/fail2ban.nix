@@ -5,19 +5,14 @@
   ...
 }:
 let
-  inherit (lib)
-    mkEnableOption
-    mkIf
-    ;
-
   cfg = config.kompis-os.fail2ban;
 in
 {
   options.kompis-os.fail2ban = {
-    enable = mkEnableOption "the jails configured with `services.fail2ban.jails`";
+    enable = lib.mkEnableOption "the jails configured with `services.fail2ban.jails`";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     services.fail2ban = {
       enable = true;
       maxretry = 1;

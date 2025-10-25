@@ -8,42 +8,29 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mapAttrs
-    mapAttrs'
-    mkEnableOption
-    mkIf
-    mkOption
-    nameValuePair
-    types
-    ;
-
   cfg = config.kompis-os.sendmail;
-  eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
+  eachUser = lib.filterAttrs (user: cfg: cfg.enable) cfg;
 
   userOpts = {
     options = {
-      enable = mkEnableOption "sendmail." // {
+      enable = lib.mkEnableOption "sendmail." // {
         default = true;
       };
     };
   };
 in
 {
-  options.kompis-os.sendmail =
-    with types;
-    mkOption {
-      description = "Set of users to be configured with sendmail.";
-      type = attrsOf (submodule userOpts);
-      default = { };
-    };
+  options.kompis-os.sendmail = lib.mkOption {
+    description = "Set of users to be configured with sendmail.";
+    type = with lib.types; attrsOf (submodule userOpts);
+    default = { };
+  };
 
-  config = mkIf (eachUser != { }) {
+  config = lib.mkIf (eachUser != { }) {
 
-    sops.secrets = mapAttrs' (
+    sops.secrets = lib.mapAttrs' (
       user: cfg:
-      (nameValuePair "${user}/mail" {
+      (lib.nameValuePair "${user}/mail" {
         sopsFile = lib'.secrets "user" user;
         owner = user;
         group = user;
@@ -58,7 +45,7 @@ in
         tls = true;
         logfile = "~/.msmtp.log";
       };
-      accounts = mapAttrs (user: cfg: {
+      accounts = lib.mapAttrs (user: cfg: {
         host = org.mailserver.ext;
         auth = true;
         user = "${user}@${org.domain}";

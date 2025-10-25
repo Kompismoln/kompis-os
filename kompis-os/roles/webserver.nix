@@ -32,6 +32,7 @@
       reverse-tunnel.enable = true;
       egress-proxy.enable = true;
       fail2ban.enable = true;
+      postgresql.enable = true;
       nginx = {
         enable = true;
         monitor = false;

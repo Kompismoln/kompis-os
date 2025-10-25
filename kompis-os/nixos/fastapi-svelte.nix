@@ -1,70 +1,56 @@
 { config, lib, ... }:
 
 let
-  inherit (lib)
-    elemAt
-    filterAttrs
-    mapAttrs
-    mkEnableOption
-    mkIf
-    mkOption
-    types
-    ;
-
   cfg = config.kompis-os.fastapi-svelte;
-  eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
   siteOpts = {
-    options = with types; {
-      enable = mkEnableOption "FastAPI+SvelteKit app";
-      ssl = mkOption {
+    options = {
+      enable = lib.mkEnableOption "FastAPI+SvelteKit app";
+      ssl = lib.mkOption {
         description = "Whether to enable SSL (https) support.";
-        type = bool;
+        type = lib.types.bool;
       };
-      ports = mkOption {
+      ports = lib.mkOption {
         description = "Listening ports.";
-        type = listOf port;
-        example = [
-          8000
-          8001
-        ];
+        type = with lib.types; listOf port;
       };
-      appname = mkOption {
+      appname = lib.mkOption {
         description = "Internal namespace";
-        type = str;
+        type = lib.types.str;
       };
-      hostname = mkOption {
+      hostname = lib.mkOption {
         description = "Network namespace";
-        type = str;
+        type = lib.types.str;
       };
     };
   };
 in
 {
-  options.kompis-os.fastapi-svelte = with types; {
-    sites = mkOption {
+  options.kompis-os.fastapi-svelte = {
+    sites = lib.mkOption {
       description = "Definition of per-domain FastAPI+SvelteKit apps to serve.";
-      type = attrsOf (submodule siteOpts);
+      type = with lib.types; attrsOf (submodule siteOpts);
       default = { };
     };
   };
 
-  config = mkIf (eachSite != { }) {
-    kompis-os.fastapi.sites = mapAttrs (name: cfg: {
+  config = lib.mkIf (eachSite != { }) {
+    kompis-os.fastapi.sites = lib.mapAttrs (name: cfg: {
       enable = cfg.enable;
       appname = cfg.appname;
       hostname = cfg.hostname;
-      port = elemAt cfg.ports 0;
+      port = builtins.elemAt cfg.ports 0;
       ssl = cfg.ssl;
     }) eachSite;
 
-    kompis-os.svelte.sites = mapAttrs (name: cfg: {
+    kompis-os.svelte.sites = lib.mapAttrs (name: cfg: {
       enable = cfg.enable;
       appname = cfg.appname;
       hostname = cfg.hostname;
-      port = elemAt cfg.ports 1;
+      port = builtins.elemAt cfg.ports 1;
       ssl = cfg.ssl;
       api = "${if cfg.ssl then "https" else "http"}://${cfg.hostname}";
-      api_ssr = "http://localhost:${toString (elemAt cfg.ports 0)}";
+      api_ssr = "http://localhost:${toString (builtins.elemAt cfg.ports 0)}";
     }) eachSite;
   };
 }

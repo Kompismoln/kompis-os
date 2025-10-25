@@ -51,7 +51,7 @@ let
           default = [ ];
         };
         members = lib.mkOption {
-          description = "user's extra groups";
+          description = "members of the user's groups";
           type = with lib.types; listOf str;
           default = [ ];
         };

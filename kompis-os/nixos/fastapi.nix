@@ -9,43 +9,31 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    flatten
-    getExe
-    mapAttrs
-    mapAttrsToList
-    mkEnableOption
-    mkIf
-    mkOption
-    types
-    ;
-
   cfg = config.kompis-os.fastapi;
 
-  eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
   stateDir = hostname: "/var/lib/${hostname}/fastapi";
 
   siteOpts = {
-    options = with types; {
-      enable = mkEnableOption "FastAPI app";
-      port = mkOption {
+    options = {
+      enable = lib.mkEnableOption "FastAPI app";
+      port = lib.mkOption {
         description = "Listening port.";
         example = 8000;
-        type = port;
+        type = lib.types.port;
       };
-      ssl = mkOption {
+      ssl = lib.mkOption {
         description = "Whether to enable SSL (https) support.";
-        type = bool;
+        type = lib.types.bool;
       };
-      appname = mkOption {
+      appname = lib.mkOption {
         description = "Internal namespace";
-        type = str;
+        type = lib.types.str;
         default = null;
       };
-      hostname = mkOption {
+      hostname = lib.mkOption {
         description = "Network namespace";
-        type = str;
+        type = lib.types.str;
         default = null;
       };
     };
@@ -53,7 +41,7 @@ let
 
   fastapiPkgs = appname: inputs.${appname}.packages.${host.system}.fastapi;
 
-  envs = mapAttrs (name: cfg: {
+  envs = lib.mapAttrs (name: cfg: {
     ALLOW_ORIGINS = "'[\"${if cfg.ssl then "https" else "http"}://${cfg.hostname}\"]'";
     DB_DSN = "postgresql+psycopg2://${cfg.appname}@:5432/${cfg.appname}";
     ENV = "production";
@@ -65,7 +53,7 @@ let
     ALEMBIC_CONFIG = "${(fastapiPkgs cfg.appname).alembic}/alembic.ini";
   }) eachSite;
 
-  bins = mapAttrs (
+  bins = lib.mapAttrs (
     name: cfg:
     ((fastapiPkgs cfg.appname).bin.overrideAttrs {
       env = envs.${cfg.appname};
@@ -75,17 +63,17 @@ let
 in
 {
 
-  options.kompis-os.fastapi = with types; {
-    sites = mkOption {
-      type = attrsOf (submodule siteOpts);
+  options.kompis-os.fastapi = {
+    sites = lib.mkOption {
+      type = with lib.types; attrsOf (submodule siteOpts);
       default = { };
       description = "Definition of per-domain FastAPI apps to serve.";
     };
   };
 
-  config = mkIf (eachSite != { }) {
+  config = lib.mkIf (eachSite != { }) {
 
-    environment.systemPackages = mapAttrsToList (name: bin: bin) bins;
+    environment.systemPackages = lib.mapAttrsToList (name: bin: bin) bins;
 
     sops.secrets = lib'.mergeAttrs (name: cfg: {
       "${cfg.appname}/secret_key" = {
@@ -102,16 +90,14 @@ in
       }
     ) eachSite;
 
-    kompis-os.postgresql = mapAttrs (name: cfg: { ensure = true; }) eachSite;
-
-    systemd.tmpfiles.rules = flatten (
-      mapAttrsToList (name: cfg: [
+    systemd.tmpfiles.rules = lib.flatten (
+      lib.mapAttrsToList (name: cfg: [
         "d '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
         "Z '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
       ]) eachSite
     );
 
-    services.nginx.virtualHosts = mapAttrs (name: cfg: {
+    services.nginx.virtualHosts = lib.mapAttrs (name: cfg: {
       serverName = cfg.hostname;
       forceSSL = cfg.ssl;
       enableACME = cfg.ssl;
@@ -149,7 +135,7 @@ in
         description = "dump a snapshot of the postgresql database";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${getExe pkgs.bash} -c '${pkgs.postgresql}/bin/pg_dump -U ${cfg.appname} ${cfg.appname} > ${stateDir cfg.appname}/dbdump.sql'";
+          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.postgresql}/bin/pg_dump -U ${cfg.appname} ${cfg.appname} > ${stateDir cfg.appname}/dbdump.sql'";
           User = cfg.appname;
           Group = cfg.appname;
         };
@@ -158,7 +144,7 @@ in
         description = "restore postgresql database from snapshot";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${getExe pkgs.bash} -c '${pkgs.postgresql}/bin/psql -U ${cfg.appname} ${cfg.appname} < ${stateDir cfg.appname}/dbdump.sql'";
+          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.postgresql}/bin/psql -U ${cfg.appname} ${cfg.appname} < ${stateDir cfg.appname}/dbdump.sql'";
           User = cfg.appname;
           Group = cfg.appname;
         };

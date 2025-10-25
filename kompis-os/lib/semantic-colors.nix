@@ -20,9 +20,11 @@ colors
   base0E = cyan-500;
   base0F = white-300;
 
+  bg-200 = black-500;
   bg-300 = black-600;
   bg-400 = black-700;
   bg-500 = black-800;
+  bg-600 = black-900;
   bg-inv = fg-400;
 
   bg-selected = bg-inv;
@@ -32,6 +34,7 @@ colors
   bg-warning = yellow-400;
   bg-info = blue-400;
 
+  fg-200 = white-200;
   fg-300 = white-300;
   fg-400 = white-400;
   fg-500 = white-500;

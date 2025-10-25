@@ -7,10 +7,6 @@
   ...
 }:
 let
-  inherit (lib)
-    mkOption
-    mkIf
-    ;
   cfg = config.kompis-os.sops;
 in
 {
@@ -19,14 +15,14 @@ in
   ];
 
   options.kompis-os.sops = {
-    enable = mkOption {
+    enable = lib.mkOption {
       description = "enable sops-nix";
       type = lib.types.bool;
       default = true;
     };
   };
 
-  config = mkIf (cfg.enable) {
+  config = lib.mkIf (cfg.enable) {
 
     sops = {
       defaultSopsFile = lib'.secrets "host" host.name;
@@ -35,6 +31,5 @@ in
         sshKeyPaths = [ ];
       };
     };
-
   };
 }

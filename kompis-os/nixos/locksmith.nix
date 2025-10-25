@@ -5,12 +5,6 @@
   ...
 }:
 let
-  inherit (lib)
-    mkEnableOption
-    mkOption
-    mkIf
-    types
-    ;
   cfg = config.kompis-os.locksmith;
 
   locksmithPkg =
@@ -36,15 +30,16 @@ let
 in
 {
   options.kompis-os.locksmith = {
-    enable = mkEnableOption "user locksmith";
-    luksDevice = mkOption {
-      type = types.str;
+    enable = lib.mkEnableOption "service locksmith";
+    luksDevice = lib.mkOption {
+      type = lib.types.str;
       default = "/dev/null";
     };
   };
 
-  config = mkIf (cfg.enable) {
+  config = lib.mkIf (cfg.enable) {
     environment.systemPackages = [ locksmithPkg ];
+
     kompis-os.users.locksmith = {
       class = "service";
       shell = true;
@@ -68,6 +63,5 @@ in
         ];
       }
     ];
-
   };
 }

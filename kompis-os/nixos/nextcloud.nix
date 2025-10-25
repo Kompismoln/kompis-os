@@ -9,9 +9,7 @@
 let
   inherit (lib)
     filterAttrs
-    flatten
     getExe
-    mapAttrs
     mapAttrs'
     mapAttrsToList
     mkDefault
@@ -113,24 +111,12 @@ in
       group = cfg.appname;
     }) eachSite;
 
-    systemd.tmpfiles.rules = flatten (
-      mapAttrsToList (name: cfg: [
-        "d '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
-        "Z '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
-      ]) eachSite
-    );
-
     sops.secrets = lib'.mergeAttrs (name: cfg: {
       "${cfg.appname}/secret-key" = {
         sopsFile = lib'.secrets "service" cfg.appname;
         owner = cfg.appname;
         group = cfg.appname;
       };
-    }) eachSite;
-
-    kompis-os.postgresql = mapAttrs (name: cfg: {
-      ensure = true;
-      name = cfg.appname;
     }) eachSite;
 
     systemd.services = lib'.mergeAttrs (name: cfg: {

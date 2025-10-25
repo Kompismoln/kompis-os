@@ -6,19 +6,14 @@
   ...
 }:
 let
-  inherit (lib)
-    mkEnableOption
-    mkIf
-    mkForce
-    ;
   cfg = config.kompis-os.reverse-tunnel;
 in
 {
   options.kompis-os.reverse-tunnel = {
-    enable = mkEnableOption "respond to phone home from stranded clients";
+    enable = lib.mkEnableOption "respond to phone home from stranded clients";
   };
 
-  config = mkIf (cfg.enable) {
+  config = lib.mkIf (cfg.enable) {
     kompis-os.users.reverse-tunnel = {
       class = "service";
       passwd = true;
@@ -31,7 +26,7 @@ in
     services.openssh = {
       enable = true;
       settings = {
-        GatewayPorts = mkForce "clientspecified";
+        GatewayPorts = lib.mkForce "clientspecified";
       };
 
       extraConfig = ''

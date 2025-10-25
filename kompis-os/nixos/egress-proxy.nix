@@ -5,15 +5,14 @@
   ...
 }:
 let
-  inherit (lib) mkEnableOption mkIf;
   cfg = config.kompis-os.egress-proxy;
 in
 {
   options.kompis-os.egress-proxy = {
-    enable = mkEnableOption "SOCKS proxy service";
+    enable = lib.mkEnableOption "SOCKS proxy service";
   };
 
-  config = mkIf (cfg.enable) {
+  config = lib.mkIf (cfg.enable) {
     kompis-os.users.egress-proxy = {
       class = "service";
     };

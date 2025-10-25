@@ -14,26 +14,31 @@ in
   ]
   ++ (lib.mapAttrsToList (name: _: ./roles/${name}) (builtins.readDir ./roles));
 
-  flake.homeConfigurations = lib.mapAttrs (
-    home: homeCfg:
-    inputs.home-manager.lib.homeManagerConfiguration {
-      pkgs = inputs.nixpkgs.legacyPackages.${homeCfg.system};
-      extraSpecialArgs =
-        let
-          userhost = lib.splitString "@" home;
-          username = builtins.elemAt userhost 0;
-          hostname = builtins.elemAt userhost 1;
-        in
-        {
-          home = homeCfg // {
-            inherit username hostname;
-          };
+  flake.homeConfigurations =
+    let
+      homes = lib.concatMapAttrs (
+        host: hostCfg:
+        lib.mapAttrs' (username: homeCfg: {
+          name = "${username}@${host}";
+          value = lib'.home-args username host;
+        }) (hostCfg.home or { })
+      ) inputs.org.host;
+    in
+    lib.mapAttrs (
+      home: homeCfg:
+      inputs.home-manager.lib.homeManagerConfiguration {
+        pkgs = inputs.nixpkgs.legacyPackages.${homeCfg.system};
+        extraSpecialArgs = {
+          home = homeCfg;
           org = inputs.org;
-          inherit lib';
+          inherit inputs lib';
         };
-      modules = map (role: self.homeModules.${role}) homeCfg.roles;
-    }
-  ) inputs.org.home-manager;
+        modules = [
+          "${lib'.home-config home}"
+        ]
+        ++ map (role: self.homeModules.${role}) homeCfg.roles;
+      }
+    ) homes;
 
   flake.nixosConfigurations = lib.mapAttrs (
     host: hostCfg:

@@ -4,6 +4,7 @@ contact = "info@kompismoln.se"
 timezone = "Europe/Stockholm"
 locale = "en_US.UTF-8"
 host-config = "hosts/$host/configuration.nix"
+home-config = "homes/$home.nix"
 build-hosts = [
   "stationary",
 ]
@@ -284,12 +285,13 @@ system = "x86_64-linux"
 stateVersion = "20.03"
 
 [host.lenovo]
-facter = "hosts/lenovo/facter.json"
 id = 7
+facter = "hosts/lenovo/facter.json"
 roles = [
   "nixos",
   "peer",
-  "workstation",
+  "comfy-root",
+  "hypr-devstation",
 ]
 subnets = [
   "wg0",
@@ -298,13 +300,18 @@ subnets = [
 system = "x86_64-linux"
 stateVersion = "24.11"
 
+[host.lenovo.home.alex]
+roles = [
+  "hypr-devstation",
+]
+
 [host.adele]
 facter = "hosts/adele/facter.json"
 id = 8
 roles = [
   "nixos",
   "peer",
-  "workstation",
+  "cinnamon-office",
   "disko-workstation",
 ]
 subnets = [
@@ -314,23 +321,30 @@ subnets = [
 system = "x86_64-linux"
 stateVersion = "25.11"
 
+[host.adele.home.ami]
+roles = [
+  "cinnamon-office",
+]
+
 [host.bootstrap]
 id = 254
 roles = []
 system = "x86_64-linux"
 stateVersion = "25.11"
 
-[home-manager."alex@debian"]
+[host.debian]
 system = "x86_64-linux"
 stateVersion = "23.11"
+users = ["alex"]
 roles = [
   "home-manager",
   "workstation",
 ]
 
-[home-manager."alex@arch"]
+[host.arch]
 system = "x86_64-linux"
 stateVersion = "24.05"
+users = ["alex"]
 roles = [
   "home-manager",
   "workstation",
@@ -398,9 +412,10 @@ allowedTCPPortRanges = [{ from = 0, to = 65535 }]
 wallpaper = "assets/wallpaper.jpg"
 
 [theme.fonts]
-monospace = "Source Code Pro"
-serif = "Merriweather"
-sans-serif = "Roboto"
+emoji = { package = "noto-fonts-emoji", name = "Noto Color Emoji" }
+monospace = { package = "source-code-pro", name = "Source Code Pro" }
+serif = { package = "merriweather", name = "Merriweather" }
+sansSerif = { package = "roboto", name = "Roboto" }
 
 [theme.colors]
 black-100 = "#717C7C"
@@ -441,6 +456,7 @@ purple-500 = "#957FB8"
 cyan-300 = "#7AA89F"
 cyan-400 = "#6A9589"
 cyan-500 = "#658594"
+white-200 = "#FCF7EA"
 white-300 = "#ECE7DA"
 white-400 = "#DCD7BA"
 white-500 = "#C8C093"

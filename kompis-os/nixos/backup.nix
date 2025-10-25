@@ -6,32 +6,24 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mkIf
-    mkEnableOption
-    mkOption
-    types
-    ;
-
   cfg = config.kompis-os.backup;
-  eachTarget = filterAttrs (user: cfg: cfg.enable) cfg;
+  eachTarget = lib.filterAttrs (user: cfg: cfg.enable) cfg;
   repoOptions =
     { config, ... }:
     {
-      options = with types; {
-        enable = mkEnableOption ''this backup target'';
-        repo = mkOption {
-          type = str;
+      options = {
+        enable = lib.mkEnableOption ''this backup target'';
+        repo = lib.mkOption {
+          type = lib.types.str;
           default = config._module.args.name;
           description = "Name for restic repository.";
         };
-        paths = mkOption {
-          type = listOf str;
+        paths = lib.mkOption {
+          type = with lib.types; listOf str;
           default = [ ];
         };
-        target = mkOption {
-          type = str;
+        target = lib.mkOption {
+          type = lib.types.str;
           default = "localhost";
         };
       };
@@ -39,14 +31,14 @@ let
 in
 {
   options.kompis-os.backup = {
-    km = mkOption {
-      type = types.submodule repoOptions;
+    km = lib.mkOption {
+      type = lib.types.submodule repoOptions;
       default = { };
       description = ''Definition of `km` backup target.'';
     };
   };
 
-  config = mkIf (eachTarget != { }) {
+  config = lib.mkIf (eachTarget != { }) {
 
     sops.secrets."backup/secret-key" = {
       sopsFile = lib'.secrets "service" "backup";

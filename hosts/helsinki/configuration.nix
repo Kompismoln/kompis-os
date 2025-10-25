@@ -92,7 +92,7 @@
       enable = true;
       hostname = "klimatkalendern.nu";
       appname = "klimatkalendern";
-      www = "redirect";
+      www-redirect = "from";
       port = lib'.ids.klimatkalendern.port;
       uid = lib'.ids.klimatkalendern.uid;
     };

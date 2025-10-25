@@ -9,24 +9,10 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    flatten
-    mapAttrs'
-    mapAttrsToList
-    mkDefault
-    mkEnableOption
-    mkForce
-    mkIf
-    mkOption
-    nameValuePair
-    types
-    ;
-
   cfg = config.kompis-os.mobilizon;
   settingsFormat = pkgs.formats.elixirConf { elixir = cfg.package.elixirPackage; };
 
-  eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (name: cfg: cfg.enable) cfg.sites;
   stateDir = appname: "/var/lib/${appname}/mobilizon";
   hostConfig = config;
 
@@ -34,16 +20,16 @@ let
     { name, config, ... }:
     {
       config = {
-        appname = mkDefault name;
+        appname = lib.mkDefault name;
 
         containerConf = {
-          system.stateVersion = mkForce hostConfig.system.stateVersion;
+          system.stateVersion = hostConfig.system.stateVersion;
           users = {
             users.mobilizon = {
-              uid = mkForce config.uid;
+              uid = config.uid;
               group = "mobilizon";
             };
-            groups.mobilizon.gid = mkForce config.uid;
+            groups.mobilizon.gid = config.uid;
           };
           services.mobilizon = {
             enable = true;
@@ -51,7 +37,7 @@ let
             nginx.enable = false;
             settings.":mobilizon" = {
               "Mobilizon.Web.Endpoint".http = {
-                port = mkForce config.port;
+                port = lib.mkForce config.port;
                 ip = settingsFormat.lib.mkTuple [
                   0
                   0
@@ -60,15 +46,15 @@ let
                 ];
               };
               "Mobilizon.Storage.Repo" = {
-                hostname = mkForce "127.0.0.1";
+                hostname = "127.0.0.1";
                 database = config.appname;
                 username = config.appname;
                 password = config.appname;
                 socket_dir = null;
               };
               ":instance" = {
-                name = mkForce config.appname;
-                hostname = mkForce config.hostname;
+                name = config.appname;
+                hostname = config.hostname;
               };
             };
 
@@ -77,47 +63,47 @@ let
       };
 
       options = {
-        enable = mkEnableOption "mobilizon on this host";
-        ssl = mkOption {
+        enable = lib.mkEnableOption "mobilizon on this host";
+        ssl = lib.mkOption {
           description = "Enable HTTPS";
           default = true;
-          type = types.bool;
+          type = lib.types.bool;
         };
-        subnet = mkOption {
+        subnet = lib.mkOption {
           description = "Use self-signed certificates";
           default = false;
-          type = types.bool;
+          type = lib.types.bool;
         };
-        www = mkOption {
+        www-redirect = lib.mkOption {
           description = "Prefix the url with www.";
           default = "no";
-          type = types.enum [
-            "no"
-            "yes"
-            "redirect"
+          type = lib.types.enum [
+            "to"
+            "from"
+            "none"
           ];
         };
-        port = mkOption {
+        port = lib.mkOption {
           description = "Port to serve on";
           type = lib.types.port;
           default = lib'.ids.${config.appname}.port;
         };
-        hostname = mkOption {
+        hostname = lib.mkOption {
           description = "Namespace identifying the service externally on the network";
-          type = types.str;
+          type = lib.types.str;
         };
-        appname = mkOption {
+        appname = lib.mkOption {
           description = "Namespace identifying the app on the system (user, logging, database, paths etc.)";
-          type = types.str;
+          type = lib.types.str;
         };
-        uid = mkOption {
+        uid = lib.mkOption {
           description = "Userid is required to map user in container";
-          type = types.int;
+          type = lib.types.int;
           default = lib'.ids.${config.appname}.uid;
         };
-        containerConf = mkOption {
+        containerConf = lib.mkOption {
           description = "The configuration passed to the mobilizon container";
-          type = types.anything;
+          type = lib.types.anything;
         };
       };
     };
@@ -125,17 +111,17 @@ in
 {
   options = {
     kompis-os.mobilizon = {
-      sites = mkOption {
-        type = types.attrsOf (types.submodule siteOpts);
+      sites = lib.mkOption {
+        type = lib.types.attrsOf (lib.types.submodule siteOpts);
         default = { };
         description = "Specification of one or more mobilizon sites to serve";
       };
     };
   };
 
-  config = mkIf (eachSite != { }) {
+  config = lib.mkIf (eachSite != { }) {
 
-    kompis-os.preserve.directories = mapAttrsToList (name: cfg: {
+    kompis-os.preserve.directories = lib.mapAttrsToList (name: cfg: {
       directory = stateDir cfg.appname;
       user = cfg.appname;
       group = cfg.appname;
@@ -149,8 +135,8 @@ in
       }
     ) eachSite;
 
-    systemd.tmpfiles.rules = flatten (
-      mapAttrsToList (name: cfg: [
+    systemd.tmpfiles.rules = lib.flatten (
+      lib.mapAttrsToList (name: cfg: [
         "d '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
         "Z '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
       ]) eachSite
@@ -194,14 +180,14 @@ in
       let
         inherit (cfg.containerConf.services.mobilizon) package;
         proxyPass = "http://127.0.0.1:${toString cfg.port}";
-        serverName = if cfg.www == "yes" then "www.${cfg.hostname}" else cfg.hostname;
-        serverNameRedirect = if cfg.www == "yes" then cfg.hostname else "www.${cfg.hostname}";
+        serverName = if cfg.www-redirect == "to" then "www.${cfg.hostname}" else cfg.hostname;
+        serverNameRedirect = if cfg.www-redirect == "to" then cfg.hostname else "www.${cfg.hostname}";
       in
       {
-        ${serverNameRedirect} = mkIf (cfg.www != "no") {
+        ${serverNameRedirect} = lib.mkIf (cfg.www-redirect != "none") {
           forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
+          sslCertificate = lib.mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
+          sslCertificateKey = lib.mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
           enableACME = cfg.ssl && !cfg.subnet;
           extraConfig = ''
             return 301 $scheme://${serverName}$request_uri;
@@ -210,8 +196,8 @@ in
 
         ${serverName} = {
           forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
+          sslCertificate = lib.mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
+          sslCertificateKey = lib.mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
           enableACME = cfg.ssl && !cfg.subnet;
 
           locations = {
@@ -245,9 +231,9 @@ in
       }
     ) eachSite;
 
-    containers = mapAttrs' (
+    containers = lib.mapAttrs' (
       name: cfg:
-      (nameValuePair cfg.appname {
+      (lib.nameValuePair cfg.appname {
         autoStart = true;
 
         bindMounts = {

@@ -1,5 +1,4 @@
 {
-  options,
   config,
   lib,
   pkgs,
@@ -7,46 +6,14 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mapAttrsToList
-    mkDefault
-    mkOption
-    types
-    ;
-
   cfg = config.kompis-os.postgresql;
-  eachCfg = filterAttrs (user: cfg: cfg.ensure) cfg;
 in
 {
-  options.kompis-os.postgresql = mkOption {
-    type = types.attrsOf (
-      types.submodule (
-        { config, ... }:
-        {
-          options = {
-            ensure = mkOption {
-              description = "Ensure a postgresql database for the user.";
-              default = true;
-              type = types.bool;
-            };
-            name = mkOption {
-              description = "Name of the postgresql database/user-pair.";
-              type = types.nullOr types.str;
-              default = null;
-            };
-          };
-          config = {
-            name = mkDefault (config._module.args.name or null);
-          };
-        }
-      )
-    );
-    default = { };
-    description = "Specification of one or more postgresql user/database pair to setup";
+  options.kompis-os.postgresql = {
+    enable = lib.mkEnableOption "postgresql";
   };
 
-  config = lib.mkIf (eachCfg != { }) {
+  config = lib.mkIf cfg.enable {
     kompis-os.preserve.databases = [
       {
         directory = "/var/lib/postgresql";
@@ -62,11 +29,6 @@ in
         ];
       enable = true;
       package = pkgs.postgresql_17;
-      ensureDatabases = mapAttrsToList (user: cfg: cfg.name) eachCfg;
-      ensureUsers = mapAttrsToList (user: cfg: {
-        name = cfg.name;
-        ensureDBOwnership = true;
-      }) eachCfg;
     };
   };
 }

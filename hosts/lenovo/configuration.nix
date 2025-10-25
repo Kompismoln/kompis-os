@@ -54,19 +54,5 @@
         groups = [ "wheel" ];
       };
     };
-
-    sendmail.alex.enable = true;
-
-    shell.alex.enable = true;
-
-    ide.alex = {
-      enable = true;
-      postgresql = true;
-      redis = true;
-    };
-    home-manager.alex.enable = true;
-    desktop-env.alex.enable = true;
-    vd.alex.enable = true;
-
   };
 }

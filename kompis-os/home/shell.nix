@@ -8,18 +8,16 @@
 }:
 
 let
-  inherit (lib) getExe mkEnableOption mkIf;
-
   colors = lib'.semantic-colors org.theme.colors;
   cfg = config.kompis-os-hm.shell;
 in
 
 {
   options.kompis-os-hm.shell = {
-    enable = mkEnableOption "Enable shell for this user";
+    enable = lib.mkEnableOption "shell tools";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
 
     home.packages = with pkgs; [
       bat
@@ -32,26 +30,21 @@ in
       imagemagick
       inotify-tools
       iproute2
-      lazygit
-      less
       nethogs
       nmap
-      ntfs3g
       openssl
       ranger
       rdfind
       ripgrep
-      shell-gpt
-      silver-searcher
-      unzip
       tcpdump
       traceroute
+      unzip
       which
       wireguard-tools
+      xdg-utils
     ];
 
     programs = {
-
       bash = {
         enable = true;
 
@@ -103,7 +96,7 @@ in
             BW_SESSION=$(<~/.bwsession) bw get password $@ | wl-copy
           }
           d() {
-            ${getExe pkgs.wdiff} "$1" "$2" | ${getExe pkgs.colordiff}
+            ${lib.getExe pkgs.wdiff} "$1" "$2" | ${lib.getExe pkgs.colordiff}
           }
         '';
       };
@@ -150,8 +143,6 @@ in
       zoxide = {
         enable = true;
       };
-
     };
-
   };
 }

@@ -9,20 +9,9 @@
 }:
 
 let
-  inherit (lib)
-    concatStringsSep
-    filterAttrs
-    mapAttrs'
-    mapAttrsToList
-    mkEnableOption
-    mkIf
-    mkMerge
-    mkOption
-    ;
-
   cfg = config.kompis-os.mailserver;
-  relayDomains = filterAttrs (domain: cfg: !cfg.mailbox) cfg.domains;
-  mailboxDomains = filterAttrs (domain: cfg: cfg.mailbox) cfg.domains;
+  relayDomains = lib.filterAttrs (domain: cfg: !cfg.mailbox) cfg.domains;
+  mailboxDomains = lib.filterAttrs (domain: cfg: cfg.mailbox) cfg.domains;
 in
 {
   imports = [
@@ -30,36 +19,36 @@ in
   ];
 
   options.kompis-os.mailserver = {
-    enable = mkEnableOption "mailserver on this host";
-    domain = mkOption {
+    enable = lib.mkEnableOption "mailserver on this host";
+    domain = lib.mkOption {
       description = "The domain name of this mailserver.";
       type = lib.types.str;
     };
-    dkimSelector = mkOption {
+    dkimSelector = lib.mkOption {
       description = "Label for the DKIM key currently in use.";
       type = lib.types.str;
     };
-    users = mkOption {
+    users = lib.mkOption {
       description = "Configure user accounts.";
       type = lib.types.attrsOf (
         lib.types.submodule (
           { name, ... }:
           {
             options = {
-              enable = (mkEnableOption "this user") // {
+              enable = (lib.mkEnableOption "this user") // {
                 default = true;
               };
-              email = mkOption {
+              email = lib.mkOption {
                 description = "User email";
                 type = lib.types.str;
                 default = "${name}@${org.domain}";
               };
-              catchAll = mkOption {
+              catchAll = lib.mkOption {
                 description = "Make the user recipient of a whole domain.";
                 type = with lib.types; listOf str;
                 default = [ ];
               };
-              aliases = mkOption {
+              aliases = lib.mkOption {
                 description = "Make the user recipient of alternative emails";
                 type = with lib.types; listOf str;
                 default = [ ];
@@ -69,12 +58,12 @@ in
         )
       );
     };
-    domains = mkOption {
+    domains = lib.mkOption {
       description = "List of domains to manage.";
       type = lib.types.attrsOf (
         lib.types.submodule {
           options = {
-            mailbox = mkOption {
+            mailbox = lib.mkOption {
               description = "Enable if this host is the domain's final destination.";
               type = lib.types.bool;
             };
@@ -84,8 +73,8 @@ in
     };
   };
 
-  config = mkMerge [
-    (mkIf cfg.enable {
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
 
       kompis-os.redis.servers.rspamd.enable = true;
 
@@ -130,8 +119,8 @@ in
         stateVersion = 3;
         fqdn = "mail.${cfg.domain}";
         dkimSelector = cfg.dkimSelector;
-        domains = mapAttrsToList (domain: _: domain) mailboxDomains;
-        domainsWithoutMailbox = mapAttrsToList (domain: _: domain) relayDomains;
+        domains = lib.mapAttrsToList (domain: _: domain) mailboxDomains;
+        domainsWithoutMailbox = lib.mapAttrsToList (domain: _: domain) relayDomains;
         enableSubmissionSsl = false;
         redis.configureLocally = false;
         mailboxes = {
@@ -157,8 +146,8 @@ in
           };
         };
 
-        loginAccounts = mkMerge [
-          (mapAttrs' (user: userCfg: {
+        loginAccounts = lib.mkMerge [
+          (lib.mapAttrs' (user: userCfg: {
             name = userCfg.email;
             value = {
               inherit (userCfg) catchAll aliases;
@@ -192,15 +181,15 @@ in
           settings.main = {
             myorigin = cfg.domain;
             mynetworks = [
-              "10.0.0.0/24"
               "127.0.0.1/32"
               "[::1]/128"
-            ];
+            ]
+            ++ (lib.mapAttrsToList (iface: ifaceCfg: ifaceCfg.address) org.subnet);
           };
           transport =
             let
-              transportsList = mapAttrsToList (domain: cfg: "${domain} smtp:") relayDomains;
-              transportsCfg = concatStringsSep "\n" transportsList;
+              transportsList = lib.mapAttrsToList (domain: cfg: "${domain} smtp:") relayDomains;
+              transportsCfg = lib.concatStringsSep "\n" transportsList;
             in
             transportsCfg;
         };

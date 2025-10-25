@@ -8,13 +8,6 @@
 }:
 
 let
-  inherit (lib)
-    mkIf
-    mkEnableOption
-    mkOption
-    types
-    ;
-
   cfg = config.kompis-os.preserve;
 
   # Piggyback on preservation's options for files and directories
@@ -28,20 +21,20 @@ in
   options.kompis-os.preserve = rec {
     inherit (preserveAtOptions) files directories;
     databases = directories;
-    enable = mkEnableOption ''ephemeral root on this host'';
-    storage = mkOption {
+    enable = lib.mkEnableOption ''ephemeral root on this host'';
+    storage = lib.mkOption {
       description = "permanent storage";
-      type = types.str;
+      type = lib.types.str;
       default = "/srv/storage";
     };
-    database = mkOption {
+    database = lib.mkOption {
       description = "permanent no-cow storage";
-      type = types.str;
+      type = lib.types.str;
       default = "/srv/database";
     };
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
 
     preservation = {
       enable = true;

@@ -5,45 +5,37 @@
   ...
 }:
 let
-  inherit (lib)
-    mkEnableOption
-    mkIf
-    mkOption
-    types
-    ;
   cfg = config.kompis-os.collabora;
 in
 {
   options = {
     kompis-os.collabora = {
-      enable = mkEnableOption "collabora-online on this server";
-      subnet = mkOption {
+      enable = lib.mkEnableOption "collabora-online on this server";
+      subnet = lib.mkOption {
         description = "Use self-signed certificates";
         default = false;
-        type = types.bool;
+        type = lib.types.bool;
       };
-      host = mkOption {
+      host = lib.mkOption {
         description = "Public hostname";
-        type = types.str;
+        type = lib.types.str;
       };
-      allowedHosts = mkOption {
+      allowedHosts = lib.mkOption {
         description = "Accept WOPI from these hosts";
-        type = types.listOf types.str;
+        type = with lib.types; listOf str;
       };
     };
   };
 
-  config = mkIf cfg.enable {
-    kompis-os.tls-certs = [ "km" ];
-
+  config = lib.mkIf cfg.enable {
     services.nginx.virtualHosts.${cfg.host} =
       let
         proxyPass = "http://127.0.0.1:${builtins.toString lib'.ids.collabora.port}";
       in
       {
         forceSSL = true;
-        sslCertificate = mkIf cfg.subnet ../domains/km-tls-cert.pem;
-        sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
+        sslCertificate = lib.mkIf cfg.subnet ../domains/km-tls-cert.pem;
+        sslCertificateKey = lib.mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
 
         enableACME = !cfg.subnet;
 
@@ -99,9 +91,7 @@ in
     services.collabora-online = {
       enable = true;
       port = lib'.ids.collabora.port;
-      aliasGroups = map (host: {
-        host = "https://nextcloud.km";
-      }) cfg.allowedHosts;
+      aliasGroups = cfg.allowedHosts;
 
       settings = {
         ssl = {

@@ -8,32 +8,23 @@
 }:
 
 let
-  inherit (lib)
-    getExe
-    mkEnableOption
-    mkIf
-    mkOption
-    types
-    ;
-
   cfg = config.kompis-os.glesys.updaterecord;
 in
 {
 
-  options.kompis-os.glesys.updaterecord = with types; {
-    enable = mkEnableOption "updating DNS-record on glesys";
-    recordid = mkOption {
+  options.kompis-os.glesys.updaterecord = {
+    enable = lib.mkEnableOption "updating DNS-record on glesys";
+    recordid = lib.mkOption {
       description = "The glesys id of the record";
-      type = str;
+      type = lib.types.str;
     };
-    device = mkOption {
+    device = lib.mkOption {
       description = "Device that should be watched.";
-      example = "enp3s0";
-      type = str;
+      type = lib.types.str;
     };
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
 
     sops.secrets."glesys-api/secret-key" = {
       sopsFile = lib'.secrets "service" "glesys-api";
@@ -55,7 +46,7 @@ in
         {
           ExecStart = pkgs.writeShellScript "glesys-updaterecord" ''
             ipv4="$(${pkgs.iproute2}/bin/ip -4 -o addr show ${cfg.device} | ${pkgs.gawk}/bin/awk '{split($4, a, "/"); print a[1]}')"
-            ${getExe pkgs.curl} -sSX POST -d "${data}" -u ${user} ${url} | ${pkgs.util-linux}/bin/logger -t dhcpcd
+            ${lib.getExe pkgs.curl} -sSX POST -d "${data}" -u ${user} ${url} | ${pkgs.util-linux}/bin/logger -t dhcpcd
           '';
         };
     };

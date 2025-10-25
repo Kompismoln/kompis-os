@@ -5,18 +5,14 @@
   ...
 }:
 let
-  inherit (lib)
-    mkEnableOption
-    mkIf
-    ;
   cfg = config.kompis-os.ssh;
 in
 {
   options.kompis-os.ssh = {
-    enable = mkEnableOption "ssh server";
+    enable = lib.mkEnableOption "ssh server";
   };
 
-  config = mkIf (cfg.enable) {
+  config = lib.mkIf (cfg.enable) {
 
     services.fail2ban.jails = {
       sshd.settings = {

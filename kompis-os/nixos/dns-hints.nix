@@ -9,13 +9,13 @@ let
   cfg = config.kompis-os.dns-hints;
   subnet = org.subnet.${cfg.subnet};
   listen = peerAddress subnet host;
-  hints = lib.mapAttrsToList hint org.host;
 
   peerAddress =
     subnet: peer: builtins.replaceStrings [ "x" ] [ (toString peer.id) ] subnet.peerAddress;
 
-  hint =
-    hostname: hostconf: "hints['${hostname}.${subnet.namespace}'] = '${peerAddress subnet hostconf}'";
+  hint = host: hostCfg: "hints['${host}.${subnet.namespace}'] = '${peerAddress subnet hostCfg}'";
+  peers = lib.filterAttrs (host: hostCfg: lib.elem "peer" hostCfg.roles) org.host;
+  hints = lib.mapAttrsToList hint peers;
 in
 {
   options.kompis-os.dns-hints = {

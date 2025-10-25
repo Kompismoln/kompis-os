@@ -1,0 +1,3 @@
+{
+  flake.nixosModules.comfy-root = { };
+}

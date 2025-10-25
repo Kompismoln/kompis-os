@@ -7,61 +7,48 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    getExe
-    mapAttrs'
-    mapAttrsToList
-    mkDefault
-    mkEnableOption
-    mkIf
-    mkOption
-    nameValuePair
-    types
-    ;
-
   cfg = config.kompis-os.wordpress;
   webserver = config.services.nginx;
-  eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (name: cfg: cfg.enable) cfg.sites;
   stateDir = appname: "/var/lib/${appname}/wordpress";
 
   siteOpts =
     { name, ... }:
     {
-      config.appname = mkDefault name;
+      config.appname = lib.mkDefault name;
       options = {
-        enable = mkEnableOption "wordpress on this host.";
-        ssl = mkOption {
+        enable = lib.mkEnableOption "wordpress on this host.";
+        ssl = lib.mkOption {
           description = "Enable HTTPS.";
-          type = types.bool;
+          type = lib.types.bool;
           default = true;
         };
-        subnet = mkOption {
+        subnet = lib.mkOption {
           description = "Use self-signed certificates";
           default = false;
-          type = types.bool;
+          type = lib.types.bool;
         };
-        www = mkOption {
+        www = lib.mkOption {
           description = "Prefix the url with www.";
           default = "no";
-          type = types.enum [
+          type = lib.types.enum [
             "no"
             "yes"
             "redirect"
           ];
         };
-        basicAuth = mkOption {
+        basicAuth = lib.mkOption {
           description = "Protect the site with basic auth.";
-          type = types.attrsOf types.str;
+          type = with lib.types; attrsOf str;
           default = { };
         };
-        hostname = mkOption {
+        hostname = lib.mkOption {
           description = "Namespace identifying the service externally on the network.";
-          type = types.str;
+          type = lib.types.str;
         };
-        appname = mkOption {
+        appname = lib.mkOption {
           description = "Namespace identifying the app on the system (user, logging, database, paths etc.)";
-          type = types.str;
+          type = lib.types.str;
         };
       };
     };
@@ -85,17 +72,17 @@ in
 {
   options = {
     kompis-os.wordpress = {
-      sites = mkOption {
-        type = types.attrsOf (types.submodule siteOpts);
+      sites = lib.mkOption {
+        type = with lib.types; attrsOf (submodule siteOpts);
         default = { };
         description = "Specification of one or more wordpress sites to serve";
       };
     };
   };
 
-  config = mkIf (eachSite != { }) {
+  config = lib.mkIf (eachSite != { }) {
 
-    kompis-os.preserve.directories = mapAttrsToList (name: cfg: {
+    kompis-os.preserve.directories = lib.mapAttrsToList (name: cfg: {
       directory = stateDir cfg.appname;
       user = cfg.appname;
       group = cfg.appname;
@@ -123,10 +110,10 @@ in
         serverNameRedirect = if cfg.www == "yes" then cfg.hostname else "www.${cfg.hostname}";
       in
       {
-        ${serverNameRedirect} = mkIf (cfg.www != "no") {
+        ${serverNameRedirect} = lib.mkIf (cfg.www != "no") {
           forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
+          sslCertificate = lib.mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
+          sslCertificateKey = lib.mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
           enableACME = cfg.ssl && !cfg.subnet;
           extraConfig = ''
             return 301 $scheme://${serverName}$request_uri;
@@ -135,12 +122,12 @@ in
 
         ${serverName} = {
           forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
+          sslCertificate = lib.mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
+          sslCertificateKey = lib.mkIf cfg.subnet config.sops.secrets."km/tls-cert".path;
           enableACME = cfg.ssl && !cfg.subnet;
 
           root = stateDir cfg.appname;
-          basicAuth = mkIf (cfg.basicAuth != { }) cfg.basicAuth;
+          basicAuth = lib.mkIf (cfg.basicAuth != { }) cfg.basicAuth;
 
           extraConfig = ''
             index index.php;
@@ -212,11 +199,9 @@ in
       }
     ) eachSite;
 
-    kompis-os.mysql = mapAttrs' (name: cfg: nameValuePair cfg.appname { ensure = true; }) eachSite;
-
-    services.phpfpm.pools = mapAttrs' (
+    services.phpfpm.pools = lib.mapAttrs' (
       name: cfg:
-      nameValuePair cfg.appname {
+      lib.nameValuePair cfg.appname {
         user = cfg.appname;
         group = cfg.appname;
         phpPackage = wpPhp;
@@ -247,7 +232,7 @@ in
         description = "dump a snapshot of the mysql database";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${getExe pkgs.bash} -c '${pkgs.mariadb}/bin/mysqldump -u ${cfg.appname} ${cfg.appname} > ${stateDir cfg.appname}/dbdump.sql'";
+          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.mariadb}/bin/mysqldump -u ${cfg.appname} ${cfg.appname} > ${stateDir cfg.appname}/dbdump.sql'";
           User = cfg.appname;
           Group = cfg.appname;
         };
@@ -256,7 +241,7 @@ in
         description = "restore mysql database from snapshot";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${getExe pkgs.bash} -c '${pkgs.mariadb}/bin/mysql -u ${cfg.appname} ${cfg.appname} < ${stateDir cfg.appname}/dbdump.sql'";
+          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.mariadb}/bin/mysql -u ${cfg.appname} ${cfg.appname} < ${stateDir cfg.appname}/dbdump.sql'";
           User = cfg.appname;
           Group = cfg.appname;
         };

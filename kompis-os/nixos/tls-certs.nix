@@ -6,24 +6,17 @@
 }:
 
 let
-  inherit (lib)
-    mkOption
-    mkIf
-    types
-    ;
-
   tls-certs = config.kompis-os.tls-certs;
-
 in
 {
-  options.kompis-os.tls-certs = mkOption {
-    type = types.listOf types.str;
+  options.kompis-os.tls-certs = lib.mkOption {
+    type = with lib.types; listOf str;
     default = [ ];
     description = "List of self signed certificates to accept and expose";
   };
 
-  config = mkIf (tls-certs != [ ]) {
-    security.pki.certificates = builtins.map (
+  config = lib.mkIf (tls-certs != [ ]) {
+    security.pki.certificates = map (
       name: builtins.readFile (lib'.public-artifacts "service" "domain-${name}" "tls-cert")
     ) tls-certs;
 
@@ -35,7 +28,7 @@ in
     };
 
     sops.secrets = builtins.listToAttrs (
-      builtins.map (name: {
+      map (name: {
         name = "domain-${name}/tls-cert";
         value = {
           sopsFile = lib'.secrets "service" "domain-${name}";

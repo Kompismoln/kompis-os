@@ -5,55 +5,32 @@
   lib,
   lib',
   org,
+  pkgs,
   ...
 }:
-
-let
-  inherit (lib)
-    filterAttrs
-    mapAttrs
-    mkEnableOption
-    mkIf
-    mkOption
-    types
-    ;
-
-  cfg = config.kompis-os.home-manager;
-  eachUser = filterAttrs (user: cfg: cfg.enable) cfg;
-
-  userOpts = {
-    options.enable = mkEnableOption "home-manager for this user";
-  };
-in
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  options.kompis-os.home-manager =
-    with types;
-    mkOption {
-      description = "Set of users to be configured with home-manager.";
-      type = attrsOf (submodule userOpts);
-      default = { };
-    };
+  options.kompis-os.home-manager = {
+    enable = lib.mkEnableOption "home-manager";
+  };
 
-  config = mkIf (eachUser != { }) {
+  config = lib.mkIf config.kompis-os.home-manager.enable {
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
       extraSpecialArgs = {
         inherit inputs lib' org;
       };
-      users = mapAttrs (user: cfg: {
-        home.stateVersion = host.stateVersion;
-        home.username = user;
-        kompis-os-hm.user = {
-          enable = config.kompis-os.home-manager.${user}.enable;
-          name = user;
-          uid = lib'.ids.${user}.uid;
-        };
-      }) eachUser;
+      users = lib.mapAttrs (username: homeCfg: {
+        _module.args.home = lib'.home-args username host.name;
+        home.packages = [ pkgs.home-manager ];
+
+        imports = map (role: inputs.self.homeModules.${role}) homeCfg.roles;
+
+      }) org.host.${host.name}.home;
     };
   };
 }

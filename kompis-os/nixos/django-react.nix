@@ -1,65 +1,51 @@
 { config, lib, ... }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mapAttrs
-    mkEnableOption
-    mkIf
-    mkOption
-    types
-    ;
-
-  inherit (builtins) elemAt;
   cfg = config.kompis-os.django-react;
-  eachSite = filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
 
   siteOpts = {
-    options = with types; {
-      enable = mkEnableOption "Django+React app";
-      ports = mkOption {
+    options = {
+      enable = lib.mkEnableOption "Django+React app";
+      ports = lib.mkOption {
         description = "Listening ports.";
-        example = [
-          8000
-          8001
-        ];
-        type = listOf port;
+        type = with lib.types; listOf port;
       };
-      ssl = mkOption {
+      ssl = lib.mkOption {
         description = "Whether to enable SSL (https) support.";
-        type = bool;
+        type = lib.types.bool;
       };
-      appname = mkOption {
+      appname = lib.mkOption {
         description = "Internal namespace";
-        type = str;
+        type = lib.types.str;
       };
-      hostname = mkOption {
+      hostname = lib.mkOption {
         description = "Network namespace";
-        type = str;
+        type = lib.types.str;
       };
     };
   };
 in
 {
-  options.kompis-os.django-react = with types; {
-    sites = mkOption {
+  options.kompis-os.django-react = {
+    sites = lib.mkOption {
       description = "Definition of per-domain Django+React apps to serve.";
-      type = attrsOf (submodule siteOpts);
+      type = with lib.types; attrsOf (submodule siteOpts);
       default = { };
     };
   };
 
-  config = mkIf (eachSite != { }) {
+  config = lib.mkIf (eachSite != { }) {
 
-    kompis-os.django.sites = mapAttrs (name: cfg: {
+    kompis-os.django.sites = lib.mapAttrs (name: cfg: {
       enable = cfg.enable;
       appname = cfg.appname;
       hostname = cfg.hostname;
-      port = elemAt cfg.ports 0;
+      port = builtins.elemAt cfg.ports 0;
       ssl = cfg.ssl;
     }) eachSite;
 
-    kompis-os.react.sites = mapAttrs (name: cfg: {
+    kompis-os.react.sites = lib.mapAttrs (name: cfg: {
       enable = cfg.enable;
       ssl = cfg.ssl;
       api = "${if cfg.ssl then "https" else "http"}://${cfg.hostname}/api";

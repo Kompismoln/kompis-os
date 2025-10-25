@@ -7,51 +7,40 @@
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mapAttrs
-    mapAttrs'
-    mkEnableOption
-    mkIf
-    mkOption
-    nameValuePair
-    types
-    ;
-
   cfg = config.kompis-os.react;
 
-  eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (name: cfg: cfg.enable) cfg.sites;
 
   siteOpts = {
-    options = with types; {
-      enable = mkEnableOption "react-app for this host.";
-      location = mkOption {
+    options = {
+      enable = lib.mkEnableOption "react-app for this host.";
+      location = lib.mkOption {
         description = "URL path to serve the application.";
         default = "/";
-        type = str;
+        type = lib.types.str;
       };
-      ssl = mkOption {
+      ssl = lib.mkOption {
         description = "Whether the react-app can assume https or not.";
-        type = bool;
+        type = lib.types.bool;
       };
-      api = mkOption {
+      api = lib.mkOption {
         description = "URL for the API endpoint";
-        type = str;
+        type = lib.types.str;
       };
-      appname = mkOption {
+      appname = lib.mkOption {
         description = "Internal namespace";
-        type = str;
+        type = lib.types.str;
       };
-      hostname = mkOption {
+      hostname = lib.mkOption {
         description = "Network namespace";
-        type = str;
+        type = lib.types.str;
       };
     };
   };
 
   reactPkgs' = appname: inputs.${appname}.packages.${host.system}.vite-static;
 
-  reactPkgs = mapAttrs (
+  reactPkgs = lib.mapAttrs (
     name: cfg:
     (reactPkgs' cfg.appname).overrideAttrs {
       env = {
@@ -64,18 +53,18 @@ in
 
   options = {
     kompis-os.react = {
-      sites = mkOption {
-        type = types.attrsOf (types.submodule siteOpts);
+      sites = lib.mkOption {
+        type = with lib.types; attrsOf (submodule siteOpts);
         default = { };
         description = "Specification of one or more React sites to serve";
       };
     };
   };
 
-  config = mkIf (eachSite != { }) {
-    services.nginx.virtualHosts = mapAttrs' (
+  config = lib.mkIf (eachSite != { }) {
+    services.nginx.virtualHosts = lib.mapAttrs' (
       name: cfg:
-      nameValuePair cfg.hostname {
+      lib.nameValuePair cfg.hostname {
         forceSSL = cfg.ssl;
         enableACME = cfg.ssl;
         root = "${reactPkgs.${cfg.appname}}/dist";

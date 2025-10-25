@@ -1,6 +1,6 @@
 {
   imports = [
-    ../../modules/glesys-updaterecord.nix
+    ../../kompis-os/nixos/glesys-updaterecord.nix
   ];
 
   kompis-os = {

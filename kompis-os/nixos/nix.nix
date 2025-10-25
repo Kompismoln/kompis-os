@@ -11,7 +11,6 @@
 }:
 
 let
-  inherit (lib) mkDefault mkForce;
   cfg = config.kompis-os.nix;
 
   nixservicePkg =
@@ -83,7 +82,7 @@ in
     };
 
     nix = {
-      package = mkDefault pkgs.lix;
+      package = lib.mkDefault pkgs.lix;
       registry = {
         self.flake = inputs.self;
         kompis-os = {
@@ -104,7 +103,7 @@ in
           "flakes"
         ];
         max-jobs = "auto";
-        nix-path = mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
+        nix-path = lib.mkForce "nixpkgs=/etc/nix/inputs/nixpkgs";
         substituters = [
           "https://cache.nixos.org"
           "https://cache.lix.systems"
