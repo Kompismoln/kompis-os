@@ -155,12 +155,16 @@ ids-by-class() {
 ids-by-substring:() {
     if [[ $1 == "*" ]]; then
         org-toml "class-list" | while read -r _class; do
-            ids-by-substring: "$_class" "$2"
+            ids-by-substring "$_class" "$2"
         done
     else
-        local query='.'"$1"' | keys | map(. | "'"$1-"'" + select(contains("'"$2"'"))) | .[]'
-        as-json | try jq -r "$query"
+        ids-by-substring
     fi
+}
+
+ids-by-substring() {
+    local query='.'"$1"' | keys | map(. | "'"$1-"'" + select(contains("'"$2"'"))) | .[]'
+    as-json | try jq -r "$query"
 }
 
 ids-by-roles:() {
@@ -183,7 +187,7 @@ ids-by-roles() {
 autocomplete-identity:() {
     ids-by-id: "$1" && return
     local matches
-    matches="$(ids-by-substring: "*" "$1")"
+    matches="$(LOG_LEVEL=off ids-by-substring: "*" "$1")"
     [[ -n "$matches" ]] || die 1 "\`$1\` did not match any identities"
 
     if (($(echo "$matches" | wc -l) > 1)); then

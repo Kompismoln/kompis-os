@@ -11,6 +11,10 @@
     enable = lib.mkEnableOption "IDE";
   };
 
+  imports = [
+    ./neovim.nix
+  ];
+
   config = lib.mkIf config.kompis-os-hm.ide.enable {
 
     kompis-os-hm.neovim.enable = true;

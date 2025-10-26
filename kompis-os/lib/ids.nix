@@ -49,51 +49,6 @@
   admin = {
     uid = 1000;
   };
-
-  esse = {
-    uid = 607;
-    #port = 2607;
-  };
-  esse-redis = {
-    uid = 608;
-    port = 2608;
-  };
-  alex = {
-    uid = 1001;
-  };
-  johanna = {
-    uid = 1102;
-  };
-  ludvig = {
-    uid = 1103;
-  };
-  ami = {
-    uid = 1104;
-  };
-  klimatkalendern = {
-    uid = 700;
-    port = 2700;
-  };
-  klimatkalendern-dev = {
-    uid = 701;
-    port = 2701;
-  };
-  nextcloud-kompismoln = {
-    uid = 702;
-    port = 2702;
-  };
-  chatddx-redis = {
-    uid = 610;
-    port = 2610;
-  };
-  chatddx-svelte = {
-    uid = 611;
-    port = 2611;
-  };
-  chatddx-django = {
-    uid = 609;
-    port = 2609;
-  };
   test-redis = {
     uid = 614;
     port = 2614;

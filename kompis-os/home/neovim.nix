@@ -92,39 +92,26 @@ in
         };
       };
 
-      autoCmd = [
-        {
-          command = "silent :!${pkgs.isort}/bin/isort format %";
-          event = [ "BufWritePost" ];
-          pattern = [ "*.py" ];
-        }
-        {
-          command = "silent :!${pkgs.ruff}/bin/ruff format %";
-          event = [ "BufWritePost" ];
-          pattern = [ "*.py" ];
-        }
-        {
-          command = "silent :!${pkgs.nixfmt-rfc-style}/bin/nixfmt %";
-          event = [ "BufWritePost" ];
-          pattern = [ "*.nix" ];
-        }
-      ];
+      globals.mapleader = "\\";
 
       opts = {
         number = true;
         shiftwidth = 2;
+        tabstop = 2;
+        expandtab = true;
         wildmenu = true;
         wildmode = "longest:full,full";
       };
 
       keymaps = [
         {
-          key = "<F2>";
-          action = "<cmd>Neotree toggle<cr>";
+          key = "-";
+          action = "<cmd>Oil<cr>";
+          options.desc = "Open parent directory";
         }
         {
-          key = "<space>e";
-          action.__raw = "vim.diagnostic.open_float";
+          key = "<F2>";
+          action = "<cmd>NvimTreeToggle<cr>";
         }
         {
           key = "<leader>sh";
@@ -135,14 +122,44 @@ in
           action = ":vsplit<cr>";
         }
         {
-          key = "<leader>c";
+          key = "<leader>y";
           action = ''"+yy'';
           mode = [ "n" ];
         }
         {
-          key = "<leader>c";
+          key = "<leader>y";
           action = ''"+y'';
           mode = [ "v" ];
+        }
+        {
+          key = "<leader>bn";
+          action = ":bnext<cr>";
+          options.desc = "Next buffer";
+        }
+        {
+          key = "<leader>bp";
+          action = ":bprevious<cr>";
+          options.desc = "Previous buffer";
+        }
+        {
+          key = "<leader>w";
+          action = ":w<cr>";
+          options.desc = "Save file";
+        }
+        {
+          key = "<leader>f";
+          action.__raw = ''
+            function()
+              require("conform").format({ async = true, lsp_fallback = true })
+            end
+          '';
+          options.desc = "Format buffer";
+        }
+
+        {
+          key = "<leader>/";
+          action = ":noh<cr>";
+          options.desc = "Clear search highlight";
         }
       ];
 
@@ -150,29 +167,30 @@ in
         web-devicons.enable = true;
         leap.enable = true;
         sleuth.enable = true;
-        neo-tree.enable = true;
         oil.enable = true;
         nix.enable = true;
         colorizer.enable = true;
         fugitive.enable = true;
         gitignore.enable = false;
         direnv.enable = true;
+        nvim-tree.enable = true;
 
         conform-nvim = {
           enable = true;
           autoLoad = true;
           settings = {
             formatters_by_ft = {
+              nix = [
+                "nixfmt"
+              ];
+              python = [
+                "isort"
+                "ruff_format"
+              ];
               bash = [
                 "shellcheck"
                 "shellharden"
                 "shfmt"
-              ];
-              javascript = [
-                "prettier"
-              ];
-              typescript = [
-                "prettier"
               ];
             };
             format_on_save = {
@@ -226,12 +244,14 @@ in
           keymaps = {
             lspBuf = {
               K = "hover";
-              gD = "references";
               gd = "definition";
+              gD = "declaration";
+              gr = "references";
               gi = "implementation";
               gt = "type_definition";
             };
             diagnostic = {
+              "<leader>d" = "open_float";
               "<leader>j" = "goto_next";
               "<leader>k" = "goto_prev";
             };

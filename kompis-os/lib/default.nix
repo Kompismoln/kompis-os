@@ -14,7 +14,7 @@ lib: inputs: {
       acc: name: value:
       (lib.recursiveUpdate acc (f name value))
     ) { } attrs;
-  ids = import ./ids.nix;
+  ids = (import ./ids.nix) // inputs.org.ids;
   semantic-colors = import ./semantic-colors.nix;
 
   public-artifacts =
@@ -55,9 +55,15 @@ lib: inputs: {
     in
     "${inputs.self}/${path}";
 
-  home-args = user: host: {
-    inherit (inputs.org.host.${host}) system stateVersion;
-    roles = inputs.org.host.${host}.home.${user}.roles or [ ];
-    username = user;
-  };
+  home-args =
+    user: host:
+    let
+      hostCfg = inputs.org.host.${host} or (throw "Host '${host}' not found in org.host");
+      homeCfg = hostCfg.home.${user} or (throw "User '${user}' not found in org.host.${host}.home");
+    in
+    {
+      inherit (hostCfg) system stateVersion;
+      roles = homeCfg.roles or [ ];
+      username = user;
+    };
 }

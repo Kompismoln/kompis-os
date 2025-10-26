@@ -14,7 +14,6 @@
         ../home/graphic.nix
         ../home/hyprland.nix
         ../home/ide.nix
-        ../home/neovim.nix
         ../home/nix-conf.nix
         ../home/qutebrowser.nix
         ../home/shell.nix
@@ -27,7 +26,6 @@
           fonts.enable = true;
           hyprland.enable = true;
           ide.enable = true;
-          neovim.enable = true;
           nix-conf.enable = true;
           qutebrowser.enable = true;
           shell.enable = true;

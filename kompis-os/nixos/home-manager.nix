@@ -1,3 +1,4 @@
+# kompis-os/nixos/home-manager.nix
 {
   config,
   host,
