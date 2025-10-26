@@ -1,5 +1,5 @@
 # kompis-os/lib/default.nix
-lib: inputs: {
+lib: inputs: rec {
   # pick a list of attributes from an attrSet
   pick = attrNames: attrSet: lib.filterAttrs (name: value: lib.elem name attrNames) attrSet;
 
@@ -64,6 +64,8 @@ lib: inputs: {
     {
       inherit (hostCfg) system stateVersion;
       roles = homeCfg.roles or [ ];
+      hostname = host;
       username = user;
+      configPath = home-config "${user}@${host}";
     };
 }

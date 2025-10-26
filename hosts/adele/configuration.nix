@@ -1,15 +1,11 @@
 {
-  lib,
   pkgs,
   ...
 }:
 {
   kompis-os = {
     sysadm.rescueMode = true;
-
     users.ami.enable = true;
-    home-manager.ami.enable = true;
-    shell.ami.enable = true;
   };
 
   boot = {
@@ -22,13 +18,6 @@
   sops.secrets.wifi-keys = {
     mode = "644";
     owner = "ami";
-  };
-
-  networking = {
-    useDHCP = lib.mkDefault true;
-    networkmanager = {
-      enable = true;
-    };
   };
 
   services.printing = {
@@ -57,41 +46,4 @@
   boot.extraModprobeConfig = ''
     options snd_hda_intel power_save=0
   '';
-
-  security = {
-    rtkit.enable = true;
-    polkit.enable = true;
-  };
-
-  services.xserver = {
-    enable = true;
-    desktopManager.cinnamon.enable = true;
-    displayManager.lightdm = {
-      enable = true;
-    };
-  };
-
-  nix.settings.trusted-users = [ "ami" ];
-
-  home-manager.users.ami =
-    { pkgs, ... }:
-    {
-      programs.firefox = {
-        enable = true;
-      };
-
-      home = {
-        stateVersion = "25.11";
-        packages = with pkgs; [
-          webcamoid
-          libcamera
-          shotwell
-          signal-desktop
-          libreoffice
-          hunspell
-          hunspellDicts.sv_SE
-          hunspellDicts.en_US
-        ];
-      };
-    };
 }

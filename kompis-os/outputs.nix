@@ -34,7 +34,7 @@ in
           inherit inputs lib';
         };
         modules = [
-          "${lib'.home-config home}"
+          homeCfg.configPath
         ]
         ++ map (role: self.homeModules.${role}) homeCfg.roles;
       }

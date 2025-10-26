@@ -317,8 +317,8 @@ id = 8
 roles = [
   "nixos",
   "peer",
+  "disko-laptop",
   "cinnamon-office",
-  "disko-workstation",
 ]
 subnets = [
   "wg0",

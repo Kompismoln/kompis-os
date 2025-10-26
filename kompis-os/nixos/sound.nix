@@ -1,3 +1,4 @@
+# kompis-os/nixos/sound.nix
 {
   pkgs,
   lib,
@@ -26,7 +27,7 @@
       rtkit.enable = true;
     };
 
-    users.groups.networkmanager.members = lib.attrNames (
+    users.groups.pipewire.members = lib.attrNames (
       lib.filterAttrs (user: userCfg: userCfg.isNormalUser) config.users.users
     );
   };
