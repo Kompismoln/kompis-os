@@ -47,6 +47,7 @@
 
   kompis-os = {
     sysadm.rescueMode = true;
+    sendmail.enable = true;
 
     users = {
       alex = {

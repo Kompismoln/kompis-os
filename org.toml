@@ -5,6 +5,7 @@ timezone = "Europe/Stockholm"
 locale = "en_US.UTF-8"
 host-config = "hosts/$host/configuration.nix"
 home-config = "homes/$home.nix"
+app-config = "apps/$app.nix"
 build-hosts = [
   "stationary",
 ]
@@ -27,22 +28,77 @@ type = "github"
 owner = "Kompismoln"
 repo = "kompis-os"
 
-[site."kompismoln.se"]
+[app.chatddx]
+endpoint = "chatddx.com"
+altpoints = ["www.chatddx.com"]
+run-on-hosts = ["helsinki"]
+grants = ["host:app-scheduler"]
+
+[app.chatddx-dev]
+endpoint = "chatddx-dev.kompismoln.se"
+run-on-hosts = ["stationary"]
+grants = ["host:app-scheduler"]
+
+[app.esse]
+endpoint = "www.esse.nu"
+altpoints = ["esse.nu"]
+run-on-hosts = ["helsinki"]
+grants = ["host:app-scheduler"]
+
+[app.sverigesval]
+endpoint = "sverigesval.org"
+altpoints = ["www.sverigesval.org"]
+run-on-hosts = ["helsinki"]
+grants = ["host:app-scheduler"]
+
+[app.klimatkalendern]
+endpoint = "klimatkalendern.nu"
+altpoints = ["www.klimatkalendern.nu"]
+run-on-hosts = ["helsinki"]
+grants = ["host:app-scheduler"]
+
+[app.klimatkalendern-dev]
+endpoint = "klimatkalendern-dev.kompismoln.se"
+run-on-hosts = ["stationary"]
+grants = ["host:app-scheduler"]
+
+[app.nextcloud-kompismoln]
+endpoint = "nextcloud.kompismoln.se"
+altpoints = ["nc.kompismoln.se"]
+run-on-hosts = ["helsinki"]
+grants = ["host:app-scheduler"]
+
+[app.nextcloud-kompismoln-dev]
+endpoint = "nextcloud-kompismoln-dev.kompismoln.se"
+run-on-hosts = ["stationary"]
+grants = ["host:app-scheduler"]
+
+[app.collabora]
+endpoint = "collabora.kompismoln.se"
+run-on-hosts = ["helsinki"]
+grants = ["host:app-scheduler"]
+
+[app.collabora-dev]
+endpoint = "collabora-dev.kompismoln.se"
+run-on-hosts = ["stationary"]
+grants = ["host:app-scheduler"]
+
+[dns."kompismoln.se"]
 mailbox = true
 
-[site."chatddx.com"]
+[dns."chatddx.com"]
 mailbox = true
 
-[site."sverigesval.org"]
+[dns."sverigesval.org"]
 mailbox = true
 
-[site."ahbk.se"]
+[dns."ahbk.se"]
 mailbox = true
 
-[site."esse.nu"]
+[dns."esse.nu"]
 mailbox = false
 
-[site."klimatkalendern.nu"]
+[dns."klimatkalendern.nu"]
 mailbox = false
 
 [public-artifacts]
@@ -68,6 +124,14 @@ keys = [
   "luks-key",
 ]
 
+[class.user]
+keys = [
+  "age-key",
+  "ssh-key",
+  "mail",
+  "passwd",
+]
+
 [class.service]
 keys = [
   "age-key",
@@ -85,14 +149,6 @@ keys = [
   "secret-key",
 ]
 
-[class.user]
-keys = [
-  "age-key",
-  "ssh-key",
-  "mail",
-  "passwd",
-]
-
 [ops.rebuild]
 "*" = [
   "rebuild:age-key",
@@ -107,7 +163,7 @@ keys = [
 "host:luks+server" = [
   "check:luks-key",
 ]
-"host:webserver" = [
+"host:server" = [
   "check:age-key",
   "check:ssh-key",
 ]
@@ -154,6 +210,16 @@ grants = [
   "host-*",
 ]
 
+[service.domain-km1]
+grants = [
+  "host-*",
+]
+
+[service."domain-kompismoln.se"]
+grants = [
+  "host-*",
+]
+
 [service.locksmith]
 grants = [
   "host-*",
@@ -161,12 +227,12 @@ grants = [
 
 [service.egress-proxy]
 grants = [
-  "host:webserver",
+  "host:server",
 ]
 
 [service.reverse-tunnel]
 grants = [
-  "host:webserver",
+  "host:server",
 ]
 
 [service.nix-build]
@@ -194,21 +260,9 @@ grants = [
   "host-*",
 ]
 
-[service.chatddx-django]
-grants = [
-  "host-helsinki",
-  "host-stationary",
-]
-
 [service.dmarc-reports]
 grants = [
   "host:mailserver",
-]
-
-[service.nextcloud-kompismoln]
-grants = [
-  "host-helsinki",
-  "host-stationary",
 ]
 
 [service.glesys-api]
@@ -224,9 +278,12 @@ id = 1
 roles = [
   "nixos",
   "peer",
-  "webserver",
+  "server",
+  "comfy-root",
+  "app-scheduler",
 ]
 endpoint = "stationary.kompismoln.se"
+dnsFor = "wg1"
 subnets = [
   "wg0",
   "wg1",
@@ -270,6 +327,7 @@ roles = [
   "disko-server",
 ]
 endpoint = "helsinki.kompismoln.se"
+dnsFor = "wg0"
 subnets = [
   "wg0",
   "wg1",
@@ -468,15 +526,22 @@ white-400 = "#DCD7BA"
 white-500 = "#C8C093"
 
 [ids]
-esse = { uid = 607, port = 2607 }
-esse-redis = { uid = 608, port = 2608 }
-alex = { uid = 1001 }
-johanna = { uid = 1102 }
-ludvig = { uid = 1103 }
-ami = { uid = 1104 }
-klimatkalendern = { uid = 700, port = 2700 }
-klimatkalendern-dev = { uid = 701, port = 2701 }
-nextcloud-kompismoln = { uid = 702, port = 2702 }
-chatddx-redis = { uid = 610, port = 2610 }
-chatddx-svelte = { uid = 611, port = 2611 }
-chatddx-django = { uid = 609, port = 2609 }
+alex = 1001
+johanna = 1102
+ami = 1104
+esse = 3000
+esse-redis = 3001
+esse-dev = 3002
+esse-dev-redis = 3003
+klimatkalendern = 3004
+klimatkalendern-dev = 3005
+nextcloud-kompismoln = 3006
+nextcloud-kompismoln-dev = 3007
+chatddx-redis = 3008
+chatddx-svelte = 3009
+chatddx-django = 3010
+chatddx-dev-redis = 3011
+chatddx-dev-svelte = 3012
+chatddx-dev-django = 3013
+collabora = 3014
+collabora-dev = 3015

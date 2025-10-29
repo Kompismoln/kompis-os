@@ -20,7 +20,7 @@ in
     };
 
     networking.firewall.allowedTCPPorts = [
-      lib'.ids.reverse-tunnel.port
+      (lib'.ports "reverse-tunnel")
     ];
 
     services.openssh = {

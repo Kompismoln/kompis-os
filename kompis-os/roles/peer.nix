@@ -1,4 +1,5 @@
 # kompis-os/roles/peer.nix
+{ inputs, ... }:
 {
   flake.nixosModules.peer = {
     imports = [
@@ -17,7 +18,7 @@
         class = "user";
         groups = [ "wheel" ];
       };
-      tls-certs = [ "km" ];
+      tls-certs = inputs.org.namespaces;
       locksmith.enable = true;
       sops.enable = true;
       ssh.enable = true;

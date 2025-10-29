@@ -29,6 +29,7 @@ lib: inputs: rec {
     in
     "${inputs.self}/${path}";
 
+  ports = entity: ids.${entity} + 10000;
   secrets =
     class: entity:
     let
@@ -55,6 +56,13 @@ lib: inputs: rec {
     in
     "${inputs.self}/${path}";
 
+  app-config =
+    app:
+    let
+      path = builtins.replaceStrings [ "$app" ] [ app ] inputs.org.app-config;
+    in
+    "${inputs.self}/${path}";
+
   home-args =
     user: host:
     let
@@ -68,4 +76,58 @@ lib: inputs: rec {
       username = user;
       configPath = home-config "${user}@${host}";
     };
+
+  homes = lib.concatMapAttrs (
+    host: hostCfg:
+    lib.mapAttrs' (username: homeCfg: {
+      name = "${username}@${host}";
+      value = home-args username host;
+    }) (hostCfg.home or { })
+  ) inputs.org.host;
+
+  mkAppOpts =
+    host: appType: submodule:
+    { name, ... }@args:
+    let
+      options = {
+        enable = lib.mkEnableOption appType;
+        endpoint = lib.mkOption {
+          description = "canonical domain name";
+          type = lib.types.str;
+        };
+        location = lib.mkOption {
+          description = "canonical path";
+          default = "/";
+          type = lib.types.str;
+        };
+        ssl = lib.mkOption {
+          description = "force https";
+          default = true;
+          type = lib.types.bool;
+        };
+        port = lib.mkOption {
+          description = "allocated port";
+          default = ids.${name} + 10000;
+          type = lib.types.port;
+        };
+        uid = lib.mkOption {
+          description = "user and group id";
+          type = lib.types.int;
+          default = ids.${name};
+        };
+        package = lib.mkOption {
+          description = "${appType}'s package(s)";
+          default = inputs.${name}.packages.${host.system}.default;
+          type = with lib.types; either package (attrsOf package);
+        };
+        entity = lib.mkOption {
+          description = "belongs to this entity";
+          default = name;
+          type = lib.types.str;
+        };
+      };
+    in
+    lib.recursiveUpdate { inherit options; } (
+      if lib.isFunction submodule then submodule args else submodule
+    );
 }

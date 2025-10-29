@@ -57,6 +57,7 @@ setup() {
     -h | --host) class="host" ;;
     -u | --user) class="user" ;;
     -s | --service) class="service" ;;
+    -a | --app) class="app" ;;
     -H | --help)
         less "$km_root/share/doc/id-entities-usage.txt"
         exit 0
@@ -209,12 +210,12 @@ verify:host:ssh-key:() {
 }
 
 verify:service:tls-cert:() {
-    with get-artifact: secret_file
+    with get-artifact: secret_file domain
 
     try openssl x509 -in "$get_artifact_" -checkend 2592000 | log info
 
     openssl x509 -in "$get_artifact_" -noout -ext subjectAltName |
-        try grep -q "DNS:$entity"
+        try grep -qE "DNS:(\*\.)?$domain"
 
     openssl pkey -in "$secret_file" -pubout |
         try diff - <(openssl x509 -in "$get_artifact_" -pubkey -noout)
@@ -421,9 +422,10 @@ derive-artifact:nix-sign:() {
 }
 
 derive-artifact:tls-cert:() {
+    with domain
     run cat-secret | try openssl req -new -x509 -key /dev/stdin \
-        -subj "/CN=*.$entity" \
-        -addext "subjectAltName=DNS:*.$entity,DNS:$entity" \
+        -subj "/CN=$domain" \
+        -addext "subjectAltName=DNS:*.$domain,DNS:$domain" \
         -nodes -out - -days 3650
 }
 
@@ -600,6 +602,7 @@ declare -g \
     backend_enabled \
     backend_file \
     backend_path \
+    domain \
     exact_key \
     get_artifact_ \
     fqdn \
@@ -659,6 +662,15 @@ backend_path() {
     with repo_root
     echo -n "$repo_root/"
     CONTEXT="$class:$entity:$key" org-toml.sh "secrets"
+}
+
+domain() {
+    case "$entity" in
+    domain-*)
+        echo "${entity#domain-}"
+        ;;
+    *) die 1 "tls-cert can only be given to domains" ;;
+    esac
 }
 
 exact_key() {

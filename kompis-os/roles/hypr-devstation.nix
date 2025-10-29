@@ -50,6 +50,7 @@
         networkmanager.enable = true;
         shell.enable = true;
         sound.enable = true;
+        tls-certs = inputs.org.namespaces;
       };
 
       nixpkgs.overlays = [

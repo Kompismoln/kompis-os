@@ -70,7 +70,7 @@ in
 
                 port = lib.mkOption {
                   type = lib.types.port;
-                  default = lib'.ids.${redisName name}.port;
+                  default = lib'.ports (redisName name);
                   description = ''
                     The TCP port to accept connections.
                     If port 0 is specified Redis will not listen on a TCP socket.
@@ -350,7 +350,7 @@ in
       name: conf:
       lib.nameValuePair (redisName name) {
         description = "System user for the redis-server instance ${name}";
-        inherit (lib'.ids.${redisName name}) uid;
+        uid = lib'.ids.${redisName name};
         isSystemUser = true;
         group = redisName name;
       }
@@ -358,7 +358,7 @@ in
     users.groups = lib.mapAttrs' (
       name: conf:
       lib.nameValuePair (redisName name) {
-        gid = lib'.ids.${redisName name}.uid;
+        gid = lib'.ids.${redisName name};
       }
     ) enabledServers;
 

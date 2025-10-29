@@ -6,22 +6,10 @@
   kompis-os = {
     sysadm.rescueMode = true;
 
-    dns-hints = {
-      enable = true;
-      subnet = "wg1";
-    };
-
     glesys.updaterecord = {
       enable = true;
       recordid = "3754970";
       device = "enp3s0";
-    };
-
-    mobilizon.sites."klimatkalendern-dev" = {
-      enable = true;
-      www = "no";
-      hostname = "klimatkalendern-dev.kompismoln.se";
-      appname = "klimatkalendern-dev";
     };
   };
 

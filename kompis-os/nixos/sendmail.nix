@@ -8,28 +8,17 @@
 }:
 
 let
-  cfg = config.kompis-os.sendmail;
-  eachUser = lib.filterAttrs (user: cfg: cfg.enable) cfg;
-
-  userOpts = {
-    options = {
-      enable = lib.mkEnableOption "sendmail." // {
-        default = true;
-      };
-    };
-  };
+  eachUser = lib.filterAttrs (
+    user: userCfg: userCfg.isNormalUser && org.user.${user} ? mail
+  ) config.users.users;
 in
 {
-  options.kompis-os.sendmail = lib.mkOption {
-    description = "Set of users to be configured with sendmail.";
-    type = with lib.types; attrsOf (submodule userOpts);
-    default = { };
-  };
+  options.kompis-os.sendmail = lib.mkEnableOption "sendmail";
 
   config = lib.mkIf (eachUser != { }) {
 
     sops.secrets = lib.mapAttrs' (
-      user: cfg:
+      user: userCfg:
       (lib.nameValuePair "${user}/mail" {
         sopsFile = lib'.secrets "user" user;
         owner = user;
@@ -39,13 +28,18 @@ in
 
     programs.msmtp = {
       enable = true;
-      defaults = {
+
+      accounts = {
+        default = {
+          user = "someone";
+          from = "someone";
+          host = org.mailserver.int;
+        };
+      }
+      // lib.mapAttrs (user: userCfg: {
         port = 587;
-        host = org.mailserver.int;
         tls = true;
         logfile = "~/.msmtp.log";
-      };
-      accounts = lib.mapAttrs (user: cfg: {
         host = org.mailserver.ext;
         auth = true;
         user = "${user}@${org.domain}";

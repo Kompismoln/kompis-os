@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tools/bin/org-toml.sh
+# kompis-os/tools/bin/org-toml.sh
 # shellcheck disable=SC2016
 # - Yes, we know expressions wont expand in single quotes.
 
@@ -112,12 +112,12 @@ expand-entity-group:() {
         IFS='-' read -r _class _ <<<"$1"
         ids-by-class: "$_class"
         ;;
-    *-*)
-        echo "$1"
-        ;;
     *:*)
         IFS=':' read -r _class entity_group <<<"$1"
         ids-by-roles: "$_class" "$entity_group"
+        ;;
+    *-*)
+        echo "$1"
         ;;
     *)
         die 1 "bad argument '$1'"

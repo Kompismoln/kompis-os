@@ -1,5 +1,5 @@
 #!/usr/bin/env bats
-# tools/tests/org-toml.bats
+# tests/org-toml.bats
 
 set -eu
 

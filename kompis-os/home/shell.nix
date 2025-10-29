@@ -33,6 +33,7 @@ in
       nethogs
       nmap
       openssl
+      osc
       ranger
       rdfind
       ripgrep
@@ -122,16 +123,21 @@ in
         escapeTime = 10;
         baseIndex = 1;
         extraConfig = with colors; ''
-          set -g update-environment "SSH_AUTH_SOCK"
-          set-option -ga terminal-features ',foot:RGB'
-          set-option -g status-right "#{user}@#{host}"
-          set -ga terminal-overrides ",256col:Tc"
-          set -ga update-environment TERM
-          set -ga update-environment TERM_PROGRAM
           set -g allow-passthrough on
+          set -g set-clipboard on
+
           set -g status-bg "${bg-400}"
           set -g status-fg "${fg-500}"
-          bind -T copy-mode-vi y send -X copy-pipe-and-cancel 'wl-copy'
+          set -g status-right "#{user}@#{host}"
+
+          set -ga terminal-overrides ",256col:Tc"
+          set -ga terminal-features ',foot:RGB'
+
+          set -ga update-environment TERM
+          set -ga update-environment TERM_PROGRAM
+          set -ga update-environment SSH_AUTH_SOCK
+
+          bind -T copy-mode-vi y send -X copy-pipe-and-cancel '${pkgs.osc}/bin/osc copy'
         '';
       };
 

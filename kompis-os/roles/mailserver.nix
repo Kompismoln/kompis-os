@@ -17,7 +17,7 @@
 
         domains = lib.mapAttrs (_: siteCfg: {
           mailbox = siteCfg.mailbox;
-        }) org.site;
+        }) org.dns;
       };
     };
 }

@@ -22,6 +22,7 @@ in
     programs.foot = {
       enable = true;
       settings = {
+        security.osc52 = "copy-enabled";
         main.font = "${fonts.monospace.name}:size=11";
         main.dpi-aware = "no";
         mouse.hide-when-typing = "yes";

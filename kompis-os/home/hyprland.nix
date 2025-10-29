@@ -202,7 +202,7 @@ in
         ];
         exec-once =
           let
-            uid = lib'.ids.${config.home.username}.uid;
+            uid = lib'.ids.${config.home.username};
             start-waybar = pkgs.writeShellScriptBin "start-waybar" ''
               while [ ! -S "/run/user/${toString uid}/hypr/''${HYPRLAND_INSTANCE_SIGNATURE}/.socket.sock" ]; do
                 sleep 0.1

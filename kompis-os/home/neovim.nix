@@ -167,13 +167,19 @@ in
         web-devicons.enable = true;
         leap.enable = true;
         sleuth.enable = true;
-        oil.enable = true;
         nix.enable = true;
         colorizer.enable = true;
         fugitive.enable = true;
         gitignore.enable = false;
         direnv.enable = true;
         nvim-tree.enable = true;
+
+        oil = {
+          enable = true;
+          settings = {
+            skip_confirm_for_simple_edits = true;
+          };
+        };
 
         conform-nvim = {
           enable = true;

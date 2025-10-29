@@ -31,6 +31,7 @@ let
           type = lib.types.enum [
             "user"
             "service"
+            "app"
             "system"
           ];
         };
@@ -86,7 +87,7 @@ in
       {
         inherit isNormalUser;
         description = userCfg.description;
-        uid = lib'.ids.${user}.uid;
+        uid = lib'.ids.${user};
         isSystemUser = !isNormalUser;
         shell = lib.mkIf (!isNormalUser && userCfg.shell) pkgs.bash;
         home = lib.mkIf (!isNormalUser && userCfg.home) "/var/lib/${user}";
@@ -98,7 +99,7 @@ in
     ) eachUser;
 
     users.groups = lib.mapAttrs (user: userCfg: {
-      gid = lib'.ids.${user}.uid;
+      gid = lib'.ids.${user};
       members = [ user ] ++ userCfg.members;
     }) eachUser;
   };

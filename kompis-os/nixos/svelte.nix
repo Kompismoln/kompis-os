@@ -1,3 +1,4 @@
+# kompis-os/nixos/svelte.nix
 {
   config,
   host,
@@ -10,106 +11,77 @@
 
 let
   cfg = config.kompis-os.svelte;
-  eachSite = lib.filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
+  eachApp = lib.filterAttrs (endpoint: cfg: cfg.enable) cfg.apps;
 
-  siteOpts =
-    { name, config, ... }:
+  appOpts = lib'.mkAppOpts host "svelte" (
+    { config, ... }:
     {
       options = {
-        enable = lib.mkEnableOption "svelte-app for this host.";
-        location = lib.mkOption {
-          description = "URL path to serve the application.";
-          default = "/";
-          type = lib.types.str;
-        };
-        port = lib.mkOption {
-          description = "Port to serve the application.";
-          default = lib'.ids."${config.appname}-svelte".port;
-          type = lib.types.port;
-        };
-        ssl = lib.mkOption {
-          description = "Whether the svelte-app can assume https or not.";
-          default = true;
-          type = lib.types.bool;
-        };
         api = lib.mkOption {
-          description = "URL for the API endpoint";
+          description = "API root";
           type = lib.types.str;
+          default = "${if config.ssl then "https" else "http"}://${config.endpoint}";
         };
         api_ssr = lib.mkOption {
           description = "Server side URL for the API endpoint";
           type = lib.types.str;
         };
-        appname = lib.mkOption {
-          description = "Internal namespace";
-          default = name;
-          type = lib.types.str;
-        };
-        hostname = lib.mkOption {
-          description = "Network namespace";
-          type = lib.types.str;
-        };
       };
-    };
+    }
+  );
 
   sveltePkgs =
-    appname:
-    inputs.${appname}.packages.${host.system}.svelte-app.overrideAttrs {
-      env = envs.${appname};
+    app: appCfg:
+    appCfg.package.svelte-app.overrideAttrs {
+      env = envs.${app};
     };
 
-  envs = lib.mapAttrs (name: cfg: {
-    ORIGIN = "${if cfg.ssl then "https" else "http"}://${cfg.hostname}";
-    PUBLIC_API = cfg.api;
-    PUBLIC_API_SSR = cfg.api_ssr;
-    PORT = toString cfg.port;
-  }) eachSite;
+  envs = lib.mapAttrs (app: appCfg: {
+    ORIGIN = "${if appCfg.ssl then "https" else "http"}://${appCfg.endpoint}";
+    PUBLIC_API = appCfg.api;
+    PUBLIC_API_SSR = appCfg.api_ssr;
+    PORT = toString appCfg.port;
+  }) eachApp;
 in
 {
 
   options = {
     kompis-os.svelte = {
-      sites = lib.mkOption {
-        type = with lib.types; attrsOf (submodule siteOpts);
+      apps = lib.mkOption {
+        type = with lib.types; attrsOf (submodule appOpts);
         default = { };
-        description = "Specification of one or more Svelte sites to serve";
+        description = "Specification of one or more Svelte apps to serve";
       };
     };
   };
 
-  config = lib.mkIf (eachSite != { }) {
-    kompis-os.users = lib.mapAttrs' (
-      name: cfg:
-      lib.nameValuePair "${cfg.appname}-svelte" {
-        class = "service";
-        publicKey = false;
-      }
-    ) eachSite;
+  config = lib.mkIf (eachApp != { }) {
+    kompis-os.users = lib.mapAttrs (app: appCfg: {
+      class = "app";
+      publicKey = false;
+    }) eachApp;
 
     services.nginx.virtualHosts = lib.mapAttrs' (
-      name: cfg:
-      lib.nameValuePair cfg.hostname {
-        forceSSL = cfg.ssl;
-        enableACME = cfg.ssl;
-        locations."${cfg.location}" = {
+      app: appCfg:
+      lib.nameValuePair appCfg.endpoint {
+        forceSSL = appCfg.ssl;
+        enableACME = appCfg.ssl;
+        locations."${appCfg.location}" = {
           recommendedProxySettings = true;
-          proxyPass = "http://127.0.0.1:${toString cfg.port}";
+          proxyPass = "http://127.0.0.1:${toString appCfg.port}";
         };
       }
-    ) eachSite;
+    ) eachApp;
 
-    systemd.services = lib.mapAttrs' (
-      name: cfg:
-      (lib.nameValuePair "${cfg.appname}-svelte" {
-        description = "serve ${cfg.appname}-svelte";
-        serviceConfig = {
-          ExecStart = "${pkgs.nodejs_20}/bin/node ${sveltePkgs cfg.appname}/build";
-          Environment = lib'.envToList envs.${cfg.appname};
-          User = "${cfg.appname}-svelte";
-          Group = "${cfg.appname}-svelte";
-        };
-        wantedBy = [ "multi-user.target" ];
-      })
-    ) eachSite;
+    systemd.services = lib.mapAttrs (app: appCfg: {
+      description = "serve ${app}";
+      serviceConfig = {
+        ExecStart = "${pkgs.nodejs_20}/bin/node ${sveltePkgs app appCfg}/build";
+        Environment = lib'.envToList envs.${app};
+        User = app;
+        Group = app;
+      };
+      wantedBy = [ "multi-user.target" ];
+    }) eachApp;
   };
 }
