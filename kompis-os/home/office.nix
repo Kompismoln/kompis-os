@@ -1,3 +1,4 @@
+# kompis-os/home/office.nix
 {
   config,
   lib,

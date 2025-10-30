@@ -38,12 +38,9 @@
     };
   };
 
-  powerManagement = {
-    cpuFreqGovernor = "ondemand";
-    powertop.enable = true;
-  };
-
-  boot.extraModprobeConfig = ''
-    options snd_hda_intel power_save=0
-  '';
+  boot.kernelParams = [
+    "snd_hda_intel.power_save=0"
+    "intel_pstate=active"
+    "intel_idle.max_cstate=1"
+  ];
 }
