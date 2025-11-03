@@ -16,6 +16,7 @@ pkgs: with pkgs; rec {
     fzf
     git
     jq
+    restic
     ripgrep
     tree
   ];
