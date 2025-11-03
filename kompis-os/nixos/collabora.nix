@@ -85,8 +85,8 @@ in
         };
       };
 
-    users.users.cool.uid = lib'.ids.${cfg.app};
-    users.groups.cool.gid = lib'.ids.${cfg.app};
+    users.users.cool.uid = lib'.ids.${cfg.user};
+    users.groups.cool.gid = lib'.ids.${cfg.user};
 
     services.collabora-online = {
       enable = true;

@@ -3,186 +3,115 @@
   lib,
   lib',
   pkgs,
-  inputs,
   host,
   ...
 }:
 
 let
-  inherit (lib)
-    filterAttrs
-    mapAttrs
-    mapAttrsToList
-    mapAttrs'
-    mkDefault
-    mkEnableOption
-    mkIf
-    mkOption
-    nameValuePair
-    types
-    ;
-
   cfg = config.kompis-os.nextcloud-rolf;
-  eachSite = filterAttrs (name: cfg: cfg.enable) cfg.sites;
+  eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
 
-  serverName = cfg: if cfg.www == "yes" then "www.${cfg.hostname}" else cfg.hostname;
-  serverNameRedirect = cfg: if cfg.www == "yes" then cfg.hostname else "www.${cfg.hostname}";
-
-  siteOpts =
-    { name, ... }:
-    {
-      config.appname = mkDefault name;
-      config.username = mkDefault config.appname;
-      options = {
-        enable = mkEnableOption "nextcloud-rolf on this host.";
-        ssl = mkOption {
-          description = "Enable HTTPS";
-          default = true;
-          type = types.bool;
-        };
-        subnet = mkOption {
-          description = "Use self-signed certificates";
-          default = false;
-          type = types.bool;
-        };
-        hostname = mkOption {
-          description = "Namespace identifying the service externally on the network.";
-          type = types.str;
-        };
-        appname = mkOption {
-          description = "Namespace identifying the app on the system (logging, database, paths etc.)";
-          type = types.str;
-        };
-        username = mkOption {
-          description = "Owner of the app";
-          type = types.str;
-        };
-        siteRoot = mkOption {
-          description = "Path to serve";
-          type = types.str;
-        };
-        sourceRoot = mkOption {
-          description = "Where build files are gathered at runtime";
-          type = types.str;
-        };
-        www = mkOption {
-          description = "Prefix the url with www.";
-          default = "no";
-          type = types.enum [
-            "no"
-            "yes"
-            "redirect"
-          ];
-        };
+  appOpts = lib'.mkAppOpts host "nextcloud-rolf" {
+    options = {
+      siteRoot = lib.mkOption {
+        description = "Path to serve";
+        type = lib.types.str;
+      };
+      sourceRoot = lib.mkOption {
+        description = "Where build files are gathered at runtime";
+        type = lib.types.str;
       };
     };
+  };
 in
 {
   options = {
     kompis-os.nextcloud-rolf = {
-      sites = mkOption {
-        type = types.attrsOf (types.submodule siteOpts);
+      apps = lib.mkOption {
+        type = with lib.types; attrsOf (submodule appOpts);
         default = { };
-        description = "Specification of one or more nextcloud-rolf sites to serve";
+        description = "nextcloud-rolf apps to serve";
       };
     };
   };
 
   config =
     let
-      sync-commands = mapAttrs (
-        name: cfg:
-        pkgs.runCommand cfg.appname
+      sync-commands = lib.mapAttrs (
+        app: appCfg:
+        pkgs.runCommand app
           {
-            src = inputs.${cfg.appname}.packages.${host.system}.default;
+            src = appCfg.package;
             nativeBuildInputs = with pkgs; [ makeWrapper ];
           }
           ''
             mkdir -p $out/bin
 
             makeWrapper \
-              $src/bin/${cfg.appname} \
-              $out/bin/${cfg.appname} \
-                --append-flags ${cfg.sourceRoot} \
-                --append-flags ${cfg.sourceRoot}/_src \
-                --append-flags ${cfg.siteRoot} \
+              $src/bin/rolf \
+              $out/bin/${app} \
+                --append-flags ${appCfg.sourceRoot} \
+                --append-flags ${appCfg.sourceRoot}/_src \
+                --append-flags ${appCfg.siteRoot} \
                 --append-flags --watch
           ''
-      ) eachSite;
+      ) eachApp;
     in
-    mkIf (eachSite != { }) {
+    lib.mkIf (eachApp != { }) {
 
-      environment.systemPackages = mapAttrsToList (name: pkg: pkg) sync-commands;
+      environment.systemPackages = lib.mapAttrsToList (app: pkg: pkg) sync-commands;
 
-      security.acme.certs = lib.mapAttrs' (name: cfg: {
-        name = serverName cfg;
-        value = mkIf (cfg.ssl && !cfg.subnet) {
-          extraDomainNames = [ (serverNameRedirect cfg) ];
-        };
-      }) eachSite;
+      services.nginx.virtualHosts = lib.mapAttrs' (
+        app: appCfg:
+        lib.nameValuePair appCfg.endpoint {
+          forceSSL = appCfg.ssl;
+          enableACME = appCfg.ssl;
 
-      services.nginx.virtualHosts = lib'.mergeAttrs (name: cfg: {
-        ${serverNameRedirect cfg} = {
-          forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."domain-km/tls-cert".path;
-          useACMEHost = mkIf (cfg.ssl && !cfg.subnet) (serverName cfg);
-          extraConfig = ''
-            return 301 $scheme://${serverName cfg}$request_uri;
-          '';
-        };
-
-        ${serverName cfg} = {
-          forceSSL = cfg.ssl;
-          sslCertificate = mkIf cfg.subnet lib'.public-artifacts "service" "domain-km" "tls-cert";
-          sslCertificateKey = mkIf cfg.subnet config.sops.secrets."domain-km/tls-cert".path;
-          enableACME = cfg.ssl && !cfg.subnet;
-
-          root = cfg.siteRoot;
+          root = appCfg.siteRoot;
           locations."/" = {
             index = "index.html";
             tryFiles = "$uri $uri/ /404.html";
           };
-        };
-      }) eachSite;
+        }
+      ) eachApp;
 
-      systemd.timers = mapAttrs' (
-        name: cfg:
-        nameValuePair "${cfg.appname}-build" {
+      systemd.timers = lib.mapAttrs' (
+        app: appCfg:
+        lib.nameValuePair "${app}-build" {
           description = "Scheduled building of todays articles";
           wantedBy = [ "timers.target" ];
           timerConfig = {
             OnCalendar = "01:00";
-            Unit = "${cfg.appname}-build.service";
+            Unit = "${app}-build.service";
           };
         }
-      ) eachSite;
+      ) eachApp;
 
-      systemd.services = lib'.mergeAttrs (name: cfg: {
-        "${cfg.appname}-build" = {
-          description = "run ${cfg.appname}-build";
+      systemd.services = lib'.mergeAttrs (app: appCfg: {
+        "${app}-build" = {
+          description = "run ${app}-build";
           serviceConfig = {
             Type = "oneshot";
             ExecStart =
               let
-                inherit (inputs.${cfg.appname}.packages.${host.system}) gems;
+                inherit (appCfg.packages) gems;
               in
-              "${gems}/bin/jekyll build -s ${cfg.sourceRoot}/_src -d ${cfg.siteRoot} --disable-disk-cache";
-            WorkingDirectory = "${cfg.sourceRoot}/_src";
-            User = cfg.username;
-            Group = cfg.username;
+              "${gems}/bin/jekyll build -s ${appCfg.sourceRoot}/_src -d ${appCfg.siteRoot} --disable-disk-cache";
+            WorkingDirectory = "${appCfg.sourceRoot}/_src";
+            User = appCfg.user;
+            Group = appCfg.user;
           };
         };
-        ${cfg.appname} = {
-          description = "run ${cfg.appname}";
+        ${app} = {
+          description = "run ${app}";
           serviceConfig = {
-            ExecStart = "${sync-commands.${cfg.appname}}/bin/${cfg.appname}";
-            WorkingDirectory = cfg.sourceRoot;
-            User = cfg.username;
-            Group = cfg.username;
+            ExecStart = "${sync-commands.${app}}/bin/${app}";
+            WorkingDirectory = appCfg.sourceRoot;
+            User = appCfg.user;
+            Group = appCfg.user;
           };
           wantedBy = [ "multi-user.target" ];
         };
-      }) eachSite;
+      }) eachApp;
     };
 }

@@ -1,10 +1,13 @@
 { org, ... }:
+let
+  name = "sverigesval";
+  cfg = org.app.${name};
+in
 {
-  nextcloud-rolf.sites."sverigesval-sync" = {
+  nextcloud-rolf.apps.${name} = {
     enable = true;
-    hostname = org.app.sverigesval.endpoint;
+    endpoint = cfg.endpoint;
     username = "nextcloud-kompismoln";
-    www = "redirect";
     siteRoot = "/var/lib/nextcloud-kompismoln/nextcloud/data/rolf/files/+pub/_site";
     sourceRoot = "/var/lib/nextcloud-kompismoln/nextcloud/data/rolf/files/+pub";
   };

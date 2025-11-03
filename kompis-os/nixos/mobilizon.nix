@@ -12,7 +12,6 @@ let
   settingsFormat = appCfg: pkgs.formats.elixirConf { elixir = appCfg.package.elixirPackage; };
 
   eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
-  stateDir = app: "/var/lib/${app}/mobilizon";
   hostConfig = config;
 in
 {
@@ -21,71 +20,28 @@ in
       apps = lib.mkOption {
         type = lib.types.attrsOf (lib.types.submodule (lib'.mkAppOpts host "mobilizon" { }));
         default = { };
-        description = "Specification of one or more mobilizon apps to serve";
+        description = "mobilizon apps to serve";
       };
     };
   };
 
   config = lib.mkIf (eachApp != { }) {
+    kompis-os.org.apps = config.kompis-os.mobilizon.apps;
 
-    kompis-os.preserve.directories = lib.mapAttrsToList (app: appCfg: {
-      directory = stateDir app;
-      user = app;
-      group = app;
-    }) eachApp;
-
-    kompis-os.users = lib.mapAttrs' (
-      app: appCfg:
-      lib.nameValuePair app {
-        class = "app";
-        publicKey = false;
-      }
+    kompis-os.paths = lib.mapAttrs' (
+      _: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }
     ) eachApp;
 
-    systemd.tmpfiles.rules = lib.flatten (
-      lib.mapAttrsToList (app: appCfg: [
-        "d '${stateDir app}' 0750 ${app} ${app} - -"
-        "Z '${stateDir app}' 0750 ${app} ${app} - -"
-      ]) eachApp
-    );
-
-    systemd.services = lib'.mergeAttrs (app: appCfg: {
-      "${app}-pgsql-dump" = {
-        description = "dump a snapshot of the postgresql database";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-dump}/bin/pgsql-dump ${app} ${stateDir app}";
-          User = app;
-          Group = app;
-        };
-      };
-
-      "${app}-pgsql-restore" = {
-        description = "restore postgresql database from snapshot";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-restore}/bin/pgsql-restore ${app} ${stateDir app}";
-          User = app;
-          Group = app;
-        };
-      };
-    }) eachApp;
-
-    systemd.timers = lib'.mergeAttrs (app: appCfg: {
-      "${app}-pgsql-dump" = {
-        description = "scheduled database dump";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "daily";
-          Unit = "${app}-pgsql-dump.service";
-        };
-      };
+    kompis-os.preserve.directories = lib.mapAttrsToList (app: appCfg: {
+      directory = appCfg.home;
+      user = appCfg.user;
+      group = appCfg.user;
     }) eachApp;
 
     services.nginx.virtualHosts = lib.mapAttrs' (
       app: appCfg:
       let
-        proxyPass = "http://127.0.0.1:${toString appCfg.port}";
+        proxyPass = "http://127.0.0.1:${toString (lib'.ports app)}";
       in
       lib.nameValuePair appCfg.endpoint {
         forceSSL = appCfg.ssl;
@@ -102,7 +58,7 @@ in
           };
         };
         locations."~ ^/(assets|img)" = {
-          root = "${appCfg.package}/lib/mobilizon-${appCfg.package.version}/priv/static";
+          root = "${appCfg.package}/lib/mobilizon-${(appCfg.package).version}/priv/static";
           extraConfig = ''
             access_log off;
             add_header Cache-Control "public, max-age=31536000, s-maxage=31536000, immutable";
@@ -129,7 +85,7 @@ in
         bindMounts = {
           "/var/lib/mobilizon" = {
             isReadOnly = false;
-            hostPath = stateDir app;
+            hostPath = appCfg.home;
           };
         };
 
@@ -137,10 +93,10 @@ in
           system.stateVersion = hostConfig.system.stateVersion;
           users = {
             users.mobilizon = {
-              uid = appCfg.uid;
+              uid = lib'.ids.${app};
               group = "mobilizon";
             };
-            groups.mobilizon.gid = appCfg.uid;
+            groups.mobilizon.gid = lib'.ids.${app};
           };
           services.mobilizon = {
             enable = true;
@@ -148,7 +104,7 @@ in
             nginx.enable = false;
             settings.":mobilizon" = {
               "Mobilizon.Web.Endpoint".http = {
-                port = lib.mkForce appCfg.port;
+                port = lib'.ports app;
                 ip = (settingsFormat appCfg).lib.mkTuple [
                   0
                   0

@@ -1,5 +1,10 @@
 # kompis-os/apps/klimatkalendern-dev.nix
-{ org, pkgs, ... }:
+{
+  config,
+  org,
+  pkgs,
+  ...
+}:
 let
   name = "klimatkalendern-dev";
   cfg = org.app.${name};
@@ -13,7 +18,15 @@ in
 
   kompis-os = {
     nginx.enable = true;
-    postgresql.enable = true;
+    postgresql.databases.${name} = {
+      enable = true;
+      dumpPath = "${config.users.users.${name}.home}/dbdump.sql";
+    };
+
+    users.${name} = {
+      class = "app";
+    };
+
     mobilizon.apps.${name} = {
       enable = true;
       inherit (cfg) endpoint;

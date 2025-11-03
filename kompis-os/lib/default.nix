@@ -77,6 +77,8 @@ lib: inputs: rec {
       configPath = home-config "${user}@${host}";
     };
 
+  package-sets = import ../packages/sets.nix;
+
   homes = lib.concatMapAttrs (
     host: hostCfg:
     lib.mapAttrs' (username: homeCfg: {
@@ -87,7 +89,7 @@ lib: inputs: rec {
 
   mkAppOpts =
     host: appType: submodule:
-    { name, ... }@args:
+    { name, config, ... }@args:
     let
       options = {
         enable = lib.mkEnableOption appType;
@@ -100,30 +102,45 @@ lib: inputs: rec {
           default = "/";
           type = lib.types.str;
         };
+        entity = lib.mkOption {
+          description = "entity name";
+          default = name;
+          type = lib.types.str;
+        };
+        input = lib.mkOption {
+          description = "app flake input name";
+          default = config.entity;
+          type = lib.types.str;
+        };
+        database = lib.mkOption {
+          description = "app's database";
+          default = config.entity;
+          type = lib.types.str;
+        };
+        user = lib.mkOption {
+          description = "app's system user";
+          default = config.entity;
+          type = lib.types.str;
+        };
+        home = lib.mkOption {
+          description = "path to app's filesystem";
+          default = "/var/lib/${config.entity}/${appType}";
+          type = lib.types.str;
+        };
         ssl = lib.mkOption {
-          description = "force https";
+          description = "let's encrypt and force https";
           default = true;
           type = lib.types.bool;
         };
-        port = lib.mkOption {
-          description = "allocated port";
-          default = ids.${name} + 10000;
-          type = lib.types.port;
-        };
-        uid = lib.mkOption {
-          description = "user and group id";
-          type = lib.types.int;
-          default = ids.${name};
-        };
         package = lib.mkOption {
-          description = "${appType}'s package(s)";
-          default = inputs.${name}.packages.${host.system}.default;
-          type = with lib.types; either package (attrsOf package);
+          description = "${appType}'s default package";
+          default = inputs.${config.input}.packages.${host.system}.default;
+          type = lib.types.package;
         };
-        entity = lib.mkOption {
-          description = "belongs to this entity";
-          default = name;
-          type = lib.types.str;
+        packages = lib.mkOption {
+          description = "${appType}'s packages";
+          default = inputs.${config.input}.packages.${host.system};
+          type = with lib.types; attrsOf package;
         };
       };
     in

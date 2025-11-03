@@ -19,31 +19,7 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    home.packages = with pkgs; [
-      bat
-      bitwarden-cli
-      btrfs-progs
-      dig
-      eza
-      fd
-      ffmpeg
-      imagemagick
-      inotify-tools
-      iproute2
-      nethogs
-      nmap
-      openssl
-      osc
-      ranger
-      rdfind
-      ripgrep
-      tcpdump
-      traceroute
-      unzip
-      which
-      wireguard-tools
-      xdg-utils
-    ];
+    home.packages = (lib'.package-sets pkgs).all;
 
     programs = {
       bash = {

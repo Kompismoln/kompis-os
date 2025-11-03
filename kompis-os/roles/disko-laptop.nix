@@ -1,4 +1,4 @@
-# kompis-os/roles/disko-workstation.nix
+# kompis-os/roles/disko-laptop.nix
 {
   flake.nixosModules.disko-laptop =
     {

@@ -15,8 +15,17 @@ in
   ];
 
   kompis-os = {
+    postgresql.enable = true;
+    nginx.enable = true;
+    users.${name} = {
+      class = "app";
+      members = [
+        "nginx"
+      ];
+    };
     nextcloud.apps.${name} = {
       enable = true;
+      user = name;
       inherit (cfg) endpoint;
       collabora.endpoint = org.app.collabora-dev.endpoint;
     };

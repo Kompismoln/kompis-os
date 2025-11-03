@@ -76,8 +76,6 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
 
-      kompis-os.redis.servers.rspamd.enable = true;
-
       kompis-os.preserve.directories = with config.mailserver; [
         dkimKeyDirectory
         mailDirectory
@@ -122,7 +120,6 @@ in
         domains = lib.mapAttrsToList (domain: _: domain) mailboxDomains;
         domainsWithoutMailbox = lib.mapAttrsToList (domain: _: domain) relayDomains;
         enableSubmissionSsl = false;
-        redis.configureLocally = false;
         mailboxes = {
           Drafts = {
             auto = "subscribe";

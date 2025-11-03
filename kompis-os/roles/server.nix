@@ -16,6 +16,7 @@
         ../nixos/monitor.nix
         ../nixos/reverse-tunnel.nix
         ../nixos/sendmail.nix
+        ../nixos/shell.nix
         ../nixos/tls-certs.nix
       ];
 
@@ -29,6 +30,7 @@
           subnet = org.host.${host.name}.dnsFor;
         };
 
+        shell.enable = true;
         egress-proxy.enable = true;
         fail2ban.enable = true;
         reverse-tunnel.enable = true;

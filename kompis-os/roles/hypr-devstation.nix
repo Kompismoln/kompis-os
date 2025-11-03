@@ -52,11 +52,6 @@
         sound.enable = true;
         tls-certs = inputs.org.namespaces;
       };
-
-      nixpkgs.overlays = [
-        (import ../overlays/km-tools.nix { inherit inputs; })
-      ];
-
     };
   };
 }

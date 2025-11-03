@@ -39,8 +39,24 @@ let
           default = name;
           type = lib.types.str;
         };
-        home = lib.mkEnableOption "force home at /var/lib for system users";
-        shell = lib.mkEnableOption "force bash shell for system users";
+        home = lib.mkOption {
+          description = "force home at /var/lib for system users";
+          default = config.class == "app";
+          type = lib.types.bool;
+        };
+        preserveHome = lib.mkOption {
+          description = "preserve home on ephemeral systems";
+          default = builtins.elem config.class [
+            "app"
+            "user"
+          ];
+          type = lib.types.bool;
+        };
+        shell = lib.mkOption {
+          description = "force bash shell for system users";
+          default = false;
+          type = lib.types.bool;
+        };
         email = lib.mkOption {
           description = "user's primary email";
           default = "${name}@${org.domain}";
@@ -86,17 +102,25 @@ in
       in
       {
         inherit isNormalUser;
+        isSystemUser = !isNormalUser;
         description = userCfg.description;
         uid = lib'.ids.${user};
-        isSystemUser = !isNormalUser;
-        shell = lib.mkIf (!isNormalUser && userCfg.shell) pkgs.bash;
-        home = lib.mkIf (!isNormalUser && userCfg.home) "/var/lib/${user}";
         group = user;
         extraGroups = userCfg.groups;
+        homeMode = lib.mkIf (userCfg.class == "app") "0750";
         openssh.authorizedKeys.keyFiles = lib.mkIf userCfg.publicKey [ publicKey ];
         hashedPasswordFile = lib.mkIf userCfg.passwd passwordFile;
+        shell = lib.mkIf userCfg.shell pkgs.bash;
+        home = lib.mkIf userCfg.home "/var/lib/${user}";
+        createHome = lib.mkIf userCfg.home true;
       }
     ) eachUser;
+
+    kompis-os.preserve.directories = lib.mapAttrsToList (user: userCfg: {
+      directory = config.users.users.${user}.home;
+      user = user;
+      group = user;
+    }) (lib.filterAttrs (user: userCfg: userCfg.preserveHome) eachUser);
 
     users.groups = lib.mapAttrs (user: userCfg: {
       gid = lib'.ids.${user};

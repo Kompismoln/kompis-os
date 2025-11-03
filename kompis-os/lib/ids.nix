@@ -7,7 +7,5 @@
   nix-switch = 2003;
   nix-push = 2004;
   tls-cert = 2005;
-  rspamd-redis = 2006;
   egress-proxy = 2007;
-  test-redis = 2008;
 }

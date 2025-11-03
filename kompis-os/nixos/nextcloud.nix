@@ -9,10 +9,8 @@
 
 let
   cfg = config.kompis-os.nextcloud;
-  webserver = config.services.nginx;
 
-  eachSite = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
-  stateDir = app: "/var/lib/${app}/nextcloud";
+  eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
 
   appOpts = lib'.mkAppOpts host "nextcloud" {
     options = {
@@ -34,34 +32,26 @@ in
     };
   };
 
-  config = lib.mkIf (eachSite != { }) {
+  config = lib.mkIf (eachApp != { }) {
 
-    kompis-os.users = lib.mapAttrs (app: appCfg: {
-      class = "app";
-      publicKey = false;
-      members = [ webserver.user ];
-    }) eachSite;
-
-    kompis-os.preserve.directories = lib.mapAttrsToList (app: appCfg: {
-      directory = stateDir app;
-      user = app;
-      group = app;
-    }) eachSite;
+    kompis-os.paths = lib.mapAttrs' (
+      _: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }
+    ) eachApp;
 
     sops.secrets = lib'.mergeAttrs (app: appCfg: {
-      "${app}/secret-key" = {
-        sopsFile = lib'.secrets "app" app;
-        owner = app;
-        group = app;
+      "${appCfg.entity}/secret-key" = {
+        sopsFile = lib'.secrets "app" appCfg.entity;
+        owner = appCfg.user;
+        group = appCfg.user;
       };
-    }) eachSite;
+    }) eachApp;
 
     systemd.services = lib'.mergeAttrs (app: appCfg: {
       "${app}-pgsql-dump" = {
         description = "dump a snapshot of the postgresql database";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.postgresql}/bin/pg_dump -U ${app} ${app} > ${stateDir app}/dbdump.sql'";
+          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.postgresql}/bin/pg_dump -U ${app} ${app} > ${appCfg.home}/dbdump.sql'";
           User = app;
           Group = app;
         };
@@ -82,12 +72,12 @@ in
         requires = [ "${app}-pgsql-init.service" ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-restore}/bin/pgsql-restore ${app} ${stateDir app}";
+          ExecStart = "${pkgs.pgsql-restore}/bin/pgsql-restore ${app} ${appCfg.home}";
           User = app;
           Group = app;
         };
       };
-    }) eachSite;
+    }) eachApp;
 
     systemd.timers = lib'.mergeAttrs (app: appCfg: {
       "${app}-pgsql-dump" = {
@@ -98,7 +88,7 @@ in
           Unit = "${app}-pgsql-dump.service";
         };
       };
-    }) eachSite;
+    }) eachApp;
 
     services.nginx.virtualHosts = lib.mapAttrs' (
       app: appCfg:
@@ -111,7 +101,7 @@ in
 
         locations = {
           "/" = {
-            proxyPass = "http://127.0.0.1:${toString appCfg.port}";
+            proxyPass = "http://127.0.0.1:${toString (lib'.ports app)}";
           };
           "/.well-known/carddav" = {
             return = "301 $scheme://$host/remote.php/dav";
@@ -122,7 +112,7 @@ in
           };
         };
       }
-    ) eachSite;
+    ) eachApp;
 
     containers = lib.mapAttrs (app: appCfg: {
       autoStart = true;
@@ -130,23 +120,23 @@ in
       bindMounts = {
         ${config.services.nextcloud.home} = {
           isReadOnly = false;
-          hostPath = stateDir app;
+          hostPath = appCfg.home;
         };
         "/run/secrets/db-password" = {
           isReadOnly = true;
-          hostPath = config.sops.secrets."${app}/secret-key".path;
+          hostPath = config.sops.secrets."${appCfg.entity}/secret-key".path;
         };
         "/run/secrets/admin-password" = {
           isReadOnly = true;
-          hostPath = config.sops.secrets."${app}/secret-key".path;
+          hostPath = config.sops.secrets."${appCfg.entity}/secret-key".path;
         };
       };
 
       config = {
         system.stateVersion = config.system.stateVersion;
 
-        users.users.nextcloud.uid = appCfg.uid;
-        users.groups.nextcloud.gid = appCfg.uid;
+        users.users.nextcloud.uid = lib'.ids.${app};
+        users.groups.nextcloud.gid = lib'.ids.${app};
 
         services.nginx = {
           virtualHosts.localhost = {
@@ -158,7 +148,7 @@ in
             listen = [
               {
                 addr = "127.0.0.1";
-                port = appCfg.port;
+                port = lib'.ports app;
                 ssl = false;
               }
             ];
@@ -215,6 +205,6 @@ in
           };
         };
       };
-    }) eachSite;
+    }) eachApp;
   };
 }

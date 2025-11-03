@@ -16,10 +16,10 @@
   };
 
   config = lib.mkIf config.kompis-os.ide.enable {
+    services.redis.servers."test".enable = true;
     kompis-os = {
       postgresql.enable = true;
       mysql.enable = true;
-      redis.servers.test.enable = true;
     };
   };
 }

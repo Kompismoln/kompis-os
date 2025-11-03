@@ -29,8 +29,11 @@
     nixos-cli.url = "github:nix-community/nixos-cli";
     nixos-cli.inputs.nixpkgs.follows = "nixpkgs";
 
-    sverigesval-sync.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
-    sverigesval-sync.inputs.nixpkgs.follows = "nixpkgs";
+    sverigesval.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
+    sverigesval.inputs.nixpkgs.follows = "nixpkgs";
+
+    sverigesval-dev.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
+    sverigesval-dev.inputs.nixpkgs.follows = "nixpkgs";
 
     chatddx.url = "git+ssh://git@github.com/LigninDDX/chatddx";
     chatddx.inputs.nixpkgs.follows = "nixpkgs";

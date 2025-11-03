@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  lib',
   pkgs,
   ...
 }:
@@ -20,26 +21,24 @@
       SOPS_AGE_KEY_FILE = "/keys/user-$USER";
     };
 
+    nixpkgs.overlays = [
+      (import ../overlays/km-tools.nix { inherit inputs; })
+    ];
+
     programs.bash.promptInit = builtins.readFile ../tools/session/prompt-init.sh;
 
     programs.neovim = {
       enable = true;
       defaultEditor = true;
+      vimAlias = true;
+      viAlias = true;
+      configure = {
+        customRC = ''
+          colorscheme vim
+        '';
+      };
     };
 
-    environment.systemPackages = with pkgs; [
-      age
-      envsubst
-      git
-      jq
-      libxml2
-      ssh-to-age
-      sops
-      w3m
-      tree
-      nixos-facter
-      km-tools
-      nix-serve-ng
-    ];
+    environment.systemPackages = (lib'.package-sets pkgs).all;
   };
 }

@@ -10,6 +10,8 @@
       imports = [
         "${lib'.host-config host.name}"
         ../nixos/system.nix
+        ../nixos/paths.nix
+        ../nixos/org.nix
       ];
     };
 }

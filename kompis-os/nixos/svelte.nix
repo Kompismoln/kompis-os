@@ -2,7 +2,6 @@
 {
   config,
   host,
-  inputs,
   lib,
   lib',
   pkgs,
@@ -22,7 +21,7 @@ let
           type = lib.types.str;
           default = "${if config.ssl then "https" else "http"}://${config.endpoint}";
         };
-        api_ssr = lib.mkOption {
+        ssr = lib.mkOption {
           description = "Server side URL for the API endpoint";
           type = lib.types.str;
         };
@@ -32,15 +31,15 @@ let
 
   sveltePkgs =
     app: appCfg:
-    appCfg.package.svelte-app.overrideAttrs {
+    appCfg.packages.svelte-app.overrideAttrs {
       env = envs.${app};
     };
 
   envs = lib.mapAttrs (app: appCfg: {
     ORIGIN = "${if appCfg.ssl then "https" else "http"}://${appCfg.endpoint}";
     PUBLIC_API = appCfg.api;
-    PUBLIC_API_SSR = appCfg.api_ssr;
-    PORT = toString appCfg.port;
+    PUBLIC_API_SSR = appCfg.ssr;
+    PORT = toString (lib'.ports app);
   }) eachApp;
 in
 {
@@ -56,11 +55,6 @@ in
   };
 
   config = lib.mkIf (eachApp != { }) {
-    kompis-os.users = lib.mapAttrs (app: appCfg: {
-      class = "app";
-      publicKey = false;
-    }) eachApp;
-
     services.nginx.virtualHosts = lib.mapAttrs' (
       app: appCfg:
       lib.nameValuePair appCfg.endpoint {
@@ -68,7 +62,7 @@ in
         enableACME = appCfg.ssl;
         locations."${appCfg.location}" = {
           recommendedProxySettings = true;
-          proxyPass = "http://127.0.0.1:${toString appCfg.port}";
+          proxyPass = "http://127.0.0.1:${toString (lib'.ports app)}";
         };
       }
     ) eachApp;

@@ -2,7 +2,7 @@ colors:
 with colors;
 colors
 // rec {
-  base00 = black-900;
+  base00 = black-1000;
   base01 = red-400;
   base02 = green-400;
   base03 = yellow-400;
@@ -24,7 +24,6 @@ colors
   bg-300 = black-600;
   bg-400 = black-700;
   bg-500 = black-800;
-  bg-600 = black-900;
   bg-inv = fg-400;
 
   bg-selected = bg-inv;

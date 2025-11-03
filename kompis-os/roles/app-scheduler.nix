@@ -10,24 +10,26 @@
       ...
     }:
     let
-      apps = lib.filter (appname: lib.elem host.name org.app.${appname}.run-on-hosts) (
+      apps = lib.filter (app: lib.elem host.name org.app.${app}.run-on-hosts) (
         lib.attrNames inputs.org.app
       );
     in
     {
-      imports = map (appname: lib'.app-config appname) apps;
+      imports = [
+      ]
+      ++ map (app: lib'.app-config app) apps;
 
       config = lib.mkMerge (
         map (
-          appname:
+          app:
           let
-            app = org.app.${appname};
+            appCfg = org.app.${app};
           in
           {
-            services.nginx.virtualHosts = lib.genAttrs (app.altpoints or [ ]) (altpoint: {
+            services.nginx.virtualHosts = lib.genAttrs (appCfg.altpoints or [ ]) (altpoint: {
               forceSSL = true;
               enableACME = true;
-              locations."/".return = "301 https://${app.endpoint}$request_uri";
+              locations."/".return = "301 https://${appCfg.endpoint}$request_uri";
             });
           }
         ) apps

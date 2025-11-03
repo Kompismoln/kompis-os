@@ -15,6 +15,7 @@ in
 
   svelte.apps.${name} = {
     enable = true;
+    entity = name;
     inherit (appCfg) endpoint;
   };
 
