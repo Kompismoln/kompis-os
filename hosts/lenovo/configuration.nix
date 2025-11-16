@@ -1,4 +1,9 @@
-{ org, ... }:
+{
+  inputs,
+  host,
+  org,
+  ...
+}:
 {
   imports = [
     ../../kompis-os/nixos/sendmail.nix
@@ -18,6 +23,9 @@
     ];
   };
 
+  environment.systemPackages = [
+    inputs.disko.packages.${host.system}.default
+  ];
   swapDevices = [
     {
       device = "/swapfile";

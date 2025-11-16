@@ -1,5 +1,5 @@
 # kompis-os/roles/server.nix
-{ inputs, ... }:
+{ inputs, self, ... }:
 {
   flake.nixosModules.server =
     {
@@ -30,11 +30,13 @@
           subnet = org.host.${host.name}.dnsFor;
         };
 
+        # msmtp conflicts with postfix
+        sendmail.enable = host.name != self.org.mailserver.host;
+
         shell.enable = true;
         egress-proxy.enable = true;
         fail2ban.enable = true;
         reverse-tunnel.enable = true;
-        sendmail = true;
         tls-certs = org.namespaces;
       };
 

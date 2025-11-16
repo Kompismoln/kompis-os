@@ -66,30 +66,24 @@ reset() {
     local extra_files="$tmpdir/extra-files"
     local luks_key="$tmpdir/luks_key"
     local age_key="$extra_files/keys/host-$host"
-    local kexec
 
     install -d -m700 "$(dirname "$age_key")"
 
-    #scp -r "./result/." "root@$address:"
-
-    ./tools/id-entities.sh -h "$host" cat-secret luks-key >"$luks_key" || die 1 "no luks-key"
-    ./tools/id-entities.sh -h "$host" cat-secret age-key >"$age_key" || die 1 "no age-key"
+    id-entities.sh -h "$host" cat-secret luks-key >"$luks_key" || die 1 "no luks-key"
+    id-entities.sh -h "$host" cat-secret age-key >"$age_key" || die 1 "no age-key"
 
     chmod 600 "$age_key"
 
     log info "luks key prepared: $(cat "$luks_key")"
     log info "age key prepared: $(cat "$age_key")"
-    #kexec=$(nix build --print-out-paths .#nixosConfigurations.bootstrap.config.system.build.kexecInstallerTarball)
-    kexec=/nix/store/79hazfvf8y0v9d8q7nr5jq8z4by5gdbd-kexec-tarball
 
-    nixos-anywhere \
+    anywhere.sh \
         --flake ".#$host" \
         --target-host "root@$address" \
         --ssh-option GlobalKnownHostsFile=/dev/null \
         --disk-encryption-keys "/keys/host-$host" "$age_key" \
         --disk-encryption-keys "/luks-key" "$luks_key" \
         --generate-hardware-config nixos-facter hosts/"$host"/facter.json \
-        --kexec "$kexec/nixos-kexec-installer-x86_64-linux.tar.gz" \
         --extra-files "$extra_files" \
         --copy-host-keys
 }

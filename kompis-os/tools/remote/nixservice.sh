@@ -22,7 +22,7 @@ main() {
 
 build() {
     if [[ -n $refresh ]]; then
-        rm -r "$HOME/.cache/nix/"*
+        rm -rf "$HOME/.cache/nix/"*
     fi
     nix build "$REPO#nixosConfigurations.$host.config.system.build.toplevel" \
         --print-out-paths --no-link

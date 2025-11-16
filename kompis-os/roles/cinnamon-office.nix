@@ -19,21 +19,28 @@
     };
   };
 
-  flake.nixosModules.cinnamon-office = {
-    imports = [
-      ../nixos/cinnamon.nix
-      ../nixos/home-manager.nix
-      ../nixos/networkmanager.nix
-      ../nixos/sound.nix
-    ];
+  flake.nixosModules.cinnamon-office =
+    { lib, ... }:
+    {
+      imports = [
+        ../nixos/cinnamon.nix
+        ../nixos/home-manager.nix
+        ../nixos/networkmanager.nix
+        ../nixos/sound.nix
+      ];
 
-    config = {
-      kompis-os = {
-        cinnamon.enable = true;
-        home-manager.enable = true;
-        networkmanager.enable = true;
-        sound.enable = true;
+      config = {
+        nixpkgs.config.allowUnfreePredicate =
+          pkg:
+          builtins.elem (lib.getName pkg) [
+            "zoom"
+          ];
+        kompis-os = {
+          cinnamon.enable = true;
+          home-manager.enable = true;
+          networkmanager.enable = true;
+          sound.enable = true;
+        };
       };
     };
-  };
 }

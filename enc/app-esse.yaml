@@ -1,6 +1,7 @@
 identity: ENC[AES256_GCM,data:QkcJmRdN3J0=,iv:P1reDK1nrWjzkdFf3Ampvn1VBvm9FPl852t/tEP72zI=,tag:Bcogznc59lA/ajPmlfGhnA==,type:str]
 esse:
     age-key: ENC[AES256_GCM,data:8/iqd8PEvgHKH+OCIqErRVjiXdwITNpGFDCWNLOd9zuY5F2ohvZbjRkMnHVz5ze5sEHW3kJKi1XcVhsHead6v4o8YYBhe5ME0OFZ,iv:ZiBwOBc3LBJICdbzlk/yv4wuGBR+POJmwPosXUMPjOA=,tag:qH0iWNBT21soPddcEpmDMw==,type:str]
+    ssh-key: ENC[AES256_GCM,data:YSYDeHU81gQOr8yemCVPEkiFmsNOFmE8dA+7Mz4LS9vEDmxQY0jE2ZEltADP+lNETmnXsYX103FGB6Ja1OH+EqpYjPWQmyaPRmgFqMIKLgr53HvLGxuiq9jJSPDJmK+r49iyxhqpjTJb98sdfw0a9KywgKhFggbTu/4FnpXSo/wf9AV2Ktf7ZnYHTryjHEJPbzN7WUgjag2nni814D/RCdsU5CV2GbViznYpbtU73T/maISmPaurUJ75Jzmc13Ahxp40otH9MsIubtdzAsF3P0Xl7Hm8ThPf8k2/iqZV/g0sd5Z0VEL4/bbkGu/2CH93aP8VY9ybDP6uMkIaPww7pLyqY7f/v0m+bLcu8MJrQgO7rRBpA+O7RIVv9vniCdHNSQq71Ia/Q+FTlwxDzbz/P2rij6rb8TeinKMcOC4nK6IKlzXZkQgDKdyBKDJ19r/UZQadnzXe8mz/rE1m+JLeHXeEHBcTWYLf5Q6xOuf4UHHeQTuj10bi1bgL+dx4Wxr7+eRe30Nnn/8o0nXx/6R7,iv:f9MxPI5nVZo+w2fFcXPfXT0D5C49+/cfPYEy210smbI=,tag:X3UMGFFZjtOw3yHv4heBIw==,type:str]
 sops:
     age:
         - recipient: age1tfg0m4w2hy0es4wtzt7ltrgtxuhaukvk072kq2hs20tedeav4ghswk0vtd
@@ -30,7 +31,7 @@ sops:
             eW12dDJwWjBYQnhFdFJPOGsyUWlrclUKdvTqk/TIVsUdP0/pyLtlyKHvcShBvIHm
             HxsPT1TpcslZKJtp3k23v0fiXyaCO7fJlvl3vztizl58/mi9VOeTOQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-10-26T22:40:26Z"
-    mac: ENC[AES256_GCM,data:J3WFoeGul8N8BFmF7Pa6PjnS7IRbuQyVrO9BHDeQeJmeHJKHHYJ1CdoAhedK9nZOe2DLIXavZo5eLt2GpLbBTjtsjxklJO+dGGwwDJNBM/KvUFQ23dIFXi5p+rsYh2dG61eL2pTjjYLrbYiCOI+f66UTv290/kuS+ai1SmQ+yUk=,iv:CsXnuSVMK9y9qmfHLCi4kkwYrBkHdN+5dJz95sR0e18=,tag:0JkVMI8m66Kl3dhlftE9Lg==,type:str]
+    lastmodified: "2025-11-15T23:48:21Z"
+    mac: ENC[AES256_GCM,data:bCH70iFmc07kUjWtleuvoC8jpRw7WBck34PJUPhppSnOFHGJvB3HPRvPzpWHIP8OsJ1WLX2OdUEcOK1Por+J1crEHIp5RDGYPYkeVhDZCM2MtF072h/oqYQb3cpB474pgbDemfnA2/mka3o9Hp1x4c6D/KcCauI56xb+qXJKS1E=,iv:BBLGXwVdIqLvEnuLTsQKUdRnOZD82+ooC4T+s44Ecsk=,tag:NEkZ1ClJhID6b9GboOntaA==,type:str]
     unencrypted_suffix: _unencrypted
     version: 3.11.0

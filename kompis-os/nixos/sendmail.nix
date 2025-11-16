@@ -8,14 +8,13 @@
 }:
 
 let
-  eachUser = lib.filterAttrs (
-    user: userCfg: userCfg.isNormalUser && org.user.${user} ? mail
-  ) config.users.users;
+  eachUser = lib.filterAttrs (_: userCfg: userCfg.mail) org.user;
+  cfg = config.kompis-os.sendmail;
 in
 {
-  options.kompis-os.sendmail = lib.mkEnableOption "sendmail";
+  options.kompis-os.sendmail.enable = lib.mkEnableOption "sendmail";
 
-  config = lib.mkIf (eachUser != { }) {
+  config = lib.mkIf cfg.enable {
 
     sops.secrets = lib.mapAttrs' (
       user: userCfg:

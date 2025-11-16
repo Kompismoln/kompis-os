@@ -1,6 +1,7 @@
 { org, ... }:
 let
   name = "sverigesval-dev";
+  nextcloud = "nextcloud-kompismoln-dev";
   cfg = org.app.${name};
 in
 {
@@ -10,13 +11,13 @@ in
   ];
   kompis-os = {
     nginx.enable = true;
-    users."nextcloud-kompismoln-dev".members = [ "nginx" ];
+    users.${nextcloud}.members = [ "nginx" ];
     nextcloud-rolf.apps.${name} = {
       enable = true;
       endpoint = cfg.endpoint;
-      user = "nextcloud-kompismoln-dev";
-      siteRoot = "/var/lib/nextcloud-kompismoln-dev/nextcloud/data/rolf/files/+pub/_site";
-      sourceRoot = "/var/lib/nextcloud-kompismoln-dev/nextcloud/data/rolf/files/+pub";
+      user = nextcloud;
+      siteRoot = "/var/lib/${nextcloud}/nextcloud/data/rolf/files/+pub/_site";
+      sourceRoot = "/var/lib/${nextcloud}/nextcloud/data/rolf/files/+pub";
     };
   };
 }

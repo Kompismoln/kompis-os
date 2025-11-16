@@ -8,6 +8,7 @@
       ../nixos/preserve.nix
       ../nixos/sops.nix
       ../nixos/ssh.nix
+      ../nixos/state.nix
       ../nixos/tls-certs.nix
       ../nixos/users.nix
       ../nixos/wireguard.nix
@@ -17,11 +18,13 @@
       users.admin = {
         class = "user";
         groups = [ "wheel" ];
+        stateful = false;
       };
       tls-certs = inputs.org.namespaces;
       locksmith.enable = true;
       sops.enable = true;
       ssh.enable = true;
+      state.enable = true;
     };
   };
 }

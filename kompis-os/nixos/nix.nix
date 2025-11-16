@@ -46,7 +46,7 @@ in
       default = lib.elem host.name org.build-hosts;
     };
     facter = (lib.mkEnableOption "facter hardware configuration") // {
-      default = lib.hasAttr "facter" org.host.${host.name};
+      default = org.host.${host.name}.facter != null;
     };
     repo = lib.mkOption {
       description = "repo for this config";

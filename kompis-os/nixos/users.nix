@@ -25,6 +25,13 @@ let
         publicKey = lib.mkEnableOption "public key" // {
           default = true;
         };
+        stateful = lib.mkEnableOption "this entity has a state" // {
+          type = lib.types.bool;
+          default = builtins.elem config.class [
+            "app"
+            "user"
+          ];
+        };
         class = lib.mkOption {
           description = "user's entity class";
           default = "user";
@@ -42,14 +49,6 @@ let
         home = lib.mkOption {
           description = "force home at /var/lib for system users";
           default = config.class == "app";
-          type = lib.types.bool;
-        };
-        preserveHome = lib.mkOption {
-          description = "preserve home on ephemeral systems";
-          default = builtins.elem config.class [
-            "app"
-            "user"
-          ];
           type = lib.types.bool;
         };
         shell = lib.mkOption {
@@ -120,7 +119,7 @@ in
       directory = config.users.users.${user}.home;
       user = user;
       group = user;
-    }) (lib.filterAttrs (user: userCfg: userCfg.preserveHome) eachUser);
+    }) (lib.filterAttrs (user: userCfg: userCfg.stateful) eachUser);
 
     users.groups = lib.mapAttrs (user: userCfg: {
       gid = lib'.ids.${user};

@@ -45,6 +45,7 @@ allowedTCPPortRanges = [{ from = 0, to = 65535 }]
 
 [mailserver]
 dkimSelector = "k1"
+host = "helsinki"
 int = "helsinki.km"
 ext = "mail.kompismoln.se"
 
@@ -100,6 +101,7 @@ keys = [
   "ssh-key",
   "mail",
   "passwd",
+  "restic-key",
 ]
 
 [class.service]
@@ -118,6 +120,7 @@ keys = [
   "age-key",
   "ssh-key",
   "secret-key",
+  "restic-key",
 ]
 
 [ops.rebuild]
@@ -187,7 +190,26 @@ subnets = [
   "wg1",
 ]
 system = "x86_64-linux"
-stateVersion = "20.03"
+stateVersion = "25.05"
+disk-layouts.main-server.device = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
+
+[host.lenovo]
+id = 7
+facter = "hosts/lenovo/facter.json"
+roles = [
+  "nixos",
+  "peer",
+]
+subnets = [
+  "wg0",
+  "wg1",
+]
+system = "x86_64-linux"
+stateVersion = "24.11"
+# disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
+homes.alex.roles = [
+  "hypr-devstation",
+]
 
 [host.laptop]
 id = 2
@@ -215,23 +237,24 @@ system = "aarch64-linux"
 stateVersion = ""
 
 [host.helsinki]
-facter = "hosts/helsinki/facter.json"
 id = 5
-roles = [
-  "nixos",
-  "peer",
-  "webserver",
-  "mailserver",
-  "disko-server",
-]
+system = "x86_64-linux"
+stateVersion = "25.05"
+facter = "hosts/helsinki/facter.json"
 endpoint = "helsinki.kompismoln.se"
 dnsFor = "wg0"
 subnets = [
   "wg0",
   "wg1",
 ]
-system = "x86_64-linux"
-stateVersion = "25.05"
+roles = [
+  "nixos",
+  "peer",
+  "server",
+  "mailserver",
+  "app-scheduler",
+]
+disk-layouts.main-server.device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]
 id = 6
@@ -246,50 +269,33 @@ subnets = [
 system = "x86_64-linux"
 stateVersion = "20.03"
 
-[host.lenovo]
-id = 7
-facter = "hosts/lenovo/facter.json"
-roles = [
-  "nixos",
-  "peer",
-  "hypr-devstation",
-]
-subnets = [
-  "wg0",
-  "wg1",
-]
-system = "x86_64-linux"
-stateVersion = "24.11"
-
-[host.lenovo.home.alex]
-roles = [
-  "hypr-devstation",
-]
-
 [host.adele]
-facter = "hosts/adele/facter.json"
 id = 8
-roles = [
-  "nixos",
-  "peer",
-  "disko-laptop",
-  "cinnamon-office",
-]
-subnets = [
-  "wg0",
-  "wg1",
-]
 system = "x86_64-linux"
 stateVersion = "25.11"
-
-[host.adele.home.ami]
+facter = "hosts/adele/facter.json"
+subnets = [
+  "wg0",
+  "wg1",
+]
 roles = [
+  "nixos",
+  "peer",
+]
+disk-layouts.main-workstation.device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
+homes.ami.roles = [
   "cinnamon-office",
 ]
 
 [host.bootstrap]
 id = 254
-roles = []
+roles = [
+  "nixos",
+  "peer",
+]
+subnets = [
+  "wg0",
+]
 system = "x86_64-linux"
 stateVersion = "25.11"
 
@@ -411,7 +417,7 @@ grants = [
 ]
 
 [service.glesys-api]
-account = "cl44748"
+data.account = "cl44748"
 endpoint = "https://api.glesys.com"
 grants = [
   "host-stationary",
@@ -548,9 +554,11 @@ klimatkalendern = 3004
 klimatkalendern-dev = 3005
 nextcloud-kompismoln = 3006
 nextcloud-kompismoln-dev = 3007
+chatddx = 3019
 chatddx-redis = 3008
 chatddx-svelte = 3009
 chatddx-django = 3010
+chatddx-django-flower = 3018
 chatddx-dev = 3017
 chatddx-dev-redis = 3011
 chatddx-dev-svelte = 3012

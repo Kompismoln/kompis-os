@@ -22,10 +22,14 @@
     };
 
     nixpkgs.overlays = [
-      (import ../overlays/km-tools.nix { inherit inputs; })
+      (import ../overlays/tools.nix { inherit inputs; })
     ];
 
-    programs.bash.promptInit = builtins.readFile ../tools/session/prompt-init.sh;
+    programs.bash = {
+      promptInit = builtins.readFile ../tools/session/prompt-init.sh;
+      shellAliases = {
+      };
+    };
 
     programs.neovim = {
       enable = true;

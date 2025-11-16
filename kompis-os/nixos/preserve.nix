@@ -1,3 +1,4 @@
+# kompis-os/nixos/preserve.nix
 {
   config,
   inputs,
@@ -30,7 +31,7 @@ in
     database = lib.mkOption {
       description = "permanent no-cow storage";
       type = lib.types.str;
-      default = "/srv/database";
+      default = "/srv/zfs_vol";
     };
   };
 

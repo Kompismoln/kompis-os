@@ -5,12 +5,8 @@
     imports = [
       ../nixos/collabora.nix
       ../nixos/dns-hints.nix
-      ../nixos/django-react.nix
-      ../nixos/django.nix
       ../nixos/egress-proxy.nix
       ../nixos/fail2ban.nix
-      ../nixos/fastapi-svelte.nix
-      ../nixos/fastapi.nix
       ../nixos/mobilizon.nix
       ../nixos/monitor.nix
       ../nixos/mysql.nix

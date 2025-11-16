@@ -25,22 +25,27 @@
     drivers = [ pkgs.gutenprint ];
   };
 
-  services.pipewire.extraConfig.pipewire-pulse."99-echo-cancel" = {
-    "pulse.cmd" = [
-      {
-        cmd = "load-module";
-        args = "module-echo-cancel";
-      }
-    ];
-    "stream.properties" = {
-      "default.configured.audio.sink" = "echo-cancel-sink";
-      "default.configured.audio.source" = "echo-cancel-source";
+  services.pipewire.extraConfig.pipewire-pulse = {
+    "99-echo-cancel" = {
+      "pulse.cmd" = [
+        {
+          cmd = "load-module";
+          args = "module-echo-cancel";
+        }
+      ];
+      "stream.properties" = {
+        "default.configured.audio.sink" = "echo-cancel-sink";
+        "default.configured.audio.source" = "echo-cancel-source";
+      };
+    };
+    "92-low-latency" = {
+      stream.properties = {
+        resample.quality = 10;
+      };
     };
   };
 
-  boot.kernelParams = [
-    "snd_hda_intel.power_save=0"
-    "intel_pstate=active"
-    "intel_idle.max_cstate=1"
-  ];
+  boot.extraModprobeConfig = ''
+    options snd-hda-intel dmic_detect
+  '';
 }

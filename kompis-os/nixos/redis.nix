@@ -225,7 +225,7 @@ in
   config = lib.mkIf (eachServer != { }) {
 
     #(Suggested for Background Saving: <https://redis.io/docs/get-started/faq/>)
-    boot.kernel.sysctl."vm.overcommit_memory" = "1";
+    boot.kernel.sysctl."vm.overcommit_memory" = lib.mkDefault "1";
 
     environment.systemPackages = [ cfg.package ];
 

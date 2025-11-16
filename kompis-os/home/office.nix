@@ -15,8 +15,13 @@
       enable = true;
     };
 
+    programs.chromium = {
+      enable = true;
+    };
+
     home.packages = with pkgs; [
       libreoffice
+      zoom-us
       hunspell
       hunspellDicts.sv_SE
       hunspellDicts.en_US

@@ -1,3 +1,4 @@
+# kompis-os/nixos/postgresql.nix
 {
   config,
   lib,
@@ -30,7 +31,7 @@ in
                 default = config.name;
               };
               dumpPath = lib.mkOption {
-                type = lib.types.str;
+                type = lib.types.nullOr lib.types.str;
                 default = "/var/lib/${config.name}/dbdump.sql";
               };
             };
@@ -70,6 +71,6 @@ in
           Group = dbCfg.user;
         };
       }
-    ) eachDatabase;
+    ) (lib.filterAttrs (db: dbCfg: dbCfg.dumpPath != null) eachDatabase);
   };
 }

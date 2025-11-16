@@ -1,8 +1,4 @@
 {
-  lib',
-  ...
-}:
-{
   boot = {
     loader.grub.enable = true;
   };
@@ -52,16 +48,6 @@
 
   kompis-os = {
     sysadm.rescueMode = true;
-
-    dns-hints = {
-      enable = true;
-      subnet = "wg0";
-    };
-
-    nginx = {
-      enable = true;
-      monitor = true;
-    };
-
+    nginx.monitor = true;
   };
 }

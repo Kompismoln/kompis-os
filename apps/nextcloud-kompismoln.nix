@@ -8,15 +8,26 @@ let
 in
 {
   imports = [
-    ../kompis-os/nixos/mysql.nix
+    ../kompis-os/nixos/collabora.nix
     ../kompis-os/nixos/nextcloud.nix
     ../kompis-os/nixos/nginx.nix
     ../kompis-os/nixos/postgresql.nix
   ];
 
-  nextcloud.sites.${name} = {
-    enable = true;
-    hostname = cfg.endpoint;
-    collaboraHost = org.app.collabora.endpoint;
+  kompis-os = {
+    postgresql.enable = true;
+    nginx.enable = true;
+    users.${name} = {
+      class = "app";
+      members = [
+        "nginx"
+      ];
+    };
+    nextcloud.apps.${name} = {
+      enable = true;
+      user = name;
+      inherit (cfg) endpoint;
+      collabora.endpoint = org.app.collabora.endpoint;
+    };
   };
 }

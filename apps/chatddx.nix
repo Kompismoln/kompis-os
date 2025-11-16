@@ -1,8 +1,12 @@
 # kompis-os/apps/chatddx.nix
-{ org, ... }:
+{
+  lib',
+  org,
+  ...
+}:
 let
   name = "chatddx";
-  appCfg = org.app.${name};
+  cfg = org.app.${name};
 in
 {
   imports = [
@@ -13,18 +17,30 @@ in
     ../kompis-os/nixos/svelte.nix
   ];
 
-  svelte.apps.${name} = {
-    enable = true;
-    entity = name;
-    inherit (appCfg) endpoint;
-  };
+  kompis-os = {
+    nginx.enable = true;
+    postgresql.enable = true;
+    users.${name}.class = "app";
 
-  django.apps.${name} = {
-    enable = true;
-    inherit (appCfg) endpoint;
-    entity = name;
-    packagename = "chatddx_backend";
-    celery.enable = true;
-    locationProxy = "/admin";
+    redis.servers."${name}-redis" = {
+      enable = true;
+      entity = name;
+    };
+
+    svelte.apps."${name}-svelte" = {
+      enable = true;
+      entity = name;
+      inherit (cfg) endpoint;
+      ssr = "http://localhost:${toString (lib'.ports "${name}-django")}";
+    };
+
+    django.apps."${name}-django" = {
+      enable = true;
+      entity = name;
+      inherit (cfg) endpoint;
+      djangoApp = "chatddx_backend";
+      locationProxy = "/admin";
+      celery = true;
+    };
   };
 }

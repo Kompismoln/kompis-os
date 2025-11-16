@@ -72,6 +72,8 @@
               shellHook = ''
                 export SOPS_AGE_KEY_FILE=/keys/root-1
                 export BUILD_HOST=./
+                export RESTIC_REPOSITORY="$HOME/.restic"
+                export RESTIC_PASSWORD_FILE="/run/secrets/alex/restic-key"
                 PATH=$(pwd)/kompis-os/tools/bin:$PATH
               '';
             };

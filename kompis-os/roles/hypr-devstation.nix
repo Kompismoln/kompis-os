@@ -32,26 +32,47 @@
     };
   };
 
-  flake.nixosModules.hypr-devstation = {
-    imports = [
-      ../nixos/home-manager.nix
-      ../nixos/hyprland.nix
-      ../nixos/ide.nix
-      ../nixos/networkmanager.nix
-      ../nixos/shell.nix
-      ../nixos/sound.nix
-    ];
+  flake.nixosModules.hypr-devstation =
+    { pkgs, ... }:
+    {
+      imports = [
+        ../nixos/home-manager.nix
+        ../nixos/hyprland.nix
+        ../nixos/networkmanager.nix
+        ../nixos/shell.nix
+        ../nixos/sound.nix
+      ];
 
-    config = {
-      kompis-os = {
-        home-manager.enable = true;
-        hyprland.enable = true;
-        ide.enable = true;
-        networkmanager.enable = true;
-        shell.enable = true;
-        sound.enable = true;
-        tls-certs = inputs.org.namespaces;
+      config = {
+        services = {
+          transmission = {
+            enable = true;
+            package = pkgs.transmission_4-qt;
+          };
+          redis.servers."test".enable = true;
+          postgresql = {
+            enable = true;
+            package = pkgs.postgresql_17;
+            extensions =
+              ps: with ps; [
+                postgis
+                pg_repack
+              ];
+          };
+          mysql = {
+            enable = true;
+            package = pkgs.mariadb;
+          };
+        };
+
+        kompis-os = {
+          home-manager.enable = true;
+          hyprland.enable = true;
+          networkmanager.enable = true;
+          shell.enable = true;
+          sound.enable = true;
+          tls-certs = inputs.org.namespaces;
+        };
       };
     };
-  };
 }

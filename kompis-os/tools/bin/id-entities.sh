@@ -326,6 +326,10 @@ create-secret:secret-key() {
     try passphrase 40
 }
 
+create-secret:restic-key() {
+    try passphrase 40
+}
+
 # nixos-mailserver has unix-like user management, so mail will piggyback
 # on passwd for all ops
 create-secret:mail() {
@@ -402,6 +406,10 @@ derive-artifact:luks-key:() {
 }
 
 derive-artifact:secret-key:() {
+    :
+}
+
+derive-artifact:restic-key:() {
     :
 }
 

@@ -19,12 +19,16 @@ pkgs: with pkgs; rec {
     restic
     ripgrep
     tree
+    wget
   ];
 
   terminal-env = [
-    tmux
-    ranger
+    origin
     osc
+    ranger
+    reptyr
+    tmux
+    transmission_4-qt
     xdg-utils
   ];
 
@@ -34,6 +38,7 @@ pkgs: with pkgs; rec {
     openssl
     pciutils
     psmisc
+    smartmontools
     strace
     usbutils
   ];

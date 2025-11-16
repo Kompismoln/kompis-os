@@ -39,7 +39,9 @@ in
       wantedBy = [ "multi-user.target" ];
       serviceConfig =
         let
-          user = "${org.service.glesys-api.account}:$(<${config.sops.secrets."glesys-api/secret-key".path})";
+          user = "${org.service.glesys-api.data.account}:$(<${
+            config.sops.secrets."glesys-api/secret-key".path
+          })";
           data = "recordid=${cfg.recordid}&data=$ipv4";
           url = "${org.service.glesys-api.endpoint}/domain/updaterecord";
         in

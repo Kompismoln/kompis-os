@@ -65,10 +65,6 @@ in
       wireguard.enable = true;
       networkmanager.unmanaged = map (iface: "interface-name:${iface}") (lib.attrNames eachSubnet);
 
-      interfaces = lib.mapAttrs (_: _: {
-        useDHCP = false;
-      }) eachSubnet;
-
       firewall.interfaces = lib.mapAttrs (_: ifaceCfg: {
         inherit (ifaceCfg) allowedTCPPortRanges;
       }) eachSubnet;
