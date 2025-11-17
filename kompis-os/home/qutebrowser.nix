@@ -19,7 +19,7 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    xdg.mimeApps.associations.added = {
+    xdg.mimeApps.defaultApplications = {
       "x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
       "x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
     };

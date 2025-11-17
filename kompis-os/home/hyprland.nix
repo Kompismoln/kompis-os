@@ -27,7 +27,9 @@ in
 
     kompis-os-hm.foot.enable = true;
 
-    xdg.mimeApps.associations.added = {
+    xdg.mimeApps.enable = true;
+
+    xdg.mimeApps.defaultApplications = {
       "text/*" = "nvim.desktop";
       "text/x-lua" = "nvim.desktop";
       "image/*" = "feh.desktop";

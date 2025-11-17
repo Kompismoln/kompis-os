@@ -12,7 +12,7 @@
 
   config = lib.mkIf config.kompis-os-hm.social.enable {
 
-    xdg.mimeApps.associations.added = {
+    xdg.mimeApps.defaultApplications = {
       "message/rfc88" = "thunderbird.desktop";
       "application/x-email" = "thunderbird.desktop";
       "x-scheme-handler/mailto" = "thunderbird.desktop";
