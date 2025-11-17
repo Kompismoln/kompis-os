@@ -8,7 +8,9 @@
 }:
 
 let
-  eachUser = lib.filterAttrs (_: userCfg: userCfg.mail) org.user;
+  eachUser = lib.filterAttrs (
+    user: userCfg: userCfg.isNormalUser && org.user.${user}.mail
+  ) config.users.users;
   cfg = config.kompis-os.sendmail;
 in
 {
