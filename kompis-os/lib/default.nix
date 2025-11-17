@@ -147,4 +147,14 @@ lib: inputs: rec {
     lib.recursiveUpdate { inherit options; } (
       if lib.isFunction submodule then submodule args else submodule
     );
+  diskoFlakeModule =
+    {
+      lib,
+      ...
+    }:
+    {
+      options.flake.diskoModules = lib.mkOption {
+        type = lib.types.lazyAttrsOf lib.types.raw;
+      };
+    };
 }

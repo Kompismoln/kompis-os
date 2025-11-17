@@ -8,18 +8,25 @@
 let
   lib' = (import ./lib) lib inputs;
   importDir = dir: (lib.mapAttrsToList (name: _: ./${dir}/${name}) (builtins.readDir ./${dir}));
-
 in
 {
   imports = [
     ./org.nix
     inputs.home-manager.flakeModules.home-manager
-    inputs.disko.flakeModules.default
+    lib'.diskoFlakeModule
   ]
   ++ (importDir "roles")
   ++ (importDir "disk-layouts");
 
   flake.org = inputs.org;
+
+  flake.diskoConfigurations = lib.foldlAttrs (
+    acc: host: hostCfg:
+    acc
+    // (lib.mapAttrs' (
+      disk: diskCfg: lib.nameValuePair "${host}-${disk}" (self.diskoModules.${disk} { host = hostCfg; })
+    ) hostCfg.disk-layouts)
+  ) { } self.org.host;
 
   flake.homeConfigurations = lib.mapAttrs (
     home: homeCfg:
@@ -27,7 +34,7 @@ in
       pkgs = inputs.nixpkgs.legacyPackages.${homeCfg.system};
       extraSpecialArgs = {
         home = homeCfg;
-        org = inputs.org;
+        org = self.org;
         inherit inputs lib';
       };
       modules = [

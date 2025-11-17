@@ -1,7 +1,6 @@
-# kompis-os/roles/single-xfs.nix
+# kompis-os/disk-layouts/single-xfs.nix
 {
   inputs,
-  lib,
   self,
   ...
 }:
@@ -9,34 +8,40 @@ let
   name = "single-xfs";
 in
 {
-  flake.nixosModules.${name} =
+  flake.nixosModules."disk-layout-${name}" = args: {
+    imports = [
+      inputs.disko.nixosModules.disko
+    ];
+
+    inherit (self.diskoModules.${name} args) disko;
+  };
+
+  flake.diskoModules.${name} =
     { host, ... }:
     {
-      imports = [
-        inputs.disko.nixosModules.disko
-      ];
-
-      disko = (self.diskoConfigurations.${host.name}).disko;
-    };
-
-  flake.diskoConfigurations = lib.mapAttrs (host: hostCfg: {
-    disko.devices = {
-      disk = {
-        type = "disk";
-        device = hostCfg.${name}.device;
-        content = {
-          type = "gpt";
-          partitions = {
-            raid = {
-              size = "100%";
-              content = {
-                type = "mdraid";
-                name = "raid1";
+      disko.devices = {
+        disk.${name} = {
+          type = "disk";
+          device = host.disk-layouts.${name}.device;
+          content = {
+            type = "gpt";
+            partitions = {
+              xfs = {
+                size = "100%";
+                content = {
+                  type = "filesystem";
+                  format = "xfs";
+                  mountpoint = host.disk-layouts.${name}.mountpoint;
+                  mountOptions = [
+                    "defaults"
+                    "noatime"
+                    "nodiratime"
+                  ];
+                };
               };
             };
           };
         };
       };
     };
-  }) (lib.filterAttrs (host: hostCfg: lib.elem name hostCfg.roles) inputs.org.host);
 }

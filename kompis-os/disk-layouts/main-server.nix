@@ -17,14 +17,18 @@ in
       config,
       host,
       ...
-    }:
+    }@args:
     {
       imports = [
         inputs.disko.nixosModules.disko
         ../nixos/preserve.nix
       ];
 
-      inherit (self.diskoConfigurations.${host.name}) disko;
+      environment.systemPackages = [
+        inputs.disko.packages.${host.system}.default
+      ];
+
+      inherit (self.diskoModules.${name} args) disko;
 
       sops.secrets.luks-key = { };
       boot.initrd.secrets."${luksKeyFile}" = config.sops.secrets.luks-key.path;
@@ -40,214 +44,216 @@ in
       };
     };
 
-  flake.diskoConfigurations = lib.mapAttrs (host: hostCfg: {
-    disko.devices = {
-      nodev = {
-        "/tmp" = {
-          fsType = "tmpfs";
-          mountOptions = [
-            "size=1G"
-            "defaults"
-            "noatime"
-            "nosuid"
-            "nodev"
-            "noexec"
-            "mode=1777"
-          ];
+  flake.diskoModules.${name} =
+    { host, ... }:
+    {
+      disko.devices = {
+        nodev = {
+          "/tmp" = {
+            fsType = "tmpfs";
+            mountOptions = [
+              "size=1G"
+              "defaults"
+              "noatime"
+              "nosuid"
+              "nodev"
+              "noexec"
+              "mode=1777"
+            ];
+          };
         };
-      };
-      disk = {
-        main = {
-          type = "disk";
-          device = hostCfg.disk-layouts.${name}.device;
-          content = {
-            type = "gpt";
-            partitions = {
-              boot = {
-                size = "1M";
-                type = "EF02";
-                priority = 1;
+        disk = {
+          main = {
+            type = "disk";
+            device = host.disk-layouts.${name}.device;
+            content = {
+              type = "gpt";
+              partitions = {
+                boot = {
+                  size = "1M";
+                  type = "EF02";
+                  priority = 1;
+                };
+                ESP = {
+                  size = "1G";
+                  type = "EF00";
+                  content = {
+                    type = "filesystem";
+                    format = "vfat";
+                    mountpoint = "/boot";
+                    mountOptions = [ "umask=0077" ];
+                  };
+                };
+                luks = {
+                  size = "100%";
+                  label = luksPartitionLabel;
+                  content = {
+                    type = "luks";
+                    name = "luks";
+                    settings = {
+                      keyFile = luksKeyFile;
+                      allowDiscards = true;
+                    };
+                    content = {
+                      type = "lvm_pv";
+                      vg = "pool";
+                    };
+                  };
+                };
               };
-              ESP = {
+            };
+          };
+        };
+        lvm_vg = {
+          pool = {
+            type = "lvm_vg";
+            lvs = {
+              root = {
                 size = "1G";
-                type = "EF00";
                 content = {
                   type = "filesystem";
-                  format = "vfat";
-                  mountpoint = "/boot";
-                  mountOptions = [ "umask=0077" ];
+                  format = "ext4";
+                  mountpoint = "/";
+                  mountOptions = [
+                    "defaults"
+                    "noatime"
+                    "nodiratime"
+                  ];
                 };
               };
-              luks = {
-                size = "100%";
-                label = luksPartitionLabel;
+              var = {
+                size = "1G";
                 content = {
-                  type = "luks";
-                  name = "luks";
-                  settings = {
-                    keyFile = luksKeyFile;
-                    allowDiscards = true;
+                  type = "filesystem";
+                  format = "ext4";
+                  mountpoint = "/var";
+                  mountOptions = [
+                    "defaults"
+                    "noatime"
+                    "nodiratime"
+                  ];
+                };
+              };
+              keys = {
+                size = "1G";
+                content = {
+                  type = "filesystem";
+                  format = "ext4";
+                  mountpoint = "/keys";
+                  mountOptions = [
+                    "defaults"
+                    "noatime"
+                    "nodiratime"
+                    "noexec"
+                    "nosuid"
+                    "nodev"
+                  ];
+                };
+              };
+              swap = {
+                size = "8G";
+                content = {
+                  type = "swap";
+                };
+              };
+              zfs_vol = {
+                size = "20%VG";
+                content = {
+                  type = "zfs";
+                  pool = "dbroot";
+                };
+              };
+              btrfs_vol = {
+                size = "40%VG";
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  mountpoint = "/mnt/btrfs_vol";
+                  mountOptions = [
+                    "subvolid=5"
+                    "noatime"
+                    "space_cache=v2"
+                  ];
+                  subvolumes = {
+                    "@nix" = {
+                      mountpoint = "/nix";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                        "space_cache=v2"
+                      ];
+                    };
+                    "@storage" = {
+                      mountpoint = "/srv/storage";
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                        "space_cache=v2"
+                      ];
+                    };
+                    "@backup" = {
+                      mountpoint = "/srv/backup";
+                      mountOptions = [
+                        "compress=no"
+                        "noatime"
+                        "space_cache=v2"
+                        "ro"
+                      ];
+                    };
+                    "@snapshots" = {
+                      mountpoint = "/mnt/snapshots";
+                      mountOptions = [
+                        "compress=no"
+                        "noatime"
+                        "space_cache=v2"
+                      ];
+                    };
                   };
-                  content = {
-                    type = "lvm_pv";
-                    vg = "pool";
-                  };
+                };
+              };
+              share = {
+                size = "40%VG";
+                content = {
+                  type = "filesystem";
+                  format = "xfs";
+                  mountpoint = "/srv/share";
+                  mountOptions = [
+                    "defaults"
+                    "noatime"
+                    "nodiratime"
+                  ];
                 };
               };
             };
           };
         };
-      };
-      lvm_vg = {
-        pool = {
-          type = "lvm_vg";
-          lvs = {
-            root = {
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                ];
-              };
+        zpool = {
+          dbroot = {
+            type = "zpool";
+            rootFsOptions = {
+              compression = "zstd";
+              atime = "off";
             };
-            var = {
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/var";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                ];
-              };
-            };
-            keys = {
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/keys";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                  "noexec"
-                  "nosuid"
-                  "nodev"
-                ];
-              };
-            };
-            swap = {
-              size = "8G";
-              content = {
-                type = "swap";
-              };
-            };
-            zfs_vol = {
-              size = "20%VG";
-              content = {
-                type = "zfs";
-                pool = "dbroot";
-              };
-            };
-            btrfs_vol = {
-              size = "40%VG";
-              content = {
-                type = "btrfs";
-                extraArgs = [ "-f" ];
-                mountpoint = "/mnt/btrfs_vol";
-                mountOptions = [
-                  "subvolid=5"
-                  "noatime"
-                  "space_cache=v2"
-                ];
-                subvolumes = {
-                  "@nix" = {
-                    mountpoint = "/nix";
-                    mountOptions = [
-                      "compress=zstd"
-                      "noatime"
-                      "space_cache=v2"
-                    ];
-                  };
-                  "@storage" = {
-                    mountpoint = "/srv/storage";
-                    mountOptions = [
-                      "compress=zstd"
-                      "noatime"
-                      "space_cache=v2"
-                    ];
-                  };
-                  "@backup" = {
-                    mountpoint = "/srv/backup";
-                    mountOptions = [
-                      "compress=no"
-                      "noatime"
-                      "space_cache=v2"
-                      "ro"
-                    ];
-                  };
-                  "@snapshots" = {
-                    mountpoint = "/mnt/snapshots";
-                    mountOptions = [
-                      "compress=no"
-                      "noatime"
-                      "space_cache=v2"
-                    ];
-                  };
+            datasets = {
+              "data" = {
+                mountpoint = "/srv/zfs_vol";
+                type = "zfs_fs";
+                options = {
+                  recordsize = "16k";
+                  primarycache = "metadata";
                 };
               };
-            };
-            share = {
-              size = "40%VG";
-              content = {
-                type = "filesystem";
-                format = "xfs";
-                mountpoint = "/srv/share";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                ];
-              };
-            };
-          };
-        };
-      };
-      zpool = {
-        dbroot = {
-          type = "zpool";
-          rootFsOptions = {
-            compression = "zstd";
-            atime = "off";
-          };
-          datasets = {
-            "data" = {
-              mountpoint = "/srv/zfs_vol";
-              type = "zfs_fs";
-              options = {
-                recordsize = "16k";
-                primarycache = "metadata";
-              };
-            };
-            "wal" = {
-              mountpoint = "/srv/zfs_vol/pg_wal";
-              type = "zfs_fs";
-              options = {
-                recordsize = "128k";
-                primarycache = "all";
+              "wal" = {
+                mountpoint = "/srv/zfs_vol/pg_wal";
+                type = "zfs_fs";
+                options = {
+                  recordsize = "128k";
+                  primarycache = "all";
+                };
               };
             };
           };
         };
       };
     };
-  }) (lib.filterAttrs (host: hostCfg: lib.hasAttr name hostCfg.disk-layouts) self.org.host);
 }

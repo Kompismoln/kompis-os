@@ -192,6 +192,8 @@ subnets = [
 system = "x86_64-linux"
 stateVersion = "25.05"
 disk-layouts.main-server.device = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
+disk-layouts.single-xfs.device = "/dev/disk/by-id/ata-TOSHIBA_MK2555GSX_59EIS0BNS"
+disk-layouts.single-xfs.mountpoint = "/srv/xfs-1"
 
 [host.lenovo]
 id = 7

@@ -1,68 +1,26 @@
-# kompis-os/roles/raid1-xfs.nix
+# kompis-os/disk-layouts/raid1-xfs.nix
 {
   inputs,
   lib,
   self,
   ...
 }:
+let
+  name = "raid1-xfs";
+in
 {
-  flake.diskoConfigurations.raid1-xfs =
-    { host, ... }:
-    let
-      hostCfg = inputs.org.host.${host};
-    in
-    {
-      disko.devices = {
-        disk = lib.mapAttrs (disk: diskCfg: {
-          type = "disk";
-          device = diskCfg.device;
-          content = {
-            type = "gpt";
-            partitions = {
-              raid = {
-                size = "100%";
-                content = {
-                  type = "mdraid";
-                  name = "raid1";
-                };
-              };
-            };
-          };
-        }) hostCfg.raid1-xfs;
-        mdadm = {
-          raid1 = {
-            type = "mdadm";
-            level = 1;
-            content = {
-              type = "gpt";
-              partitions = {
-                primary = {
-                  size = "100%";
-                  content = {
-                    type = "filesystem";
-                    format = "xfs";
-                    mountpoint = "/mnt/raid1";
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
-    };
-
-  flake.nixosModules.raid1-xfs =
+  flake.nixosModules."disk-layout-${name}" =
     {
       host,
       ...
-    }:
+    }@args:
 
     {
       imports = [
         inputs.disko.nixosModules.disko
       ];
 
-      disko = (self.diskoConfigurations.raid1-xfs host).disko;
+      inherit (self.diskoModules.${name} args) disko;
 
       environment.systemPackages = [
         inputs.disko.packages.default
@@ -89,4 +47,47 @@
         };
       };
     };
+
+  flake.diskoModules.${name} =
+    { host, ... }:
+    {
+      disko.devices = {
+        disk = lib.mapAttrs (disk: diskCfg: {
+          type = "disk";
+          device = diskCfg.device;
+          content = {
+            type = "gpt";
+            partitions = {
+              raid = {
+                size = "100%";
+                content = {
+                  type = "mdraid";
+                  name = "raid1";
+                };
+              };
+            };
+          };
+        }) host.disk-layouts.${name};
+        mdadm = {
+          raid1 = {
+            type = "mdadm";
+            level = 1;
+            content = {
+              type = "gpt";
+              partitions = {
+                primary = {
+                  size = "100%";
+                  content = {
+                    type = "filesystem";
+                    format = "xfs";
+                    mountpoint = host;
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+
 }
