@@ -10,51 +10,72 @@ let
 in
 {
   flake.nixosModules."disk-layout-${name}" =
+    { config, host, ... }:
     {
-      host,
-      ...
-    }@args:
-
-    {
-      imports = [
-        inputs.disko.nixosModules.disko
-      ];
-
-      inherit (self.diskoModules.${name} args) disko;
-
-      environment.systemPackages = [
-        inputs.disko.packages.default
-      ];
-
-      boot.swraid = {
-        enable = true;
-        mdadmConf = ''
-          MAILADDR postmaster@${inputs.org.domain}
-          MAILFROM mdadm@${host.name}
-        '';
+      options.kompis-os.disk-layouts.${name} = lib.mkOption {
+        default = { };
+        type = lib.types.attrsOf (
+          lib.types.submodule {
+            options = {
+              mountpoint = lib.mkOption {
+                default = null;
+                type = lib.types.nullOr lib.types.str;
+              };
+              disks = lib.mkOption {
+                type = lib.types.attrsOf (
+                  lib.types.submodule {
+                    options = {
+                      device = lib.mkOption {
+                        type = lib.types.str;
+                      };
+                    };
+                  }
+                );
+              };
+            };
+          }
+        );
       };
+      config =
+        let
+          cfg = config.kompis-os.disk-layouts.${name};
+        in
+        lib.mkIf (cfg != { }) {
 
-      systemd.services.mdmonitor = {
-        enable = true;
-        wantedBy = [ "multi-user.target" ];
-      };
+          disko = lib.mkMerge (
+            lib.mapAttrsToList (disk: diskCfg: (self.diskoModules.${name} disk diskCfg).disko) cfg
+          );
 
-      services.smartd = {
-        enable = true;
-        notifications = {
-          mail.enable = true;
-          wall.enable = true;
+          boot.swraid = {
+            enable = true;
+            mdadmConf = ''
+              MAILADDR postmaster@${inputs.org.domain}
+              MAILFROM mdadm@${host.name}
+            '';
+          };
+
+          systemd.services.mdmonitor = {
+            enable = true;
+            wantedBy = [ "multi-user.target" ];
+          };
+
+          services.smartd = {
+            enable = true;
+            notifications = {
+              mail.enable = true;
+              wall.enable = true;
+            };
+          };
         };
-      };
     };
 
-  flake.diskoModules.${name} =
-    { host, ... }:
-    {
-      disko.devices = {
-        disk = lib.mapAttrs (disk: diskCfg: {
+  flake.diskoModules.${name} = disk: diskCfg: {
+    disko.devices = {
+      disk = lib.mapAttrs' (
+        rDisk: rDiskCfg:
+        lib.nameValuePair "${disk}-${rDisk}" {
           type = "disk";
-          device = diskCfg.device;
+          device = rDiskCfg.device;
           content = {
             type = "gpt";
             partitions = {
@@ -62,26 +83,26 @@ in
                 size = "100%";
                 content = {
                   type = "mdraid";
-                  name = "raid1";
+                  name = disk;
                 };
               };
             };
           };
-        }) host.disk-layouts.${name};
-        mdadm = {
-          raid1 = {
-            type = "mdadm";
-            level = 1;
-            content = {
-              type = "gpt";
-              partitions = {
-                primary = {
-                  size = "100%";
-                  content = {
-                    type = "filesystem";
-                    format = "xfs";
-                    mountpoint = host;
-                  };
+        }
+      ) diskCfg.disks;
+      mdadm = {
+        ${disk} = {
+          type = "mdadm";
+          level = 1;
+          content = {
+            type = "gpt";
+            partitions = {
+              primary = {
+                size = "100%";
+                content = {
+                  type = "filesystem";
+                  format = "xfs";
+                  mountpoint = diskCfg.mountpoint or null;
                 };
               };
             };
@@ -89,5 +110,5 @@ in
         };
       };
     };
-
+  };
 }

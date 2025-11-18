@@ -24,7 +24,8 @@ in
     acc: host: hostCfg:
     acc
     // (lib.mapAttrs' (
-      disk: diskCfg: lib.nameValuePair "${host}-${disk}" (self.diskoModules.${disk} { host = hostCfg; })
+      disk: diskCfg:
+      lib.nameValuePair "${host}-${disk}" (self.diskoModules.${diskCfg.module} disk diskCfg)
     ) hostCfg.disk-layouts)
   ) { } self.org.host;
 
@@ -54,13 +55,15 @@ in
         org = self.org;
         inherit inputs lib';
       };
-      modules = map (role: self.nixosModules.${role}) (
-        lib.unique (
-          hostCfg.roles
-          ++ (lib.mapAttrsToList (layout: _: "disk-layout-${layout}") hostCfg.disk-layouts)
-          ++ (lib.concatLists (lib.mapAttrsToList (_: userCfg: userCfg.roles) hostCfg.homes))
-        )
-      );
+      modules =
+        (lib.optionals (hostCfg.disk-layouts != { }) [ nixos/disko.nix ])
+        ++ map (role: self.nixosModules.${role}) (
+          lib.unique (
+            hostCfg.roles
+            ++ (lib.mapAttrsToList (disk: diskCfg: "disk-layout-${diskCfg.module}") hostCfg.disk-layouts)
+            ++ (lib.concatLists (lib.mapAttrsToList (_: userCfg: userCfg.roles) hostCfg.homes))
+          )
+        );
     }
   ) (lib.filterAttrs (_: cfg: lib.elem "nixos" cfg.roles) self.org.host);
 }

@@ -191,9 +191,21 @@ subnets = [
 ]
 system = "x86_64-linux"
 stateVersion = "25.05"
-disk-layouts.main-server.device = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
-disk-layouts.single-xfs.device = "/dev/disk/by-id/ata-TOSHIBA_MK2555GSX_59EIS0BNS"
-disk-layouts.single-xfs.mountpoint = "/srv/xfs-1"
+
+[host.stationary.disk-layouts.main]
+module = "main-server"
+device = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
+
+[host.stationary.disk-layouts.single-xfs]
+module = "single-xfs"
+device = "/dev/disk/by-id/ata-TOSHIBA_MK2555GSX_59EIS0BNS"
+mountpoint = "/srv/xfs-1"
+
+[host.stationary.disk-layouts.tungsten]
+module = "raid1-xfs"
+disks.one.device = "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44065762"
+disks.two.device = "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44323396"
+mountpoint = "/srv/tungsten"
 
 [host.lenovo]
 id = 7
@@ -256,7 +268,10 @@ roles = [
   "mailserver",
   "app-scheduler",
 ]
-disk-layouts.main-server.device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
+
+[host.helsinki.disk-layouts.main]
+module = "main-server"
+device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]
 id = 6
@@ -284,10 +299,13 @@ roles = [
   "nixos",
   "peer",
 ]
-disk-layouts.main-workstation.device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 homes.ami.roles = [
   "cinnamon-office",
 ]
+
+[host.adele.disk-layouts.main]
+module = "main-workstation"
+device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 
 [host.bootstrap]
 id = 254
