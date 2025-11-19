@@ -47,13 +47,21 @@ in
     }) eachApp;
 
     systemd.services = lib'.mergeAttrs (app: appCfg: {
+
+      "container@${app}" = {
+        serviceConfig = {
+          TimeoutStopSec = 10;
+          KillMode = "mixed";
+        };
+      };
+
       "${app}-pgsql-dump" = {
         description = "dump a snapshot of the postgresql database";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.postgresql}/bin/pg_dump -U ${app} ${app} > ${appCfg.home}/dbdump.sql'";
-          User = app;
-          Group = app;
+          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.postgresql}/bin/pg_dump -U ${appCfg.user} ${appCfg.database} > ${appCfg.home}/dbdump.sql'";
+          User = appCfg.user;
+          Group = appCfg.user;
         };
       };
 
@@ -73,8 +81,8 @@ in
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${pkgs.pgsql-restore}/bin/pgsql-restore ${app} ${appCfg.home}";
-          User = app;
-          Group = app;
+          User = appCfg.user;
+          Group = appCfg.user;
         };
       };
     }) eachApp;
@@ -116,6 +124,7 @@ in
 
     containers = lib.mapAttrs (app: appCfg: {
       autoStart = true;
+      ephemeral = true;
 
       bindMounts = {
         ${config.services.nextcloud.home} = {
@@ -137,6 +146,8 @@ in
 
         users.users.nextcloud.uid = lib'.ids.${app};
         users.groups.nextcloud.gid = lib'.ids.${app};
+
+        environment.systemPackages = [ pkgs.postgresql ];
 
         services.nginx = {
           virtualHosts.localhost = {
@@ -199,8 +210,8 @@ in
             dbtype = "pgsql";
             dbhost = "localhost";
             dbpassFile = "/run/secrets/db-password";
-            dbuser = app;
-            dbname = app;
+            dbuser = appCfg.user;
+            dbname = appCfg.database;
             adminpassFile = "/run/secrets/admin-password";
           };
         };

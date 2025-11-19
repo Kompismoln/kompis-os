@@ -29,6 +29,7 @@ in
 
     mobilizon.apps.${name} = {
       enable = true;
+      migration = "20250919143627";
       inherit (cfg) endpoint;
     };
   };

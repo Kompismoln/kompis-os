@@ -72,8 +72,8 @@ in
       serviceConfig = {
         ExecStart = "${pkgs.nodejs_20}/bin/node ${sveltePkgs app appCfg}/build";
         Environment = lib'.envToList envs.${app};
-        User = app;
-        Group = app;
+        User = appCfg.user;
+        Group = appCfg.user;
       };
       wantedBy = [ "multi-user.target" ];
     }) eachApp;

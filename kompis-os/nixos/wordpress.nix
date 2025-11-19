@@ -43,6 +43,10 @@ in
 
   config = lib.mkIf (eachApp != { }) {
 
+    environment.systemPackages = [
+      pkgs.wp-cli
+    ];
+
     kompis-os.preserve.directories = lib.mapAttrsToList (app: appCfg: {
       directory = appCfg.home;
       user = appCfg.user;

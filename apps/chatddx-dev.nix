@@ -39,6 +39,7 @@ in
       entity = name;
       inherit (cfg) endpoint;
       djangoApp = "chatddx_backend";
+      migration = "0032_ddxtestrun_snapshot";
       locationProxy = "/admin";
       celery = true;
     };

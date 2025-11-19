@@ -1,3 +1,4 @@
+# kompis-os/nixos/locksmith.nix
 {
   config,
   lib,

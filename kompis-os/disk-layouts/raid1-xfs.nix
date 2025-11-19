@@ -50,7 +50,7 @@ in
             enable = true;
             mdadmConf = ''
               MAILADDR postmaster@${inputs.org.domain}
-              MAILFROM mdadm@${host.name}
+              MAILFROM ${host.name}@${inputs.org.domain}
             '';
           };
 

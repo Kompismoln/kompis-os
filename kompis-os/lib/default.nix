@@ -142,6 +142,11 @@ lib: inputs: rec {
           default = inputs.${config.input}.packages.${host.system};
           type = with lib.types; attrsOf package;
         };
+        migration = lib.mkOption {
+          description = "expected state version";
+          default = null;
+          type = with lib.types; nullOr str;
+        };
       };
     in
     lib.recursiveUpdate { inherit options; } (

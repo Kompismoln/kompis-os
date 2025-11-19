@@ -58,6 +58,7 @@ in
                 "defaults"
                 "noatime"
                 "nodiratime"
+                "nofail"
               ];
             };
           };

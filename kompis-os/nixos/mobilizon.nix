@@ -18,7 +18,12 @@ in
   options = {
     kompis-os.mobilizon = {
       apps = lib.mkOption {
-        type = lib.types.attrsOf (lib.types.submodule (lib'.mkAppOpts host "mobilizon" { }));
+        type = lib.types.attrsOf (
+          lib.types.submodule (
+            lib'.mkAppOpts host "mobilizon" {
+            }
+          )
+        );
         default = { };
         description = "mobilizon apps to serve";
       };
@@ -77,15 +82,29 @@ in
       }
     ) eachApp;
 
+    systemd.services = lib.mapAttrs' (
+      app: appCfg:
+      lib.nameValuePair "container@${app}" {
+        serviceConfig = {
+          TimeoutStopSec = 10;
+          KillMode = "mixed";
+        };
+      }
+    ) eachApp;
+
     containers = lib.mapAttrs' (
       app: appCfg:
       (lib.nameValuePair app {
         autoStart = true;
+        ephemeral = true;
 
         bindMounts = {
           "/var/lib/mobilizon" = {
             isReadOnly = false;
             hostPath = appCfg.home;
+          };
+          "/run/postgresql" = {
+            isReadOnly = false;
           };
         };
 
@@ -98,6 +117,26 @@ in
             };
             groups.mobilizon.gid = lib'.ids.${app};
           };
+          services.postgresql.enable = lib.mkForce false;
+          systemd.services.mobilizon-postgresql.enable = lib.mkForce false;
+
+          environment.systemPackages = [ pkgs.postgresql ];
+
+          systemd.services.mobilizon = {
+            path = [ pkgs.postgresql ];
+
+            preStart =
+              let
+                query = "SELECT * FROM schema_migrations WHERE version=${appCfg.migration}";
+              in
+              lib.mkIf (appCfg.migration != null) (
+                lib.mkBefore ''
+                  echo "Validating database state for ${app}..."
+                  psql -U "${appCfg.user}" -d "${appCfg.database}" -c "${query}" | grep -q 1;
+                ''
+              );
+          };
+          # ...
           services.mobilizon = {
             enable = true;
             inherit (appCfg) package;
@@ -113,11 +152,9 @@ in
                 ];
               };
               "Mobilizon.Storage.Repo" = {
-                hostname = "127.0.0.1";
-                database = app;
-                username = app;
-                password = app;
-                socket_dir = null;
+                socket_dir = "/run/postgresql";
+                database = appCfg.database;
+                username = appCfg.user;
               };
               ":instance" = {
                 name = app;

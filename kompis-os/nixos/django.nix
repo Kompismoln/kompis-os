@@ -39,7 +39,7 @@ let
     app: appCfg:
     {
       DB_NAME = appCfg.database;
-      DB_USER = appCfg.database;
+      DB_USER = appCfg.user;
       DB_HOST = "/run/postgresql";
       DEBUG = "false";
       DJANGO_SETTINGS_MODULE = "${appCfg.djangoApp}.settings";
@@ -62,7 +62,10 @@ let
       text = ''
         exec ${appCfg.packages.django-manage}/bin/manage "$@"
       '';
-      runtimeEnv = envs.${app};
+      runtimeEnv = envs.${app} // {
+        DJANGO_APP = appCfg.packages.django-app;
+        DJANGO_STATIC = appCfg.packages.django-static;
+      };
     };
 
   bins = lib.mapAttrs mkDjangoManage eachApp;
@@ -129,7 +132,18 @@ in
 
     systemd.services = lib'.mergeAttrs (app: appCfg: {
       "${app}" = {
+        path = [ pkgs.postgresql ];
         description = "serve ${app}";
+        preStart =
+          let
+            query = "SELECT * FROM django_migrations WHERE name='${appCfg.migration}'";
+          in
+          lib.mkIf (appCfg.migration != null) (
+            lib.mkBefore ''
+              echo "Validating database state for ${app}..."
+              psql -U "${appCfg.user}" -d "${appCfg.database}" -c "${query}" | grep -q 1;
+            ''
+          );
         serviceConfig = {
           ExecStart = "${appCfg.packages.django-app}/bin/gunicorn ${appCfg.djangoApp}.wsgi:application --bind localhost:${toString (lib'.ports app)}";
           User = appCfg.user;
@@ -148,6 +162,8 @@ in
           Environment = lib'.envToList envs.${app};
         };
         wantedBy = [ "multi-user.target" ];
+        after = [ "${app}.service" ];
+        requires = [ "${app}.service" ];
       };
 
       "${app}-flower" = lib.mkIf appCfg.celery {
@@ -159,6 +175,8 @@ in
           Environment = lib'.envToList envs.${app};
         };
         wantedBy = [ "multi-user.target" ];
+        after = [ "${app}.service" ];
+        requires = [ "${app}.service" ];
       };
 
       "${app}-migrate" = {

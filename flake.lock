@@ -71,11 +71,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1758287904,
-        "narHash": "sha256-IGmaEf3Do8o5Cwp1kXBN1wQmZwQN3NLfq5t4nHtVtcU=",
+        "lastModified": 1762276996,
+        "narHash": "sha256-TtcPgPmp2f0FAnc+DMEw4ardEgv1SGNR3/WFGH0N19M=",
         "owner": "nix-community",
         "repo": "disko",
-        "rev": "67ff9807dd148e704baadbd4fd783b54282ca627",
+        "rev": "af087d076d3860760b3323f6b583f4d828c1ac17",
         "type": "github"
       },
       "original": {
@@ -350,11 +350,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1762196956,
-        "narHash": "sha256-RBiXJKc53ejkCq/gmFkpLnYM7lbMxw2nK6BobeqVk7Y=",
+        "lastModified": 1763570352,
+        "narHash": "sha256-0cncHSTYUjZHtHLD3Kmr5cInTAidemZtWQ2Sbct80Qc=",
         "owner": "Kompismoln",
         "repo": "klimatkalendern",
-        "rev": "2851fec0c94db7d4b961ac3499a85bd6f015bbd5",
+        "rev": "a48cde2a2f43e7a79626e110d247324f899f3b17",
         "type": "github"
       },
       "original": {
