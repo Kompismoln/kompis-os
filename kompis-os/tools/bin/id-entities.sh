@@ -197,7 +197,8 @@ new-secret:() {
 }
 
 # --- [verify|check]:*:*
-
+# verify: ensure that private and public keys are aligned
+# check: ensure live environment are actually using expected keys
 verify:() {
     with get-artifact:
     run derive-artifact | try diff - "$get_artifact_"
@@ -221,7 +222,8 @@ verify:service:tls-cert:() {
         try diff - <(openssl x509 -in "$get_artifact_" -pubkey -noout)
 }
 
-# host scan under check:* instead
+# remap check -> verify for host's ssh-keys
+# verify already scans host, so check can piggyback on verify for host's ssh keys
 check:host:ssh-key:() {
     verify:
 }

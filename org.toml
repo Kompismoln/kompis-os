@@ -476,6 +476,14 @@ endpoint = "klimatkalendern-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 
+[app.klimatkalendern-dev.state]
+capture = "hourly"
+commit = "daily"
+send."host:archive" = "daily"
+keep.snapshot.daily = 24
+keep.repo = { weekly = 7, monthly = 4 }
+keep."host:archive" = { weekly = 7, monthly = 4 }
+
 [app.nextcloud-kompismoln]
 endpoint = "nextcloud.kompismoln.se"
 altpoints = ["nc.kompismoln.se"]
