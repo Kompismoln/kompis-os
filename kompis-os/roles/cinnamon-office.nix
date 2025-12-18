@@ -35,6 +35,11 @@
           builtins.elem (lib.getName pkg) [
             "zoom"
           ];
+
+        programs.evince = {
+          enable = true;
+        };
+
         kompis-os = {
           cinnamon.enable = true;
           home-manager.enable = true;

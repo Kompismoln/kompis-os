@@ -21,6 +21,10 @@
 
     home.packages = with pkgs; [
       libreoffice
+      gnome-system-monitor
+      mate.mate-system-monitor
+      xreader
+      xournalpp
       zoom-us
       hunspell
       hunspellDicts.sv_SE
