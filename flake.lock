@@ -330,11 +330,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1756234564,
-        "narHash": "sha256-gLHCoW6bkjqS4cun/kpvkGzF3oQLc1hXgwrUbGNzoe0=",
+        "lastModified": 1765189334,
+        "narHash": "sha256-mU9uYooIZThvqwZUwwoP0JOD9Tkf7m0ybDvHXHEv2bc=",
         "owner": "Kompismoln",
         "repo": "klimatkalendern",
-        "rev": "03ba9583307a36e673dff8e00558de1458b1d3ef",
+        "rev": "4c0790303637e892a6618380dddd9f9dcd425ad9",
         "type": "github"
       },
       "original": {
@@ -350,11 +350,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1763640451,
-        "narHash": "sha256-1t4JyAR/BU8oaTQ4KAD0qwgLwcLnTPjKo5LvpbHoxlw=",
+        "lastModified": 1764959289,
+        "narHash": "sha256-mU9uYooIZThvqwZUwwoP0JOD9Tkf7m0ybDvHXHEv2bc=",
         "owner": "Kompismoln",
         "repo": "klimatkalendern",
-        "rev": "ad737f8929ad3ac2e92b7a9e3e32cabcaf944f19",
+        "rev": "2cb442ee45d6b161e011f58df36b58cac14febdb",
         "type": "github"
       },
       "original": {
