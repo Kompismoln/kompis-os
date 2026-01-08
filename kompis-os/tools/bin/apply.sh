@@ -12,7 +12,7 @@ declare -x \
     BUILD_HOST=${BUILD_HOST:-$(org-toml.sh "build-hosts" | head -n1)}
 
 apply() {
-    target_address=$(find-route.sh "$target")
+    target_address=${TARGET_ADDRESS:-$(find-route.sh "$target")}
 
     log info "use $BUILD_HOST to build $target (at $target_address)"
 
