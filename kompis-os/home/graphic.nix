@@ -31,11 +31,10 @@
       libre-bodoni
       libre-franklin
       liberation_ttf
-      manrope
       mplus-outline-fonts.githubRelease
       montserrat
       noto-fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       oxygenfonts
       roboto
       roboto-mono
@@ -47,7 +46,7 @@
       redhat-official-fonts
       rubik
       source-sans-pro
-      ubuntu_font_family
+      ubuntu-classic
     ];
   };
 }

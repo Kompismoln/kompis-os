@@ -26,10 +26,12 @@
       bats
     ];
 
-    programs.git = rec {
+    programs.git = {
       enable = true;
-      userName = config.home.username;
-      userEmail = org.user.${userName}.email;
+      settings.user = rec {
+        name = config.home.username;
+        email = org.user.${name}.email;
+      };
     };
   };
 }

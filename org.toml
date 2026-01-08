@@ -520,7 +520,7 @@ grants = ["host:app-scheduler"]
 wallpaper = "assets/wallpaper.jpg"
 
 [theme.fonts]
-emoji = { package = "noto-fonts-emoji", name = "Noto Color Emoji" }
+emoji = { package = "noto-fonts-color-emoji", name = "Noto Color Emoji" }
 monospace = { package = "source-code-pro", name = "Source Code Pro" }
 serif = { package = "merriweather", name = "Merriweather" }
 sansSerif = { package = "roboto", name = "Roboto" }
