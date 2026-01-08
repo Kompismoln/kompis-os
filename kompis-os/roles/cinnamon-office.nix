@@ -8,6 +8,7 @@
       ../home/social.nix
       ../home/xdg.nix
     ];
+
     config = {
       kompis-os-hm = {
         home.enable = true;
@@ -26,6 +27,7 @@
         ../nixos/cinnamon.nix
         ../nixos/home-manager.nix
         ../nixos/networkmanager.nix
+        ../nixos/printing.nix
         ../nixos/sound.nix
       ];
 
@@ -44,6 +46,7 @@
           cinnamon.enable = true;
           home-manager.enable = true;
           networkmanager.enable = true;
+          printing.enable = true;
           sound.enable = true;
         };
       };

@@ -1,8 +1,4 @@
 {
-  pkgs,
-  ...
-}:
-{
   kompis-os = {
     sysadm.rescueMode = true;
     users.ami.enable = true;
@@ -18,11 +14,6 @@
   sops.secrets.wifi-keys = {
     mode = "644";
     owner = "ami";
-  };
-
-  services.printing = {
-    enable = true;
-    drivers = [ pkgs.gutenprint ];
   };
 
   services.pipewire.extraConfig.pipewire-pulse = {
