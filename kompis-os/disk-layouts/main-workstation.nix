@@ -1,6 +1,5 @@
 # kompis-os/disk-layouts/main-workstation.nix
 {
-  inputs,
   self,
   ...
 }:
@@ -28,7 +27,7 @@ in
         };
         luksPartitionLabel = lib.mkOption {
           type = lib.types.str;
-          default = "luks";
+          default = "disk-main-luks";
         };
       };
 

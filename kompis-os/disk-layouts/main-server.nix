@@ -1,7 +1,6 @@
 # kompis-os/disk-layouts/main-server.nix
 {
   inputs,
-  lib,
   self,
   ...
 }:
