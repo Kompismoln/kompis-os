@@ -115,15 +115,31 @@ in
       }
     ) eachUser;
 
-    kompis-os.preserve.directories = lib.mapAttrsToList (user: userCfg: {
-      directory = config.users.users.${user}.home;
-      user = user;
-      group = user;
-    }) (lib.filterAttrs (user: userCfg: userCfg.stateful) eachUser);
-
     users.groups = lib.mapAttrs (user: userCfg: {
       gid = lib'.ids.${user};
       members = [ user ] ++ userCfg.members;
     }) eachUser;
+
+    assertions = lib.mapAttrsToList (
+      user: userCfg:
+      let
+        home = config.users.users.${user}.home;
+      in
+      {
+        assertion = !userCfg.stateful || home != "/var/empty";
+        message = "Stateful user '${user}' cannot have home '${home}'";
+      }
+    ) eachUser;
+
+    kompis-os.preserve.directories =
+      lib.mapAttrsToList
+        (user: userCfg: {
+          directory = config.users.users.${user}.home;
+          user = user;
+          group = user;
+        })
+        (
+          lib.filterAttrs (user: userCfg: toString config.users.users.${user}.home != "/var/empty") eachUser
+        );
   };
 }

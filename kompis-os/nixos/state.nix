@@ -1,3 +1,4 @@
+# kompis-os/nixos/state.nix
 {
   config,
   lib,
@@ -34,7 +35,7 @@
       userMatchBlocks = lib.concatStringsSep "\n" (
         lib.mapAttrsToList (user: userCfg: ''
           Match User ${user}
-            ForceCommand ${statePkg user userCfg}/bin/state
+            ForceCommand internal-sftp
             AllowTcpForwarding no
             X11Forwarding no
             AllowAgentForwarding no
