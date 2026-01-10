@@ -1,7 +1,7 @@
 # kompis-os/lib/default.nix
 lib: inputs: rec {
   # pick a list of attributes from an attrSet
-  pick = attrNames: attrSet: lib.filterAttrs (name: value: lib.elem name attrNames) attrSet;
+  pick = names: attrSet: lib.filterAttrs (name: value: lib.elem name names) attrSet;
 
   # create an env-file that can be sourced to set environment variables
   envToList = env: lib.mapAttrsToList (name: value: "${name}=${toString value}") env;
@@ -25,9 +25,9 @@ lib: inputs: rec {
           inputs.org.public-artifacts.${key}
         else
           inputs.org.public-artifacts.default;
-      path = builtins.replaceStrings [ "$class" "$entity" "$key" ] [ class entity key ] template;
+      location = builtins.replaceStrings [ "$class" "$entity" "$key" ] [ class entity key ] template;
     in
-    "${inputs.self}/${path}";
+    "${inputs.self}/${location}";
 
   ports = entity: ids.${entity} + 10000;
   secrets =
@@ -38,30 +38,30 @@ lib: inputs: rec {
           inputs.org.secrets.${class}
         else
           inputs.org.secrets.default;
-      path = builtins.replaceStrings [ "$class" "$entity" ] [ class entity ] template;
+      location = builtins.replaceStrings [ "$class" "$entity" ] [ class entity ] template;
     in
-    "${inputs.self}/${path}";
+    "${inputs.self}/${location}";
 
   host-config =
     host:
     let
-      path = builtins.replaceStrings [ "$host" ] [ host ] inputs.org.host-config;
+      location = builtins.replaceStrings [ "$host" ] [ host ] inputs.org.host-config;
     in
-    "${inputs.self}/${path}";
+    "${inputs.self}/${location}";
 
   home-config =
     home:
     let
-      path = builtins.replaceStrings [ "$home" ] [ home ] inputs.org.home-config;
+      location = builtins.replaceStrings [ "$home" ] [ home ] inputs.org.home-config;
     in
-    "${inputs.self}/${path}";
+    "${inputs.self}/${location}";
 
   app-config =
     app:
     let
-      path = builtins.replaceStrings [ "$app" ] [ app ] inputs.org.app-config;
+      location = builtins.replaceStrings [ "$app" ] [ app ] inputs.org.app-config;
     in
-    "${inputs.self}/${path}";
+    "${inputs.self}/${location}";
 
   home-args =
     user: host:
@@ -78,14 +78,6 @@ lib: inputs: rec {
     };
 
   package-sets = import ../packages/sets.nix;
-
-  homes = lib.concatMapAttrs (
-    host: hostCfg:
-    lib.mapAttrs' (username: homeCfg: {
-      name = "${username}@${host}";
-      value = home-args username host;
-    }) (hostCfg.home or { })
-  ) inputs.org.host;
 
   mkAppOpts =
     host: appType: submodule:

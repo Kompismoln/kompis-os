@@ -1,5 +1,7 @@
 {
   config,
+  home,
+  host,
   inputs,
   lib,
   lib',
@@ -12,6 +14,7 @@ let
   inherit (org.theme) fonts;
   colors = lib'.semantic-colors org.theme.colors;
   cfg = config.kompis-os-hm.hyprland;
+  host = org.host.${home.hostname};
 in
 
 {
@@ -31,9 +34,7 @@ in
 
     xdg.mimeApps.defaultApplications = {
       "text/*" = "nvim.desktop";
-      "text/x-lua" = "nvim.desktop";
       "image/*" = "feh.desktop";
-      "image/jpeg" = "feh.desktop";
       "video/*" = "mpv.desktop";
       "audio/*" = "mpv.desktop";
       "application/pdf" = "mupdf.desktop";
@@ -60,11 +61,7 @@ in
           position = "top";
           height = 30;
           spacing = 4;
-          output = [
-            "eDP-1"
-            "HDMI-A-1"
-            "HDMI-A-2"
-          ];
+          output = map (m: m.output) host.monitors;
           modules-right = [
             "pulseaudio#source"
             "pulseaudio#sink"
@@ -77,8 +74,8 @@ in
             "hyprland/submap"
           ];
           modules-center = [ "clock" ];
-          "network" = {
-            "interface" = "wlp1s0";
+          network = {
+            "interface" = host.desktop.wifi-interface;
             "format" = "{ifname}";
             "format-wifi" = "{essid} ({signalStrength}%) ";
             "format-ethernet" = "{ipaddr}/{cidr} 󰊗";
@@ -88,7 +85,6 @@ in
             "tooltip-format-ethernet" = "{ifname} ";
             "tooltip-format-disconnected" = "Disconnected";
             "max-length" = 50;
-
           };
           "pulseaudio#source" = {
             "format-source" = "{volume}% ";
@@ -105,8 +101,8 @@ in
             "format-bluetooth" = "{volume}% {icon}";
             "format-muted" = "";
             "format-icons" = {
-              "alsa_output.pci-0000_00_1f.3.analog-stereo" = "";
-              "alsa_output.pci-0000_00_1f.3.analog-stereo-muted" = "";
+              "alsa_output.${host.desktop.audio-bus-id}.analog-stereo" = "";
+              "alsa_output.${host.desktop.audio-bus-id}.analog-stereo-muted" = "";
               "headphone" = "";
               "hands-free" = "";
               "headset" = "";
@@ -198,32 +194,19 @@ in
     wayland.windowManager.hyprland = {
       enable = true;
       settings = {
-        monitor = [
-          "eDP-1, 1366x768, 0x0, 1"
-          "HDMI-A-2, 1920x1080, -1920x0, 1"
+        monitorv2 = host.monitors;
+
+        exec-once = [
+          "${lib.getExe pkgs.swaybg} -i ${config.home.file.wallpaper.target}"
+          "${lib.getExe pkgs.waybar}"
         ];
-        exec-once =
-          let
-            uid = lib'.ids.${config.home.username};
-            start-waybar = pkgs.writeShellScriptBin "start-waybar" ''
-              while [ ! -S "/run/user/${toString uid}/hypr/''${HYPRLAND_INSTANCE_SIGNATURE}/.socket.sock" ]; do
-                sleep 0.1
-              done
-              sleep 0.5
-              ${lib.getExe pkgs.waybar}
-            '';
-          in
-          [
-            "${lib.getExe pkgs.swaybg} -i ${config.home.file.wallpaper.target}"
-            "${start-waybar}/bin/start-waybar"
-          ];
 
         general = {
           gaps_out = 10;
         };
 
         input = {
-          kb_layout = "us,se";
+          kb_layout = host.desktop.kb-layout;
           kb_options = "grp:caps_switch";
           repeat_rate = 35;
           repeat_delay = 175;
@@ -253,17 +236,7 @@ in
           preserve_split = true;
         };
 
-        device = [
-          {
-            name = "epic-mouse-v1";
-            sensitivity = -0.5;
-          }
-          {
-            name = "wacom-intuos-pt-m-pen";
-            transform = 0;
-            output = "HDMI-A-1";
-          }
-        ];
+        device = host.devices;
 
         windowrule = [
           "float, class:^(.*)$"

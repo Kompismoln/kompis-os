@@ -29,21 +29,32 @@ in
     ) hostCfg.disk-layouts)
   ) { } self.org.host;
 
-  flake.homeConfigurations = lib.mapAttrs (
-    home: homeCfg:
-    inputs.home-manager.lib.homeManagerConfiguration {
-      pkgs = inputs.nixpkgs.legacyPackages.${homeCfg.system};
-      extraSpecialArgs = {
-        home = homeCfg;
-        org = self.org;
-        inherit inputs lib';
-      };
-      modules = [
-        homeCfg.configPath
-      ]
-      ++ map (role: self.homeModules.${role}) homeCfg.roles;
-    }
-  ) lib'.homes;
+  flake.homeConfigurations =
+    lib.mapAttrs
+      (
+        home: homeCfg:
+        inputs.home-manager.lib.homeManagerConfiguration {
+          pkgs = inputs.nixpkgs.legacyPackages.${homeCfg.system};
+          extraSpecialArgs = {
+            home = homeCfg;
+            org = self.org;
+            inherit inputs lib';
+          };
+          modules = [
+            homeCfg.configPath
+          ]
+          ++ map (role: self.homeModules.${role}) homeCfg.roles;
+        }
+      )
+      (
+        lib.concatMapAttrs (
+          host: hostCfg:
+          lib.mapAttrs' (username: homeCfg: {
+            name = "${username}@${host}";
+            value = lib'.home-args username host;
+          }) (hostCfg.home or { })
+        ) inputs.org.host
+      );
 
   flake.nixosConfigurations = lib.mapAttrs (
     host: hostCfg:

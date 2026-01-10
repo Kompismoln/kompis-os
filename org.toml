@@ -225,6 +225,29 @@ homes.alex.roles = [
   "hypr-devstation",
 ]
 
+[host.lenovo.desktop]
+wifi-interface = "wlp1s0"
+audio-bus-id = "pci-0000_00_1f.3"
+kb-layout = "us,se"
+
+[[host.lenovo.monitors]]
+output = "eDP-1"
+disabled = true
+
+[[host.lenovo.monitors]]
+output = "HDMI-A-2"
+mode = "1920x1080@144"
+position = "0x0"
+
+[[host.lenovo.devices]]
+name = "epic-mouse-v1"
+sensitivity = -0.5
+
+[[host.lenovo.devices]]
+name = "wacom-intuos-pt-m-pen"
+transform = 0
+output = "HDMI-A-1"
+
 [host.laptop]
 id = 2
 roles = [

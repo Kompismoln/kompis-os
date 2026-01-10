@@ -329,15 +329,30 @@ let
         description = "nixos state version";
         type = lib.types.str;
       };
+      homes = lib.mkOption {
+        description = "list of home configurations for a user";
+        default = { };
+        type = lib.types.attrsOf (lib.types.submodule homeOpts);
+      };
       disk-layouts = lib.mkOption {
         description = "record of disk layouts that applies to host";
         default = { };
         type = lib.types.attrsOf lib.types.anything;
       };
-      homes = lib.mkOption {
-        description = "list of home configurations for a user";
+      desktop = lib.mkOption {
+        description = "list of desktop settings";
         default = { };
-        type = lib.types.attrsOf (lib.types.submodule homeOpts);
+        type = lib.types.attrsOf (lib.types.anything);
+      };
+      monitors = lib.mkOption {
+        description = "list of monitors possibly connected to the host";
+        default = { };
+        type = lib.types.listOf (lib.types.attrsOf (lib.types.anything));
+      };
+      devices = lib.mkOption {
+        description = "list of devices possibly connected to the host";
+        default = { };
+        type = lib.types.listOf (lib.types.attrsOf (lib.types.anything));
       };
     };
   };
