@@ -120,6 +120,14 @@ in
       members = [ user ] ++ userCfg.members;
     }) eachUser;
 
+    # hack to prevent activation errors with service-users (with uid=2000+)
+    systemd.services = lib.mapAttrs' (
+      user: userCfg:
+      lib.nameValuePair "user@${toString lib'.ids.${user}}" {
+        restartIfChanged = false;
+      }
+    ) (lib.filterAttrs (user: userCfg: lib'.ids.${user} > 1999) eachUser);
+
     assertions = lib.mapAttrsToList (
       user: userCfg:
       let

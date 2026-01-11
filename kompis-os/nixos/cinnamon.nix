@@ -40,6 +40,10 @@
       enable = true;
       desktopManager.cinnamon.enable = true;
       displayManager.lightdm = {
+        extraConfig = ''
+          minimum-uid=1000
+          maximum-uid=1999
+        '';
         enable = true;
         greeters.slick.enable = true;
       };
