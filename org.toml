@@ -193,7 +193,7 @@ system = "x86_64-linux"
 stateVersion = "25.05"
 
 [host.stationary.disk-layouts.main]
-module = "main-server"
+module = "main-server-zfs-test"
 device = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
 
 [host.stationary.disk-layouts.single-xfs]
@@ -293,7 +293,7 @@ roles = [
 ]
 
 [host.helsinki.disk-layouts.main]
-module = "main-server"
+module = "main-server-btrfs"
 device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]

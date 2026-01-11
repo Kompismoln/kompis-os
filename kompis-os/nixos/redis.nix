@@ -233,13 +233,11 @@ in
       server: serverCfg: lib.nameValuePair serverCfg.home { inherit (serverCfg) user; }
     ) eachServer;
 
-    preservation.preserveAt."/srv/database" = {
-      directories = lib.mapAttrsToList (server: serverCfg: {
-        directory = serverCfg.home;
-        user = serverCfg.user;
-        group = serverCfg.user;
-      }) eachServer;
-    };
+    kompis-os.preserve.databases = lib.mapAttrsToList (server: serverCfg: {
+      directory = serverCfg.home;
+      user = serverCfg.user;
+      group = serverCfg.user;
+    }) eachServer;
 
     systemd.services = lib.mapAttrs (server: serverCfg: {
       description = "Redis Server - ${server}";

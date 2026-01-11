@@ -1,18 +1,16 @@
-# kompis-os/disk-layouts/main-server.nix
+# kompis-os/disk-layouts/main-server-btrfs.nix
 {
-  inputs,
   self,
   ...
 }:
 let
-  name = "main-server";
+  name = "main-server-btrfs";
 in
 {
   flake.nixosModules."disk-layout-${name}" =
     {
       lib,
       config,
-      host,
       ...
     }:
     let
@@ -29,7 +27,7 @@ in
         };
         luksPartitionLabel = lib.mkOption {
           type = lib.types.str;
-          default = "luks";
+          default = "disk-main-luks";
         };
       };
 
@@ -37,17 +35,10 @@ in
         sops.secrets.luks-key = { };
         boot.initrd.secrets."${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
 
-        boot.zfs.devNodes = "/dev/disk/by-uuid";
-
-        networking.hostId = lib.strings.fixedWidthString 8 "0" (
-          builtins.toString inputs.org.host.${host.name}.id
-        );
-
         kompis-os = {
           locksmith.luksDevice = "/dev/disk/by-partlabel/${cfg.luksPartitionLabel}";
           preserve.enable = true;
         };
-
         disko.devices = (self.diskoModules.${name} name cfg).disko.devices;
       };
     };
@@ -71,7 +62,7 @@ in
       disk = {
         main = {
           type = "disk";
-          device = diskCfg.device;
+          device = "/dev/sda";
           content = {
             type = "gpt";
             partitions = {
@@ -92,12 +83,11 @@ in
               };
               luks = {
                 size = "100%";
-                label = diskCfg.luksPartitionLabel;
                 content = {
                   type = "luks";
-                  name = "luks";
+                  name = "crypted";
                   settings = {
-                    keyFile = diskCfg.luksKeyFile;
+                    keyFile = "/luks-key";
                     allowDiscards = true;
                   };
                   content = {
@@ -162,19 +152,12 @@ in
                 type = "swap";
               };
             };
-            zfs_vol = {
-              size = "20%VG";
-              content = {
-                type = "zfs";
-                pool = "dbroot";
-              };
-            };
-            btrfs_vol = {
-              size = "40%VG";
+            state = {
+              size = "60%VG";
               content = {
                 type = "btrfs";
                 extraArgs = [ "-f" ];
-                mountpoint = "/mnt/btrfs_vol";
+                mountpoint = "/mnt/state";
                 mountOptions = [
                   "subvolid=5"
                   "noatime"
@@ -195,6 +178,15 @@ in
                       "compress=zstd"
                       "noatime"
                       "space_cache=v2"
+                    ];
+                  };
+                  "@database" = {
+                    mountpoint = "/srv/database";
+                    mountOptions = [
+                      "compress=no"
+                      "noatime"
+                      "space_cache=v2"
+                      "nodatacow"
                     ];
                   };
                   "@backup" = {
@@ -218,7 +210,7 @@ in
               };
             };
             share = {
-              size = "40%VG";
+              size = "100%FREE";
               content = {
                 type = "filesystem";
                 format = "xfs";
@@ -228,35 +220,6 @@ in
                   "noatime"
                   "nodiratime"
                 ];
-              };
-            };
-          };
-        };
-      };
-      zpool = {
-        dbroot = {
-          type = "zpool";
-          rootFsOptions = {
-            compression = "zstd";
-            atime = "off";
-          };
-          datasets = {
-            "data" = {
-              mountpoint = "/srv/zfs_vol";
-              type = "zfs_fs";
-              options = {
-                recordsize = "16k";
-                primarycache = "metadata";
-                canmount = "noauto";
-              };
-            };
-            "wal" = {
-              mountpoint = "/srv/zfs_vol/pg_wal";
-              type = "zfs_fs";
-              options = {
-                recordsize = "128k";
-                primarycache = "all";
-                canmount = "noauto";
               };
             };
           };
