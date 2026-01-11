@@ -1,3 +1,4 @@
+# kompis-os/tools/session/pgsql-dump.sh
 set -euo pipefail
 appname="$1"
 stateDir="$2"

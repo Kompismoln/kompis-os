@@ -30,7 +30,7 @@ in
   config = lib.mkIf cfg.enable {
     services.nginx.virtualHosts.${cfg.endpoint} =
       let
-        proxyPass = "http://127.0.0.1:${builtins.toString (lib'.ports cfg.app)}";
+        proxyPass = "http://127.0.0.1:${toString (lib'.ports cfg.app)}";
       in
       {
         forceSSL = cfg.ssl;

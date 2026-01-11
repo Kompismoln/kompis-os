@@ -1,5 +1,6 @@
 # kompis-os/apps/chatddx-dev.nix
 {
+  lib,
   lib',
   org,
   ...
@@ -39,7 +40,6 @@ in
       entity = name;
       inherit (cfg) endpoint;
       djangoApp = "chatddx_backend";
-      migration = "0032_ddxtestrun_snapshot";
       locationProxy = "/admin";
       celery = true;
     };

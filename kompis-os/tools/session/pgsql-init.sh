@@ -1,3 +1,4 @@
+# kompis-os/tools/session/pgsql-init.sh
 set -euo pipefail
 appname="$1"
 
