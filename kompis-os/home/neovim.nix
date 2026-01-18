@@ -105,6 +105,21 @@ in
 
       keymaps = [
         {
+          key = "s";
+          action = "<Plug>(leap-forward)";
+          options.desc = "Open parent directory";
+        }
+        {
+          key = "gs";
+          action = "<Plug>(leap-from-window)";
+          options.desc = "Open parent directory";
+        }
+        {
+          key = "S";
+          action = "<Plug>(leap-backward)";
+          options.desc = "Open parent directory";
+        }
+        {
           key = "-";
           action = "<cmd>Oil<cr>";
           options.desc = "Open parent directory";
