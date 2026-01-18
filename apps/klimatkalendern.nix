@@ -1,8 +1,12 @@
 # kompis-os/apps/klimatkalendern.nix
-{ org, ... }:
+{
+  config,
+  org,
+  ...
+}:
 let
   name = "klimatkalendern";
-  appCfg = org.app.${name};
+  app = org.app.${name};
 in
 {
   imports = [
@@ -13,10 +17,17 @@ in
 
   kompis-os = {
     nginx.enable = true;
-    postgresql.enable = true;
+    postgresql.databases.${name} = {
+      enable = true;
+      dumpPath = "${config.users.users.${name}.home}/dbdump.sql";
+    };
+
+    users.${name}.class = "app";
+
     mobilizon.apps.${name} = {
       enable = true;
-      inherit (appCfg) endpoint;
+      migration = "20250919143627";
+      inherit (app) endpoint;
     };
   };
 }

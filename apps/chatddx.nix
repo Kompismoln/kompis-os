@@ -41,6 +41,7 @@ in
       djangoApp = "chatddx_backend";
       locationProxy = "/admin";
       celery = true;
+      timeout = 180;
     };
   };
 }

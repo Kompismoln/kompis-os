@@ -1,6 +1,5 @@
 # kompis-os/apps/chatddx-dev.nix
 {
-  lib,
   lib',
   org,
   ...
@@ -42,6 +41,7 @@ in
       djangoApp = "chatddx_backend";
       locationProxy = "/admin";
       celery = true;
+      timeout = 180;
     };
   };
 }

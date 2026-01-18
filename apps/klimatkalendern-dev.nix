@@ -7,7 +7,7 @@
 }:
 let
   name = "klimatkalendern-dev";
-  cfg = org.app.${name};
+  app = org.app.${name};
 in
 {
   imports = [
@@ -23,14 +23,12 @@ in
       dumpPath = "${config.users.users.${name}.home}/dbdump.sql";
     };
 
-    users.${name} = {
-      class = "app";
-    };
+    users.${name}.class = "app";
 
     mobilizon.apps.${name} = {
       enable = true;
       migration = "20250919143627";
-      inherit (cfg) endpoint;
+      inherit (app) endpoint;
     };
   };
   services.mobilizon.settings."Mobilizon.Web.Email.Mailer" =

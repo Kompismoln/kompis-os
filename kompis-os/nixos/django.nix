@@ -31,6 +31,12 @@ let
         example = "~ ^/(api|admin)";
         default = "/";
       };
+      timeout = lib.mkOption {
+        description = "Workers silent for more than this many seconds are killed and restarted.";
+        type = lib.types.int;
+        example = 180;
+        default = 30;
+      };
       celery = lib.mkEnableOption "celery et al";
     };
   };
@@ -145,7 +151,14 @@ in
             ''
           );
         serviceConfig = {
-          ExecStart = "${appCfg.packages.django-app}/bin/gunicorn ${appCfg.djangoApp}.wsgi:application --bind localhost:${toString (lib'.ports app)}";
+          ExecStart = lib.escapeShellArgs [
+            "${appCfg.packages.django-app}/bin/gunicorn"
+            "${appCfg.djangoApp}.wsgi:application"
+            "--bind"
+            "localhost:${toString (lib'.ports app)}"
+            "--timeout"
+            (toString appCfg.timeout)
+          ];
           User = appCfg.user;
           Group = appCfg.user;
           Environment = lib'.envToList envs.${app};
