@@ -232,12 +232,13 @@ kb-layout = "us,se"
 
 [[host.lenovo.monitors]]
 output = "eDP-1"
-disabled = true
+mode = "preferred"
+position = "auto"
 
 [[host.lenovo.monitors]]
 output = "HDMI-A-2"
-mode = "1920x1080@144"
-position = "0x0"
+mode = "preferred"
+position = "auto"
 
 [[host.lenovo.devices]]
 name = "epic-mouse-v1"
