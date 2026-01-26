@@ -31,7 +31,7 @@ in
     database = lib.mkOption {
       description = "permanent no-cow storage";
       type = lib.types.str;
-      default = "/srv/zfs_vol";
+      default = "/srv/database";
     };
   };
 
