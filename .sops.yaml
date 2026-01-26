@@ -3,42 +3,84 @@ creation_rules:
     key_groups:
       - age:
         - age1mh2urcf7ke0wg4w7x8jxsey3xdkel08jmzr90ex0sgexnuhr9g9stmslju
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
+        - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
+        - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
+  - path_regex: enc/app-chatddx-dev.yaml
+    key_groups:
+      - age:
+        - age1t4x5jushn00c2322d2vhxmu9jfasm8w08qudqsyphtkx4x9aa3uqwsegvn
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
   - path_regex: enc/app-collabora.yaml
     key_groups:
       - age:
         - age18pse8rn72mwpv0zmncasxlsuxmm33704tprgt4zelu2gc68waskssnukt7
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
+        - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
+        - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
+  - path_regex: enc/app-collabora-dev.yaml
+    key_groups:
+      - age:
+        - age18pq0s7hwqp8z2xzv8m8qxeshj3s6sjdpzmu83hacp57xzvlfnpdqv6wcva
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
   - path_regex: enc/app-esse.yaml
     key_groups:
       - age:
         - age1tfg0m4w2hy0es4wtzt7ltrgtxuhaukvk072kq2hs20tedeav4ghswk0vtd
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
+        - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
+        - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
+  - path_regex: enc/app-esse-dev.yaml
+    key_groups:
+      - age:
+        - age1s8gcncf7exynrx864hujrun6ngpa2x0z8625utdhfflzkk4w2vnqrt9q3x
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
   - path_regex: enc/app-klimatkalendern.yaml
     key_groups:
       - age:
         - age18x06ucn9vjz5jyc9ddsj64ltlufm609cekmj0uyvjfmxw65c096sgkcvxy
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
   - path_regex: enc/app-klimatkalendern-dev.yaml
     key_groups:
       - age:
         - age17a4af2tq397y83mykcm0eepcu6sttkcqv8nxt8emjf4v7h6a8y0qtncl85
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
   - path_regex: enc/app-nextcloud-kompismoln.yaml
     key_groups:
       - age:
         - age19zqkrl5r5aat79tallyqclpv02venk7c4nw0xfvtqx8mdxxp6dnsdkj9zv
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
+        - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
+        - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
+  - path_regex: enc/app-nextcloud-kompismoln-dev.yaml
+    key_groups:
+      - age:
+        - age1qsyju5c6rtz3ul5v2mcmgemn2s96adgw9k37n9e87wwf8tn32yhs72c77j
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
   - path_regex: enc/app-sverigesval.yaml
     key_groups:
       - age:
         - age10f8dw32eukymcvpcl9tvnf8h8tz4eyjc2zyhtme9h0q2ce58tpaskws7mz
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
+        - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
+        - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
+  - path_regex: enc/app-sverigesval-dev.yaml
+    key_groups:
+      - age:
+        - age1qh8djxkt7keaek5kvh7f2dyq9vsyqn9z2j56ffnd0lsuynsuld8s5ea0p8
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
   - path_regex: enc/host-adele.yaml
@@ -130,7 +172,7 @@ creation_rules:
         - age1stgu2kujac8h0fucntv6r6fwua8rfu0sz8mq9ld5fmxxq2q2ua3s04ah39
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
-        - age1y5k2wqd0au34lecrt53xpwdtm0rwkvpkulgmwqrhz2p8a9zn8gxqvgts9g
+        - age1vtetldw3udmtx92vd55x6dk4cuqkesk4ndu7xc5vpas29hfmtquq3r4nws
   - path_regex: enc/service-domain-km1.yaml
     key_groups:
       - age:
@@ -164,6 +206,7 @@ creation_rules:
   - path_regex: enc/service-egress-proxy.yaml
     key_groups:
       - age:
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
         - age1jdad5mzehs6dsjjn8gqdmfw0qhufgwpz30kfjnlf2y7x2nn99grqs8fdet
@@ -266,6 +309,7 @@ creation_rules:
   - path_regex: enc/service-reverse-tunnel.yaml
     key_groups:
       - age:
+        - age1hltf2fu8kllnvvt768h8tmn57l3ac6nuj7cyrk4s2fhlknqmqy2sssqhr6
         - age15pv6x0rjv5x92daey2c0yg3lk926h8zprtku32uzp0a3fqskqa0q2wq8z6
         - age1cavc8kaykuqxk9xk6ca78fea73ym32ugxvhq9ek0xgg0aar23qpqg5psm3
         - age1z44ue69etcfw69ryc7mndtepgxt65ulwndrrlqjvc5nz29fzgs0sut3agn
