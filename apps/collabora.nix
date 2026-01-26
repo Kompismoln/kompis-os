@@ -1,3 +1,4 @@
+# apps/collabora.nix
 { org, ... }:
 let
   name = "collabora";

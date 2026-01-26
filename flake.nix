@@ -41,7 +41,7 @@
     chatddx-dev.url = "git+ssh://git@github.com/LigninDDX/chatddx";
     chatddx-dev.inputs.nixpkgs.follows = "nixpkgs";
 
-    kompismoln-site.url = "git+ssh://git@github.com/Kompismoln/website";
+    kompismoln-site.url = "github:Kompismoln/site";
     kompismoln-site.inputs.nixpkgs.follows = "nixpkgs";
 
     klimatkalendern.url = "github:Kompismoln/klimatkalendern";
@@ -56,7 +56,7 @@
     inputs.flake-parts.lib.mkFlake
       {
         inputs = inputs // {
-          org = builtins.fromTOML (builtins.readFile ./org.toml);
+          org = fromTOML (builtins.readFile ./org.toml);
         };
       }
       {

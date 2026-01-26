@@ -97,7 +97,7 @@ in
           "${user}/mail-sha512" = {
             sopsFile = lib'.secrets "user" user;
             restartUnits = [
-              "dovecot2.service"
+              "dovecot.service"
               "postfix.service"
             ];
           };
@@ -106,7 +106,7 @@ in
           "dmarc-reports/mail-sha512" = {
             sopsFile = lib'.secrets "service" "dmarc-reports";
             restartUnits = [
-              "dovecot2.service"
+              "dovecot.service"
               "postfix.service"
             ];
           };
@@ -119,6 +119,7 @@ in
         dkimSelector = cfg.dkimSelector;
         domains = lib.mapAttrsToList (domain: _: domain) mailboxDomains;
         domainsWithoutMailbox = lib.mapAttrsToList (domain: _: domain) relayDomains;
+        enableSubmission = true;
         enableSubmissionSsl = false;
         mailboxes = {
           Drafts = {
@@ -159,8 +160,12 @@ in
             };
           }
         ];
+        x509.useACMEHost = config.mailserver.fqdn;
+      };
 
-        certificateScheme = "acme-nginx";
+      security.acme.certs.${config.mailserver.fqdn} = {
+        group = "nginx";
+        webroot = "/var/lib/acme/acme-challenge";
       };
 
       services = {
