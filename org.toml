@@ -237,8 +237,9 @@ position = "auto"
 
 [[host.lenovo.monitors]]
 output = "HDMI-A-2"
-mode = "preferred"
+mode = "1920x1080@60"
 position = "auto"
+scale = 1
 
 [[host.lenovo.devices]]
 name = "epic-mouse-v1"
