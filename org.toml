@@ -509,6 +509,11 @@ grants = ["host:app-scheduler"]
 # keep.repo = { weekly = 7, monthly = 4 }
 # keep."host:archive" = { weekly = 7, monthly = 4 }
 
+[app.opencloud-kompismoln]
+endpoint = "opencloud.kompismoln.se"
+run-on-hosts = ["helsinki"]
+grants = ["host:app-scheduler"]
+
 [app.nextcloud-kompismoln]
 endpoint = "nextcloud.kompismoln.se"
 altpoints = ["nc.kompismoln.se"]
@@ -619,3 +624,4 @@ chatddx-dev-django = 3013
 chatddx-dev-django-flower = 3016
 collabora = 3015
 collabora-dev = 3014
+opencloud-kompismoln = 3020

@@ -89,6 +89,11 @@ lib: inputs: rec {
           description = "canonical domain name";
           type = lib.types.str;
         };
+        url = lib.mkOption {
+          description = "public url including scheme";
+          default = "${config.scheme}://${config.endpoint}";
+          type = lib.types.str;
+        };
         location = lib.mkOption {
           description = "canonical path";
           default = "/";
@@ -123,6 +128,11 @@ lib: inputs: rec {
           description = "let's encrypt and force https";
           default = true;
           type = lib.types.bool;
+        };
+        scheme = lib.mkOption {
+          description = "http or https";
+          default = if config.ssl then "https" else "http";
+          type = lib.types.str;
         };
         package = lib.mkOption {
           description = "${appType}'s default package";
