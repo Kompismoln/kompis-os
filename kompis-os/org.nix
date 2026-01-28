@@ -315,7 +315,8 @@ let
       };
       dnsFor = lib.mkOption {
         description = "subnet this host is dns for";
-        type = lib.types.str;
+        type = with lib.types; nullOr str;
+        default = null;
       };
       subnets = lib.mkOption {
         description = "list of interface names for subnets";

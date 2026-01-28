@@ -4,7 +4,6 @@
   inputs,
   lib,
   options,
-  pkgs,
   ...
 }:
 
@@ -68,32 +67,12 @@ in
 
     systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 
+    boot.initrd.systemd.enable = true;
+
     services.journald.extraConfig = ''
       SystemMaxUse=100M
       SystemKeepFree=200M
       MaxRetentionSec=1week
     '';
-
-    boot.initrd.systemd = {
-      enable = true;
-      services."format-root" = {
-        enable = true;
-        description = "Format the root LV partition at boot";
-        unitConfig = {
-          DefaultDependencies = "no";
-          Requires = "dev-pool-root.device";
-          After = "dev-pool-root.device";
-          Before = "sysroot.mount";
-        };
-
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStart = "${pkgs.e2fsprogs}/bin/mkfs.ext4 -F /dev/pool/root";
-        };
-        wantedBy = [ "initrd.target" ];
-      };
-
-    };
   };
 }

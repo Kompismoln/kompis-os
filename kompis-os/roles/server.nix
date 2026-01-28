@@ -25,7 +25,7 @@
       ];
 
       kompis-os = {
-        dns-hints = lib.mkIf (lib.hasAttr "dnsFor" org.host.${host.name}) {
+        dns-hints = lib.mkIf (org.host.${host.name}.dnsFor != null) {
           enable = true;
           subnet = org.host.${host.name}.dnsFor;
         };

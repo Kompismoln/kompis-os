@@ -332,6 +332,25 @@ homes.ami.roles = [
 module = "main-workstation"
 device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 
+[host.pelle]
+facter = "hosts/pelle/facter.json"
+id = 9
+roles = [
+  "nixos",
+  "peer",
+  "server",
+]
+subnets = [
+  "wg0",
+  "wg1",
+]
+system = "x86_64-linux"
+stateVersion = "25.11"
+
+[host.pelle.disk-layouts.main]
+module = "main-server-ai"
+device = "/dev/disk/by-id/nvme-WDC_WD_BLACK_SDBPNTY-1T00-1106_21351R802985"
+
 [host.bootstrap]
 id = 254
 roles = [

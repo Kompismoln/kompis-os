@@ -11,6 +11,7 @@ in
     {
       config,
       lib,
+      pkgs,
       ...
     }:
     let
@@ -33,16 +34,36 @@ in
 
       config = {
         sops.secrets.luks-key = { };
-        boot.initrd.secrets."/${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
 
         kompis-os = {
           locksmith.luksDevice = "/dev/disk/by-partlabel/${cfg.luksPartitionLabel}";
           preserve.enable = true;
         };
 
+        boot.initrd.secrets."/${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
+        boot.initrd.systemd = {
+          enable = true;
+          services."format-root" = {
+            enable = true;
+            description = "Format the root LV partition at boot";
+            unitConfig = {
+              DefaultDependencies = "no";
+              Requires = "dev-pool-root.device";
+              After = "dev-pool-root.device";
+              Before = "sysroot.mount";
+            };
+
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              ExecStart = "${pkgs.e2fsprogs}/bin/mkfs.ext4 -F /dev/pool/root";
+            };
+            wantedBy = [ "initrd.target" ];
+          };
+        };
+
         disko.devices = (self.diskoModules.${name} name cfg).disko.devices;
       };
-
     };
 
   flake.diskoModules.${name} = disk: diskCfg: {
