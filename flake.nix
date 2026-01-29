@@ -62,6 +62,9 @@
       {
         systems = [ "x86_64-linux" ];
         imports = [ ./kompis-os/outputs.nix ];
+        flake = {
+          src = inputs.self.outPath;
+        };
         perSystem =
           { pkgs, ... }:
           {
@@ -71,7 +74,8 @@
               ];
               shellHook = ''
                 export SOPS_AGE_KEY_FILE=/keys/root-1
-                export BUILD_HOST=./
+                export BUILD_HOST=pelle
+                export BUILD_WORKING_TREE=true
                 export RESTIC_REPOSITORY="$HOME/.restic"
                 export RESTIC_PASSWORD_FILE="/run/secrets/alex/restic-key"
                 PATH=$(pwd)/kompis-os/tools/bin:$PATH

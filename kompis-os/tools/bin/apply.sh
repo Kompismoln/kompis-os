@@ -7,32 +7,50 @@ km_root="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 # shellcheck source=../libexec/run-with.bash
 . "$km_root/libexec/run-with.bash"
 
+declare -x target=${1:?target required}
 declare -x \
-    target=${1:?target required} \
-    BUILD_HOST=${BUILD_HOST:-$(org-toml.sh "build-hosts" | head -n1)}
+    TARGET_ADDRESS=${TARGET_ADDRESS:-$(find-route.sh "$target")} \
+    BUILD_HOST_ADDRESS=${BUILD_HOST_ADDRESS:-$(find-route.sh "$BUILD_HOST" 5000)}
 
 apply() {
-    target_address=${TARGET_ADDRESS:-$(find-route.sh "$target")}
+    log info "use $BUILD_HOST to build $target (at $TARGET_ADDRESS)"
 
-    log info "use $BUILD_HOST to build $target (at $target_address)"
+    if [[ -n $BUILD_WORKING_TREE ]]; then
+        with source
 
-    with build
-    log important "$build"
+        # export for build.sh
+        export SOURCE=$source
 
-    if [[ -d "$BUILD_HOST" ]]; then
-        "$km_root/bin/as.sh" nix-push nix copy --to "ssh://nix-push@$target_address" "$build"
-    else
-        local build_host
-        build_host="http://$(find-route.sh "$BUILD_HOST" 5000):5000"
-        "$km_root/bin/as.sh" nix-build ssh "nix-build@$target_address" "pull $build $build_host"
+        log important "export SOURCE=$source"
+        if [[ $BUILD_HOST != localhost ]]; then
+            "$km_root/bin/as.sh" nix-push nix copy --to "ssh://nix-push@$BUILD_HOST_ADDRESS" "$SOURCE"
+        fi
     fi
 
-    "$km_root/bin/as.sh" nix-switch ssh "nix-switch@$target_address" "$build"
+    with build
+    log important "build=$build"
+
+    if [[ $BUILD_HOST == localhost && $TARGET_ADDRESS != localhost ]]; then
+        "$km_root/bin/as.sh" nix-push nix copy --to "ssh://nix-push@$TARGET_ADDRESS" "$build"
+    fi
+
+    if [[ $BUILD_HOST != localhost && "$BUILD_HOST" != "$target" ]]; then
+        "$km_root/bin/as.sh" nix-build ssh "nix-build@$TARGET_ADDRESS" \
+            pull \
+            "$build" \
+            "http://$BUILD_HOST_ADDRESS:5000"
+    fi
+
+    log important "switching $target to $build"
+    "$km_root/bin/as.sh" nix-switch ssh "nix-switch@$TARGET_ADDRESS" "$build"
 }
 
-declare -g build
+declare -g build source
 build() {
     "$km_root/bin/build.sh" "$target"
 }
 
+source() {
+    nix eval --raw .#src
+}
 apply

@@ -2,11 +2,13 @@
 # tools/remote/nixservice.sh
 set -euo pipefail
 
+declare -x SOURCE=${SOURCE:-$REPO}
+
 main() {
     case $1 in
     build)
         host=${2:?"host required"}
-        refresh=${3:-}
+        source=${3:-$SOURCE}
         ;;
     pull)
         closure=${2:?"closure required"}
@@ -21,10 +23,8 @@ main() {
 }
 
 build() {
-    if [[ -n $refresh ]]; then
-        rm -rf "$HOME/.cache/nix/"*
-    fi
-    nix build "$REPO#nixosConfigurations.$host.config.system.build.toplevel" \
+    rm -rf "$HOME/.cache/nix/"*
+    nix build "$source#nixosConfigurations.$host.config.system.build.toplevel" \
         --print-out-paths --no-link
 }
 

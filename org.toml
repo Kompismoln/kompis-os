@@ -8,6 +8,7 @@ host-config = "hosts/$host/configuration.nix"
 home-config = "homes/$home.nix"
 app-config = "apps/$app.nix"
 build-hosts = [
+  "pelle",
   "stationary",
 ]
 root-identities = [

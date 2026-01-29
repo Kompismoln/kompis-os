@@ -8,6 +8,12 @@ km_root="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 find-route() {
     local host=$1 port=${2:-22}
 
+    # Let localhost through
+    if [[ $host == localhost ]]; then
+        echo "$host"
+        return 0
+    fi
+
     # Fast-path for IPs
     if ip route get "$host" &>/dev/null; then
         log success "$host:$port is up"
@@ -32,7 +38,7 @@ find-route() {
             return 0
         fi
     done < <(org-toml.sh "namespaces")
-    die 1 "no contact with $host"
+    die 1 "no contact with $host:$port"
 }
 
 ping-port() {
