@@ -27,7 +27,7 @@ in
       apps = lib.mkOption {
         type = with lib.types; attrsOf (submodule appOpts);
         default = { };
-        description = "nextcloud apps to serve";
+        description = "nextcloud instances to serve";
       };
     };
   };
@@ -179,11 +179,11 @@ in
           enable = true;
           https = true;
           hostName = "localhost";
-          package = pkgs.nextcloud31;
+          package = pkgs.nextcloud32;
           appstoreEnable = true;
           maxUploadSize = "1G";
           extraApps = {
-            inherit (pkgs.nextcloud31Packages.apps) calendar;
+            inherit (pkgs.nextcloud32Packages.apps) calendar;
           };
           settings = {
             trusted_proxies = [
