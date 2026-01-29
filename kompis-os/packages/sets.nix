@@ -13,9 +13,12 @@ pkgs: with pkgs; rec {
     bat
     eza
     fd
+    file
     fzf
+    inxi
     git
     jq
+    lshw
     restic
     ripgrep
     tree
@@ -39,6 +42,7 @@ pkgs: with pkgs; rec {
     pciutils
     psmisc
     smartmontools
+    memtester
     strace
     usbutils
   ];
