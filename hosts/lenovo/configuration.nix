@@ -1,6 +1,4 @@
 {
-  inputs,
-  host,
   org,
   ...
 }:
@@ -23,9 +21,6 @@
     ];
   };
 
-  environment.systemPackages = [
-    inputs.disko.packages.${host.system}.default
-  ];
   swapDevices = [
     {
       device = "/swapfile";
