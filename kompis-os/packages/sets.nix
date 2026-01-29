@@ -45,6 +45,8 @@ pkgs: with pkgs; rec {
     memtester
     strace
     usbutils
+    htop
+    smem
   ];
 
   networking = [
@@ -55,6 +57,9 @@ pkgs: with pkgs; rec {
     tcpdump
     traceroute
     wireguard-tools
+    nload
+    iftop
+    vnstat
   ];
 
   data-processing = [
