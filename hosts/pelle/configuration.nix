@@ -39,6 +39,7 @@
   services.ollama = {
     enable = true;
     models = "/srv/models/ollama";
+    host = "0.0.0.0";
     package = pkgs.ollama-cuda;
     home = "/var/lib/private/ollama";
     user = "ollama";
