@@ -486,6 +486,7 @@ data.account = "cl44748"
 endpoint = "https://api.glesys.com"
 grants = [
   "host-stationary",
+  "host-pelle",
 ]
 
 [app.esse]

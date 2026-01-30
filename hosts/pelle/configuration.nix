@@ -2,6 +2,11 @@
 {
   kompis-os = {
     sysadm.rescueMode = true;
+    glesys.updaterecord = {
+      enable = true;
+      recordid = "3959183";
+      device = "enp5s0";
+    };
   };
 
   boot = {

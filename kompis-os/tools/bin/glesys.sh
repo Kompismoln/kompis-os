@@ -7,7 +7,7 @@ km_root="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 declare -g cloudaccount domainname apikey endpoint
 
 cloudaccount() {
-    org-toml.sh service glesys-api account
+    org-toml.sh service glesys-api data account
 }
 
 endpoint() {
