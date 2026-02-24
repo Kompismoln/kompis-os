@@ -15,18 +15,6 @@ declare -x \
 apply() {
     log info "use $BUILD_HOST to build $target (at $TARGET_ADDRESS)"
 
-    if [[ -n $BUILD_WORKING_TREE ]]; then
-        with source
-
-        # export for build.sh
-        export SOURCE=$source
-
-        log important "export SOURCE=$source"
-        if [[ $BUILD_HOST != localhost ]]; then
-            "$km_root/bin/as.sh" nix-push nix copy --to "ssh://nix-push@$BUILD_HOST_ADDRESS" "$SOURCE"
-        fi
-    fi
-
     with build
     log important "build=$build"
 
@@ -45,12 +33,9 @@ apply() {
     "$km_root/bin/as.sh" nix-switch ssh "nix-switch@$TARGET_ADDRESS" "$build"
 }
 
-declare -g build source
+declare -g build
 build() {
     "$km_root/bin/build.sh" "$target"
 }
 
-source() {
-    nix eval --raw .#src
-}
 apply
