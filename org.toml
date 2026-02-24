@@ -340,6 +340,7 @@ roles = [
   "nixos",
   "peer",
   "server",
+  "inference-server",
 ]
 subnets = [
   "wg0",
@@ -347,6 +348,11 @@ subnets = [
 ]
 system = "x86_64-linux"
 stateVersion = "25.11"
+
+[host.pelle.homes]
+alex.roles = [
+  "cli-devstation",
+]
 
 [host.pelle.disk-layouts.main]
 module = "main-server-ai"
@@ -408,7 +414,7 @@ inboxes = [
 ]
 grants = [
   "host-lenovo",
-  "host-helsinki",
+  "host-pelle",
 ]
 
 [user.johanna]
@@ -622,6 +628,16 @@ white-400 = "#DCD7BA"
 white-500 = "#C8C093"
 
 [ids]
+admin = 1000
+locksmith = 2000
+reverse-tunnel = 2001
+nix-build = 2002
+nix-switch = 2003
+nix-push = 2004
+tls-cert = 2005
+egress-proxy = 2007
+vllm = 2008
+vllm-qwen3-8b = 2009
 alex = 1001
 johanna = 1102
 ami = 1104
@@ -646,3 +662,4 @@ chatddx-dev-django-flower = 3016
 collabora = 3015
 collabora-dev = 3014
 opencloud-kompismoln = 3020
+huggingface = 4000

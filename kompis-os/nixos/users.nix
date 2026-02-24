@@ -19,19 +19,6 @@ let
         enable = lib.mkEnableOption "this user" // {
           default = true;
         };
-        passwd = lib.mkEnableOption "password" // {
-          default = config.class == "user";
-        };
-        publicKey = lib.mkEnableOption "public key" // {
-          default = true;
-        };
-        stateful = lib.mkEnableOption "this entity has a state" // {
-          type = lib.types.bool;
-          default = builtins.elem config.class [
-            "app"
-            "user"
-          ];
-        };
         class = lib.mkOption {
           description = "user's entity class";
           default = "user";
@@ -40,19 +27,39 @@ let
             "service"
             "app"
             "system"
+            "store"
           ];
         };
         description = lib.mkOption {
           default = name;
           type = lib.types.str;
         };
-        home = lib.mkOption {
-          description = "force home at /var/lib for system users";
-          default = config.class == "app";
+        passwd = lib.mkEnableOption "endow user with a password" // {
+          default = config.class == "user";
+        };
+        publicKey = lib.mkEnableOption "endow user with a cryptographic identity" // {
+          default = builtins.elem config.class [
+            "user"
+            "service"
+            "app"
+          ];
+        };
+        home = lib.mkEnableOption "force home at /home for normal users or /var/lib for others" // {
+          default = builtins.elem config.class [
+            "user"
+            "app"
+            "store"
+          ];
           type = lib.types.bool;
         };
-        shell = lib.mkOption {
-          description = "force bash shell for system users";
+        homeMode = lib.mkOption {
+          type = lib.types.str;
+          default = "0750";
+        };
+        stateful = lib.mkEnableOption "preserve home" // {
+          default = config.home;
+        };
+        shell = lib.mkEnableOption "force bash shell for non-normal users" // {
           default = false;
           type = lib.types.bool;
         };
@@ -98,20 +105,26 @@ in
         isNormalUser = userCfg.class == "user";
         publicKey = lib'.public-artifacts userCfg.class user "ssh-key";
         passwordFile = config.sops.secrets."${user}/passwd-sha512".path;
+        home =
+          if !userCfg.home then
+            "/var/empty"
+          else if isNormalUser then
+            "/home/${user}"
+          else
+            "/var/lib/${user}";
       in
       {
-        inherit isNormalUser;
+        inherit (userCfg) homeMode;
+        inherit isNormalUser home;
         isSystemUser = !isNormalUser;
         description = userCfg.description;
         uid = lib'.ids.${user};
         group = user;
         extraGroups = userCfg.groups;
-        homeMode = lib.mkIf (userCfg.class == "app") "0750";
         openssh.authorizedKeys.keyFiles = lib.mkIf userCfg.publicKey [ publicKey ];
         hashedPasswordFile = lib.mkIf userCfg.passwd passwordFile;
         shell = lib.mkIf userCfg.shell pkgs.bash;
-        home = lib.mkIf userCfg.home "/var/lib/${user}";
-        createHome = lib.mkIf userCfg.home true;
+        createHome = home != "/var/empty";
       }
     ) eachUser;
 
@@ -134,20 +147,15 @@ in
         home = config.users.users.${user}.home;
       in
       {
-        assertion = !userCfg.stateful || home != "/var/empty";
-        message = "Stateful user '${user}' cannot have home '${home}'";
+        assertion = !(userCfg.stateful && home == "/var/empty");
+        message = "Stateful user '${user}' must have a real home";
       }
     ) eachUser;
 
-    kompis-os.preserve.directories =
-      lib.mapAttrsToList
-        (user: userCfg: {
-          directory = config.users.users.${user}.home;
-          user = user;
-          group = user;
-        })
-        (
-          lib.filterAttrs (user: userCfg: toString config.users.users.${user}.home != "/var/empty") eachUser
-        );
+    kompis-os.preserve.directories = lib.mapAttrsToList (user: userCfg: {
+      directory = config.users.users.${user}.home;
+      user = user;
+      group = user;
+    }) (lib.filterAttrs (user: userCfg: userCfg.stateful) eachUser);
   };
 }

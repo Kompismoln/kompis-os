@@ -14,7 +14,7 @@ lib: inputs: rec {
       acc: name: value:
       (lib.recursiveUpdate acc (f name value))
     ) { } attrs;
-  ids = (import ./ids.nix) // inputs.org.ids;
+  inherit (inputs.org) ids;
   semantic-colors = import ./semantic-colors.nix;
 
   public-artifacts =
