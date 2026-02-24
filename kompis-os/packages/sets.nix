@@ -18,6 +18,7 @@ pkgs: with pkgs; rec {
     inxi
     git
     jq
+    bc
     lshw
     restic
     ripgrep
@@ -37,6 +38,7 @@ pkgs: with pkgs; rec {
 
   system-tools = [
     btrfs-progs
+    dmidecode
     lsof
     openssl
     pciutils
@@ -90,5 +92,8 @@ pkgs: with pkgs; rec {
   nix-tools = [
     nixos-facter
     nix-serve-ng
+    statix
+    deadnix
+    nixfmt
   ];
 }
