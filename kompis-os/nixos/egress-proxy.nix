@@ -12,7 +12,7 @@ in
     enable = lib.mkEnableOption "SOCKS proxy service";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     kompis-os.users.egress-proxy = {
       class = "service";
     };

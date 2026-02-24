@@ -13,7 +13,7 @@ in
     enable = lib.mkEnableOption "respond to phone home from stranded clients";
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
     kompis-os.users.reverse-tunnel = {
       class = "service";
       passwd = true;

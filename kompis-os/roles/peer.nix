@@ -24,7 +24,7 @@
       locksmith.enable = true;
       sops.enable = true;
       ssh.enable = true;
-      state.enable = true;
+      #state.enable = true;
     };
   };
 }

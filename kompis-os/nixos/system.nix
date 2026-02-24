@@ -22,7 +22,7 @@ in
       nixpkgs.hostPlatform = host.system;
     }
 
-    (lib.mkIf (cfg.rescueMode) {
+    (lib.mkIf cfg.rescueMode {
       users.mutableUsers = false;
       users.users.root = {
         hashedPassword = "$6$TeS3rgBzEDTxk7eb$PN0BjGcoZa1cb29HQJrOHGqVzIhUIs115eP01k.CkenNpi0fTnfxwHK9bFSXUC2zavxi5sEt.pwqcTy1rpCas1";
