@@ -22,7 +22,7 @@ in
   config = lib.mkIf config.kompis-os-hm.neovim.enable {
 
     home.packages = with pkgs; [
-      nixfmt-rfc-style
+      nixfmt
       ruff
       shellcheck
       shellharden
@@ -105,6 +105,26 @@ in
 
       keymaps = [
         {
+          key = "<C-j>";
+          action = "<C-e>";
+          options.desc = "Scroll down one line";
+        }
+        {
+          key = "<C-k>";
+          action = "<C-y>";
+          options.desc = "Scroll up one line";
+        }
+        {
+          key = "s";
+          action = "<Plug>(leap-forward)";
+          options.desc = "Open parent directory";
+        }
+        {
+          key = "gs";
+          action = "<Plug>(leap-from-window)";
+          options.desc = "Open parent directory";
+        }
+        {
           key = "s";
           action = "<Plug>(leap-forward)";
           options.desc = "Open parent directory";
@@ -170,6 +190,17 @@ in
           '';
           options.desc = "Format buffer";
         }
+        {
+          key = "<leader>tf";
+          action.__raw = ''
+            function()
+              vim.g.disable_autoformat = not vim.g.disable_autoformat
+              print("Autoformat " .. (vim.g.disable_autoformat and "disabled" or "enabled"))
+            end
+          '';
+          mode = "n";
+          options.desc = "Toggle autoformat";
+        }
 
         {
           key = "<leader>/";
@@ -187,7 +218,25 @@ in
         fugitive.enable = true;
         gitignore.enable = false;
         direnv.enable = true;
-        nvim-tree.enable = true;
+        nvim-tree = {
+          enable = true;
+          settings = {
+            on_attach.__raw = ''
+              function(bufnr)
+                local api = require('nvim-tree.api')
+
+                local function opts(desc)
+                  return { desc = 'nvim-tree: ' .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+                end
+                api.config.mappings.default_on_attach(bufnr)
+
+                vim.keymap.set('n', 't', api.node.open.tab, opts('Open in new tab'))
+                vim.keymap.set('n', 's', api.node.open.horizontal, opts('Open in horizontal split'))
+                vim.keymap.set('n', 'v', api.node.open.vertical, opts('Open in vertical split'))
+              end
+            '';
+          };
+        };
 
         oil = {
           enable = true;
@@ -199,8 +248,22 @@ in
         conform-nvim = {
           enable = true;
           autoLoad = true;
+          formatters = {
+            squeeze_blanks.command = lib.getExe' pkgs.coreutils "cat";
+            nixfmt.command = lib.getExe pkgs.nixfmt;
+            isort.command = lib.getExe pkgs.isort;
+            ruff.command = lib.getExe pkgs.ruff;
+            shellcheck.command = lib.getExe pkgs.shellcheck;
+            shfmt.command = lib.getExe pkgs.shfmt;
+            shellharden.command = lib.getExe pkgs.shellharden;
+          };
           settings = {
             formatters_by_ft = {
+              "_" = [
+                "squeeze_blanks"
+                "trim_whitespace"
+                "trim_newlines"
+              ];
               nix = [
                 "nixfmt"
               ];
@@ -214,15 +277,25 @@ in
                 "shfmt"
               ];
             };
-            format_on_save = {
-              timeout_ms = 1500;
-              lsp_format = "fallback";
-            };
+            format_on_save =
+              let
+                timeout_ms = 1500;
+                lsp_format = "fallback";
+              in
+              ''
+                function(bufnr)
+                  if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+                    return
+                  end
+                  return { timeout_ms = ${toString timeout_ms}, lsp_format = "${lsp_format}" }
+                end
+              '';
           };
         };
 
         vim-matchup = {
           enable = true;
+          autoLoad = true;
           treesitter.enable = true;
         };
 
@@ -269,6 +342,7 @@ in
             eslint.enable = true;
             bashls.enable = true;
             tombi.enable = true;
+            jsonls.enable = true;
           };
           keymaps = {
             lspBuf = {
