@@ -67,7 +67,7 @@ lib: inputs: rec {
     user: host:
     let
       hostCfg = inputs.org.host.${host} or (throw "Host '${host}' not found in org.host");
-      homeCfg = hostCfg.home.${user} or (throw "User '${user}' not found in org.host.${host}.home");
+      homeCfg = hostCfg.homes.${user} or (throw "User '${user}' not found in org.host.${host}.home");
     in
     {
       inherit (hostCfg) system stateVersion;
