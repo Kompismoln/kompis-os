@@ -1,7 +1,6 @@
 {
   config,
   home,
-  host,
   inputs,
   lib,
   lib',
@@ -239,9 +238,7 @@ in
         device = host.devices;
 
         windowrule = [
-          "float, class:^(.*)$"
-          "size 550 350, class:^(.*)$"
-          "center, class:^(.*)$"
+          "match:class (.*), float on, size 550 350, center on"
         ];
         "$mainMod" = "SUPER";
 
