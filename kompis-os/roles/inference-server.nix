@@ -51,8 +51,8 @@
         model = "Qwen/Qwen3-8B-AWQ";
         host = "0.0.0.0";
         extraArgs = [
-          "--gpu-memory-utilization=0.9"
-          "--max-model-len=4096"
+          "--gpu-memory-utilization=0.95"
+          "--max-model-len=8192"
           "--max-num-seqs=1"
           "--tool-call-parser=hermes"
           "--enable-prefix-caching"

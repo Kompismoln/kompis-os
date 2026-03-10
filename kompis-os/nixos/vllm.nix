@@ -41,7 +41,12 @@ let
         extraArgs = lib.mkOption {
           type = lib.types.listOf lib.types.str;
           default = [ ];
-          description = "Extra arguments to pass to the vllm server (e.g. ['--tp-size', '2']).";
+          description = "Extra arguments to pass to the vllm server (e.g. ['--kv-cache-dtype', 'fp8']).";
+        };
+        environment = lib.mkOption {
+          type = lib.types.attrsOf lib.types.str;
+          default = { };
+          description = "Extra arguments to pass to the vllm server (e.g. VLLM_ATTENTION_BACKEND=FLASHINFER).";
         };
         allowedGPUs = lib.mkOption {
           type = lib.types.listOf lib.types.int;
@@ -96,7 +101,8 @@ in
           HF_HUB_CACHE = config.kompis-os.huggingface.repo;
           HF_HUB_OFFLINE = "1";
           CUDA_VISIBLE_DEVICES = lib.concatMapStringsSep "," toString serverCfg.allowedGPUs;
-        };
+        }
+        // serverCfg.environment;
 
         serviceConfig = {
           User = cfg.user;
