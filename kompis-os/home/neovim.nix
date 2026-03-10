@@ -101,6 +101,9 @@ in
         expandtab = true;
         wildmenu = true;
         wildmode = "longest:full,full";
+        foldmethod = "expr";
+        foldexpr = "nvim_treesitter#foldexpr()";
+        foldenable = false;
       };
 
       keymaps = [
@@ -237,6 +240,14 @@ in
             '';
           };
         };
+        none-ls = {
+          enable = true;
+          sources = {
+            diagnostics.statix.enable = true;
+            code_actions.statix.enable = true;
+            diagnostics.deadnix.enable = true;
+          };
+        };
 
         oil = {
           enable = true;
@@ -251,15 +262,11 @@ in
           formatters = {
             squeeze_blanks.command = lib.getExe' pkgs.coreutils "cat";
             nixfmt.command = lib.getExe pkgs.nixfmt;
-            isort.command = lib.getExe pkgs.isort;
             ruff.command = lib.getExe pkgs.ruff;
-            shellcheck.command = lib.getExe pkgs.shellcheck;
-            shfmt.command = lib.getExe pkgs.shfmt;
-            shellharden.command = lib.getExe pkgs.shellharden;
           };
           settings = {
             formatters_by_ft = {
-              "_" = [
+              "markdown" = [
                 "squeeze_blanks"
                 "trim_whitespace"
                 "trim_newlines"
@@ -268,13 +275,8 @@ in
                 "nixfmt"
               ];
               python = [
-                "isort"
+                "ruff_organize_imports"
                 "ruff_format"
-              ];
-              bash = [
-                "shellcheck"
-                "shellharden"
-                "shfmt"
               ];
             };
             format_on_save =
@@ -306,20 +308,9 @@ in
 
         treesitter = {
           enable = true;
-          settings = {
-            highlight.enable = true;
-            incremental_selection = {
-              enable = true;
-              keymaps = {
-                init_selection = "<CR>";
-                node_incremental = "<CR>";
-                node_decremental = "<BS>";
-              };
-            };
-            indent = {
-              enable = true;
-            };
-          };
+          highlight.enable = true;
+          indent.enable = true;
+          folding.enable = true;
         };
 
         telescope = {
@@ -341,7 +332,7 @@ in
             nixd.enable = true;
             eslint.enable = true;
             bashls.enable = true;
-            tombi.enable = true;
+            taplo.enable = true;
             jsonls.enable = true;
           };
           keymaps = {
