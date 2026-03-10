@@ -7,18 +7,9 @@ locale = "en_US.UTF-8"
 host-config = "hosts/$host/configuration.nix"
 home-config = "homes/$home.nix"
 app-config = "apps/$app.nix"
-build-hosts = [
-  "pelle",
-  "stationary",
-]
-root-identities = [
-  "root-1",
-]
-namespaces = [
-  "km",
-  "km1",
-  "kompismoln.se",
-]
+build-hosts = ["pelle", "stationary"]
+root-identities = ["root-1"]
+namespaces = ["km", "km1", "kompismoln.se"]
 
 [subnet.wg0]
 enable = true
@@ -82,28 +73,13 @@ default = "enc/$class-$entity.yaml"
 root = "keys/$class-$entity"
 
 [class.root]
-keys = [
-  "age-key",
-]
+keys = ["age-key"]
 
 [class.host]
-keys = [
-  "age-key",
-  "ssh-key",
-  "wg0-key",
-  "wg1-key",
-  "wg2-key",
-  "luks-key",
-]
+keys = ["age-key", "ssh-key", "wg0-key", "wg1-key", "wg2-key", "luks-key"]
 
 [class.user]
-keys = [
-  "age-key",
-  "ssh-key",
-  "mail",
-  "passwd",
-  "restic-key",
-]
+keys = ["age-key", "ssh-key", "mail", "passwd", "restic-key"]
 
 [class.service]
 keys = [
@@ -117,53 +93,27 @@ keys = [
 ]
 
 [class.app]
-keys = [
-  "age-key",
-  "ssh-key",
-  "secret-key",
-  "restic-key",
-]
+keys = ["age-key", "ssh-key", "secret-key", "restic-key"]
 
 [ops.rebuild]
-"*" = [
-  "rebuild:age-key",
-]
+"*" = ["rebuild:age-key"]
 
 [ops.align]
-"*" = [
-  "align:age-key",
-]
+"*" = ["align:age-key"]
 
 [ops.check]
-"host:luks+server" = [
-  "check:luks-key",
-]
-"host:server" = [
-  "check:age-key",
-  "check:ssh-key",
-]
-"host-lenovo" = [
-  "check:age-key",
-  "check:ssh-key",
-]
+"host:luks+server" = ["check:luks-key"]
+"host:server" = ["check:age-key", "check:ssh-key"]
+"host-lenovo" = ["check:age-key", "check:ssh-key"]
 
 [ops.verify-identities]
-"*" = [
-  "verify:age-key",
-]
+"*" = ["verify:age-key"]
 
 [ops.verify-users]
-"user-*" = [
-  "verify:ssh-key",
-  "verify:passwd",
-  "verify:mail",
-]
+"user-*" = ["verify:ssh-key", "verify:passwd", "verify:mail"]
 
 [ops.verify-hosts]
-"host-*" = [
-  "verify:wg0-key",
-  "verify:wg1-key",
-]
+"host-*" = ["verify:wg0-key", "verify:wg1-key"]
 
 [ops.verify-services]
 "service-*" = [
@@ -178,18 +128,10 @@ keys = [
 [host.stationary]
 facter = "hosts/stationary/facter.json"
 id = 1
-roles = [
-  "nixos",
-  "peer",
-  "server",
-  "app-scheduler",
-]
+roles = ["nixos", "peer", "server", "app-scheduler"]
 endpoint = "stationary.kompismoln.se"
 dnsFor = "wg1"
-subnets = [
-  "wg0",
-  "wg1",
-]
+subnets = ["wg0", "wg1"]
 system = "x86_64-linux"
 stateVersion = "25.05"
 
@@ -211,20 +153,12 @@ mountpoint = "/srv/tungsten"
 [host.lenovo]
 id = 7
 facter = "hosts/lenovo/facter.json"
-roles = [
-  "nixos",
-  "peer",
-]
-subnets = [
-  "wg0",
-  "wg1",
-]
+roles = ["nixos", "peer"]
+subnets = ["wg0", "wg1"]
 system = "x86_64-linux"
 stateVersion = "24.11"
 # disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
-homes.alex.roles = [
-  "hypr-devstation",
-]
+homes.alex.roles = ["hypr-devstation"]
 
 [host.lenovo.desktop]
 wifi-interface = "wlp1s0"
@@ -253,26 +187,15 @@ output = "HDMI-A-1"
 
 [host.laptop]
 id = 2
-roles = [
-  "nixos",
-  "peer",
-]
-subnets = [
-  "wg0",
-  "wg1",
-]
+roles = ["nixos", "peer"]
+subnets = ["wg0", "wg1"]
 system = "x86_64-linux"
 stateVersion = "23.11"
 
 [host.phone]
 id = 4
-roles = [
-  "peer",
-]
-subnets = [
-  "wg0",
-  "wg1",
-]
+roles = ["peer"]
+subnets = ["wg0", "wg1"]
 system = "aarch64-linux"
 stateVersion = ""
 
@@ -283,17 +206,8 @@ stateVersion = "25.05"
 facter = "hosts/helsinki/facter.json"
 endpoint = "helsinki.kompismoln.se"
 dnsFor = "wg0"
-subnets = [
-  "wg0",
-  "wg1",
-]
-roles = [
-  "nixos",
-  "peer",
-  "server",
-  "mailserver",
-  "app-scheduler",
-]
+subnets = ["wg0", "wg1"]
+roles = ["nixos", "peer", "server", "mailserver", "app-scheduler"]
 
 [host.helsinki.disk-layouts.main]
 module = "main-server-btrfs"
@@ -301,14 +215,8 @@ device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]
 id = 6
-roles = [
-  "nixos",
-  "peer",
-]
-subnets = [
-  "wg0",
-  "wg1",
-]
+roles = ["nixos", "peer"]
+subnets = ["wg0", "wg1"]
 system = "x86_64-linux"
 stateVersion = "20.03"
 
@@ -317,17 +225,9 @@ id = 8
 system = "x86_64-linux"
 stateVersion = "25.11"
 facter = "hosts/adele/facter.json"
-subnets = [
-  "wg0",
-  "wg1",
-]
-roles = [
-  "nixos",
-  "peer",
-]
-homes.ami.roles = [
-  "cinnamon-office",
-]
+subnets = ["wg0", "wg1"]
+roles = ["nixos", "peer"]
+homes.ami.roles = ["cinnamon-office"]
 
 [host.adele.disk-layouts.main]
 module = "main-workstation"
@@ -336,23 +236,13 @@ device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 [host.pelle]
 facter = "hosts/pelle/facter.json"
 id = 9
-roles = [
-  "nixos",
-  "peer",
-  "server",
-  "inference-server",
-]
-subnets = [
-  "wg0",
-  "wg1",
-]
+roles = ["nixos", "peer", "server", "inference-server"]
+subnets = ["wg0", "wg1"]
 system = "x86_64-linux"
 stateVersion = "25.11"
 
 [host.pelle.homes]
-alex.roles = [
-  "cli-devstation",
-]
+alex.roles = ["cli-devstation"]
 
 [host.pelle.disk-layouts.main]
 module = "main-server-ai"
@@ -360,13 +250,8 @@ device = "/dev/disk/by-id/nvme-WDC_WD_BLACK_SDBPNTY-1T00-1106_21351R802985"
 
 [host.bootstrap]
 id = 254
-roles = [
-  "nixos",
-  "peer",
-]
-subnets = [
-  "wg0",
-]
+roles = ["nixos", "peer"]
+subnets = ["wg0"]
 system = "x86_64-linux"
 stateVersion = "25.11"
 
@@ -374,25 +259,17 @@ stateVersion = "25.11"
 system = "x86_64-linux"
 stateVersion = "23.11"
 users = ["alex"]
-roles = [
-  "home-manager",
-  "workstation",
-]
+roles = ["home-manager", "workstation"]
 
 [host.arch]
 system = "x86_64-linux"
 stateVersion = "24.05"
 users = ["alex"]
-roles = [
-  "home-manager",
-  "workstation",
-]
+roles = ["home-manager", "workstation"]
 
 [user.admin]
 mail = true
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 inboxes = [
   "info@kompismoln.se",
   "postmaster@kompismoln.se",
@@ -400,100 +277,61 @@ inboxes = [
 ]
 
 [user.ami]
-grants = [
-  "host-adele",
-]
+grants = ["host-adele"]
 
 [user.alex]
 mail = true
 description = "Alexander Holmbäck"
 email = "alex@kompismoln.se"
-inboxes = [
-  "alex@ahbk.se",
-  "alex@klimatkalendern.nu",
-]
-grants = [
-  "host-lenovo",
-  "host-pelle",
-]
+inboxes = ["alex@ahbk.se", "alex@klimatkalendern.nu"]
+grants = ["host-lenovo", "host-pelle"]
 
 [user.johanna]
-grants = [
-  "host-friday",
-]
+grants = ["host-friday"]
 
 [service.backup]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.domain-km]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.domain-km1]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service."domain-kompismoln.se"]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.locksmith]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.egress-proxy]
-grants = [
-  "host:server",
-]
+grants = ["host:server"]
 
 [service.reverse-tunnel]
-grants = [
-  "host:server",
-]
+grants = ["host:server"]
 
 [service.nix-build]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.nix-push]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.nix-switch]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.nix-serve]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.rescue]
-grants = [
-  "host-*",
-]
+grants = ["host-*"]
 
 [service.dmarc-reports]
-grants = [
-  "host:mailserver",
-]
+grants = ["host:mailserver"]
 
 [service.glesys-api]
 data.account = "cl44748"
 endpoint = "https://api.glesys.com"
-grants = [
-  "host-stationary",
-  "host-pelle",
-]
+grants = ["host-stationary", "host-pelle"]
 
 [app.esse]
 endpoint = "www.esse.nu"
