@@ -62,6 +62,7 @@ pkgs: with pkgs; rec {
     nload
     iftop
     vnstat
+    mtr
   ];
 
   data-processing = [

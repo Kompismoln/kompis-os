@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 p() {
     local pid=$1 args mem mem_mb etime
     args=$(ps -p "$pid" -o args= | tr -d '\n')
