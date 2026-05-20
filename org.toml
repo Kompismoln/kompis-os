@@ -284,7 +284,7 @@ mail = true
 description = "Alexander Holmbäck"
 email = "alex@kompismoln.se"
 inboxes = ["alex@ahbk.se", "alex@klimatkalendern.nu"]
-grants = ["host-lenovo", "host-pelle"]
+grants = ["host-lenovo", "host-pelle", "host-helsinki"]
 
 [user.johanna]
 grants = ["host-friday"]
