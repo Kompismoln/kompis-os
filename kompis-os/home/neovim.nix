@@ -213,6 +213,7 @@ in
       ];
 
       plugins = {
+        typst-vim.enable = true;
         web-devicons.enable = true;
         leap.enable = true;
         sleuth.enable = true;
@@ -265,11 +266,17 @@ in
             ruff.command = lib.getExe pkgs.ruff;
           };
           settings = {
+            formatters = {
+              typstyle.command = lib.getExe pkgs.typstyle;
+            };
             formatters_by_ft = {
-              "markdown" = [
+              markdown = [
                 "squeeze_blanks"
                 "trim_whitespace"
                 "trim_newlines"
+              ];
+              typst = [
+                "typstyle"
               ];
               nix = [
                 "nixfmt"
@@ -325,14 +332,17 @@ in
         lsp = {
           enable = true;
           servers = {
+            tinymist.enable = true;
             ts_ls.enable = true;
             svelte.enable = true;
             tailwindcss.enable = true;
             basedpyright.enable = true;
+            ty.enable = false; # swap with basedpyright mid 2027
+            ruff.enable = true;
             nixd.enable = true;
             eslint.enable = true;
             bashls.enable = true;
-            taplo.enable = true;
+            tombi.enable = true;
             jsonls.enable = true;
           };
           keymaps = {
