@@ -119,6 +119,7 @@ in
 
       yazi = {
         enable = true;
+        shellWrapperName = "yy";
         enableBashIntegration = true;
       };
 

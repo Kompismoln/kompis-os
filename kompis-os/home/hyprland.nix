@@ -231,7 +231,6 @@ in
         };
 
         dwindle = {
-          pseudotile = true;
           preserve_split = true;
         };
 
@@ -260,7 +259,7 @@ in
             "$mainMod, c, killactive,"
             "$mainMod, q, exit,"
             "$mainMod, d, pseudo,"
-            "$mainMod, a, togglesplit,"
+            "$mainMod, a, layoutmsg, togglesplit"
             "$mainMod, s, exec, systemctl suspend,"
             "$mainMod, h, movefocus, l"
             "$mainMod, l, exec, hyprlock"

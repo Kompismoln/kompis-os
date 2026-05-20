@@ -20,7 +20,7 @@
 
     home.packages = with pkgs; [
       kooha
-      signal-desktop-bin
+      signal-desktop
       thunderbird
       neomutt
     ];

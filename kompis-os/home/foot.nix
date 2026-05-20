@@ -26,7 +26,7 @@ in
         main.font = "${fonts.monospace.name}:size=11";
         main.dpi-aware = "no";
         mouse.hide-when-typing = "yes";
-        colors = with unhashedHexes; {
+        colors-dark = with unhashedHexes; {
           alpha = 0.8;
           background = bg-300;
           foreground = fg-200;

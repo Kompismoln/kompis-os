@@ -48,7 +48,7 @@ in
           default_page = "qute://history/";
         };
         content = {
-          javascript.clipboard = "access";
+          javascript.clipboard = "access-paste";
           pdfjs = true;
           cache = {
             appcache = true;
