@@ -1,3 +1,4 @@
+# kompis-os/nixos/sops.nix
 {
   config,
   inputs,
@@ -22,7 +23,7 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
 
     sops = {
       defaultSopsFile = lib'.secrets "host" host.name;

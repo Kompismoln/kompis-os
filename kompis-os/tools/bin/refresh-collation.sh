@@ -1,64 +1,49 @@
 #!/usr/bin/env bash
 
-# --- Configuration ---
-# Set your PostgreSQL connection variables here or export them before running.
-PGUSER="${PGUSER:-postgres}"
-# PGPASSWORD="your_password" # Better to use ~/.pgpass or export PGPASSWORD in your environment
+# Exit on any unexpected errors
+set -e
 
-echo "Starting PostgreSQL Collation Refresh and Index Check..."
-echo "Connecting to $PGHOST:$PGPORT as $PGUSER..."
-echo "----------------------------------------------------"
+echo "Starting Postgres Maintenance: Freeze -> Collation Refresh -> Integrity Check"
+echo "---------------------------------------------------------------------------"
 
-# Fetch a list of all non-template databases
-DATABASES=$(psql -U "$PGUSER" -h "$PGHOST" -p "$PGPORT" -d postgres -tAc "SELECT datname FROM pg_database WHERE datistemplate = false AND datallowconn = true;")
-
-if [ -z "$DATABASES" ]; then
-    echo "❌ No databases found or connection failed."
-    exit 1
-fi
+# Get all connectable databases
+DATABASES=$(psql -tAc "SELECT datname FROM pg_database WHERE datistemplate = false AND datallowconn = true;")
 
 for DB in $DATABASES; do
     echo "Processing Database: [$DB]"
 
-    # 1. Refresh Collation Version
+    # 1. PREPARE: Vacuum Freeze and Analyze
+    # This prepares the data for long-term storage/stability
+    echo "  -> Freezing and Analyzing..."
+    psql -d "$DB" -c "VACUUM FREEZE ANALYZE;" >/dev/null
+
+    # 2. REFRESH: Update Collation Version
+    # This tells Postgres the OS-level C-library (glibc) version is now acknowledged
     echo "  -> Refreshing collation version..."
-    psql -U "$PGUSER" -h "$PGHOST" -p "$PGPORT" -d postgres -c "ALTER DATABASE \"$DB\" REFRESH COLLATION VERSION;" >/dev/null 2>&1
+    psql -d "$DB" -c "ALTER DATABASE \"$DB\" REFRESH COLLATION VERSION;" >/dev/null 2>&1
 
-    if [ $? -eq 0 ]; then
-        echo "  ✅ Collation refreshed."
+    # 3. CHECK: Verify Index Integrity
+    # We use amcheck to see if the collation change actually broke any B-Trees
+    echo "  -> Verifying B-Tree indexes..."
+    psql -d "$DB" -c "CREATE EXTENSION IF NOT EXISTS amcheck;" >/dev/null
+
+    # We use a subshell to catch the error without exiting the whole script
+    CHECK_RESULT=$(psql -d "$DB" -v ON_ERROR_STOP=1 -c "
+        SELECT bt_index_check(c.oid)
+        FROM pg_class c
+        JOIN pg_am am ON c.relam = am.oid
+        WHERE c.relkind = 'i' AND am.amname = 'btree' AND c.relispartition = false;
+    " 2>&1)
+
+    # shellcheck disable=SC2181
+    if [[ $? -eq 0 ]]; then
+        echo "  ✅ Database [$DB] is healthy."
     else
-        echo "  ⚠️  Failed to refresh collation (Check if PG version is 15+ or if there are permission issues)."
+        echo "  ❌ CORRUPTION DETECTED in [$DB]!"
+        echo "     Details: $CHECK_RESULT"
+        echo "     Action: Consider running 'REINDEX DATABASE \"$DB\"' immediately."
     fi
-
-    # 2. Check Index Corruption
-    echo "  -> Checking B-Tree index integrity..."
-
-    # Ensure the amcheck extension exists in the target database
-    psql -U "$PGUSER" -h "$PGHOST" -p "$PGPORT" -d "$DB" -c "CREATE EXTENSION IF NOT EXISTS amcheck;" >/dev/null 2>&1
-
-    # SQL query to run bt_index_check() on all valid B-Tree indexes
-    # bt_index_check throws a hard ERROR if it detects corruption, which ON_ERROR_STOP=1 will catch.
-    CHECK_QUERY="
-    SELECT bt_index_check(i.indexrelid)
-    FROM pg_index i
-    JOIN pg_class c ON i.indexrelid = c.oid
-    JOIN pg_am am ON c.relam = am.oid
-    WHERE am.amname = 'btree' 
-      AND c.relkind = 'i' 
-      AND i.indisready 
-      AND i.indisvalid;
-    "
-
-    # Execute the check
-    psql -U "$PGUSER" -h "$PGHOST" -p "$PGPORT" -d "$DB" -v ON_ERROR_STOP=1 -c "$CHECK_QUERY" >/dev/null 2>&1
-
-    if [ $? -eq 0 ]; then
-        echo "  ✅ All B-Tree indexes are healthy."
-    else
-        echo "  ❌ WARNING: Index corruption detected or check failed in [$DB]!"
-        echo "     Run 'REINDEX DATABASE \"$DB\";' to fix potential corruption."
-    fi
-    echo "----------------------------------------------------"
+    echo "---------------------------------------------------------------------------"
 done
 
-echo "Script complete."
+echo "Maintenance Task Complete."

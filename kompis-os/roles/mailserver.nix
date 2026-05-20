@@ -8,15 +8,15 @@
       ];
       kompis-os.mailserver = {
         enable = true;
-        domain = org.domain;
-        dkimSelector = org.mailserver.dkimSelector;
+        inherit (org) domain;
+        inherit (org.mailserver) dkimSelector;
 
-        users = lib.mapAttrs (user: userCfg: { aliases = org.user.${user}.inboxes; }) (
-          lib.filterAttrs (user: userCfg: lib.hasAttr "mail" userCfg && userCfg.mail) org.user
+        users = lib.mapAttrs (user: _: { aliases = org.user.${user}.inboxes; }) (
+          lib.filterAttrs (_: userCfg: lib.hasAttr "mail" userCfg && userCfg.mail) org.user
         );
 
         domains = lib.mapAttrs (_: siteCfg: {
-          mailbox = siteCfg.mailbox;
+          inherit (siteCfg) mailbox;
         }) org.dns;
       };
     };

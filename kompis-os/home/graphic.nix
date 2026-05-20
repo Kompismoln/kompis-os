@@ -22,7 +22,6 @@
       fira-code-symbols
       font-awesome
       garamond-libre
-      # helvetica-neue-lt-std
       ibm-plex
       inter
       jost

@@ -63,7 +63,7 @@ in
       default = "stationary";
     };
   };
-  config = mkIf (cfg.enable) {
+  config = mkIf cfg.enable {
     services.prometheus = {
       enable = true;
       exporters.blackbox = {

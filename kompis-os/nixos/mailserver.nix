@@ -10,8 +10,8 @@
 
 let
   cfg = config.kompis-os.mailserver;
-  relayDomains = lib.filterAttrs (domain: cfg: !cfg.mailbox) cfg.domains;
-  mailboxDomains = lib.filterAttrs (domain: cfg: cfg.mailbox) cfg.domains;
+  relayDomains = lib.filterAttrs (_: cfg: !cfg.mailbox) cfg.domains;
+  mailboxDomains = lib.filterAttrs (_: cfg: cfg.mailbox) cfg.domains;
 in
 {
   imports = [
@@ -116,7 +116,7 @@ in
         enable = true;
         stateVersion = 3;
         fqdn = "mail.${cfg.domain}";
-        dkimSelector = cfg.dkimSelector;
+        inherit (cfg) dkimSelector;
         domains = lib.mapAttrsToList (domain: _: domain) mailboxDomains;
         domainsWithoutMailbox = lib.mapAttrsToList (domain: _: domain) relayDomains;
         enableSubmission = true;
@@ -168,16 +168,17 @@ in
         webroot = "/var/lib/acme/acme-challenge";
       };
 
-      services = {
-        #fail2ban.jails = {
-        #  postfix.settings = {
-        #    filter = "postfix[mode=aggressive]";
-        #  };
-        #  dovecot.settings = {
-        #    filter = "dovecot[mode=aggressive]";
-        #  };
-        #};
+      services.nginx.virtualHosts.${config.mailserver.fqdn} = {
+        locations."^~ /.well-known/acme-challenge/" = {
+          root = "/var/lib/acme/acme-challenge";
+          extraConfig = ''
+            auth_basic off;
+            auth_request off;
+          '';
+        };
+      };
 
+      services = {
         postfix = {
           settings.main = {
             myorigin = cfg.domain;
@@ -185,11 +186,11 @@ in
               "127.0.0.1/32"
               "[::1]/128"
             ]
-            ++ (lib.mapAttrsToList (iface: ifaceCfg: ifaceCfg.address) org.subnet);
+            ++ (lib.mapAttrsToList (_: ifaceCfg: ifaceCfg.address) org.subnet);
           };
           transport =
             let
-              transportsList = lib.mapAttrsToList (domain: cfg: "${domain} smtp:") relayDomains;
+              transportsList = lib.mapAttrsToList (domain: _: "${domain} smtp:") relayDomains;
               transportsCfg = lib.concatStringsSep "\n" transportsList;
             in
             transportsCfg;

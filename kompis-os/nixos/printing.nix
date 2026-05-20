@@ -1,3 +1,4 @@
+# kompis-os/nixos/printing.nix
 {
   config,
   lib,
@@ -5,7 +6,7 @@
   ...
 }:
 {
-  options.kompis-os.networkmanager = {
+  options.kompis-os.printing = {
     enable = lib.mkEnableOption "avahi printer discovery";
   };
   config = {
@@ -27,7 +28,7 @@
     ];
 
     users.groups.lpadmin.members = lib.attrNames (
-      lib.filterAttrs (user: userCfg: userCfg.isNormalUser) config.users.users
+      lib.filterAttrs (_: userCfg: userCfg.isNormalUser) config.users.users
     );
   };
 }

@@ -238,7 +238,7 @@ in
         device = host.devices;
 
         windowrule = [
-          "match:class (.*), float on, size 550 350, center on"
+          "float on, size 550 350, center on, match:class (.+), match:float 0"
         ];
         "$mainMod" = "SUPER";
 
