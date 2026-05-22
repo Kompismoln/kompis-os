@@ -66,8 +66,16 @@
           src = inputs.self.outPath;
         };
         perSystem =
-          { pkgs, ... }:
           {
+            pkgs,
+            lib,
+            ...
+          }:
+          {
+            packages = lib.mapAttrs (
+              _: hostCfg: hostCfg.config.system.build.toplevel
+            ) inputs.self.nixosConfigurations;
+
             devShells.default = pkgs.mkShell {
               buildInputs = with pkgs; [
                 toml2json

@@ -125,20 +125,22 @@ in
       "nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
     };
 
-    kompis-os.users.nix-build = {
-      class = "service";
-      shell = true;
-      home = true;
-    };
+    kompis-os.users = {
+      nix-build = {
+        class = "service";
+        shell = true;
+        home = true;
+      };
 
-    kompis-os.users.nix-switch = {
-      class = "service";
-      shell = true;
-    };
+      nix-switch = {
+        class = "service";
+        shell = true;
+      };
 
-    kompis-os.users.nix-push = {
-      class = "service";
-      shell = true;
+      nix-push = {
+        class = "service";
+        shell = true;
+      };
     };
 
     services.openssh = {

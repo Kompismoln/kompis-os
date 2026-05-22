@@ -10,7 +10,7 @@
 
 let
   cfg = config.kompis-os.svelte;
-  eachApp = lib.filterAttrs (endpoint: cfg: cfg.enable) cfg.apps;
+  eachApp = lib.filterAttrs (_: cfg: cfg.enable) cfg.apps;
 
   appOpts = lib'.mkAppOpts host "svelte" (
     { config, ... }:
