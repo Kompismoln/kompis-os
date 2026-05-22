@@ -11,14 +11,14 @@
 let
   cfg = config.kompis-os.django;
 
-  eachApp = lib.filterAttrs (name: appCfg: appCfg.enable) cfg.apps;
+  eachApp = lib.filterAttrs (_: appCfg: appCfg.enable) cfg.apps;
 
   appOpts = lib'.mkAppOpts host "django" {
     options = {
       djangoApp = lib.mkOption {
         description = "django app name";
         type = lib.types.str;
-        default = "app";
+        default = "django";
       };
       locationStatic = lib.mkOption {
         description = "Location pattern for static files, empty string -> no static";
@@ -41,40 +41,38 @@ let
     };
   };
 
-  envs = lib.mapAttrs (
+  envs = lib.mapAttrs (app: appCfg: {
+    DB_NAME = appCfg.database;
+    DB_USER = appCfg.user;
+    DB_HOST = "/run/postgresql";
+    DEBUG = "false";
+    DJANGO_SETTINGS_MODULE = "${appCfg.djangoApp}.settings";
+    HOST = appCfg.endpoint;
+    DJANGO_MODE = "main";
+    DJANGO_LOG_LEVEL = "WARNING";
+    SCHEME = if appCfg.ssl then "https" else "http";
+    SECRET_KEY_FILE = config.sops.secrets."${appCfg.entity}/secret-key".path;
+    STATIC_URL = appCfg.locationStatic;
+    STATE_DIR = appCfg.home;
+    STATIC_ROOT = statics.${app};
+  }) eachApp;
+
+  mkCollectStatic =
     app: appCfg:
-    {
-      DB_NAME = appCfg.database;
-      DB_USER = appCfg.user;
-      DB_HOST = "/run/postgresql";
-      DEBUG = "false";
-      DJANGO_SETTINGS_MODULE = "${appCfg.djangoApp}.settings";
-      HOST = appCfg.endpoint;
-      LOG_LEVEL = "WARNING";
-      SCHEME = if appCfg.ssl then "https" else "http";
-      SECRET_KEY_FILE = config.sops.secrets."${appCfg.entity}/secret-key".path;
-      STATE_DIR = appCfg.home;
-    }
-    // (lib.optionalAttrs appCfg.celery {
-      CELERY_BROKER_URL = "redis://127.0.0.1:${toString (lib'.ports "${appCfg.entity}-redis")}/0";
-      FLOWER_URL_PREFIX = "/flower";
-    })
+    pkgs.runCommand "${app}-static" { } ''
+      export STATIC_ROOT="$out"
+      export STATIC_URL="${appCfg.locationStatic}"
+      export DJANGO_MODE="collectstatic"
+      export DJANGO_SETTINGS_MODULE=${appCfg.djangoApp}.settings
+      ${appCfg.packages.django-app}/bin/django-admin collectstatic --no-input
+    '';
+
+  statics = lib.mapAttrs mkCollectStatic eachApp;
+
+  scripts = lib.mapAttrs (
+    app: appCfg: lib'.wrapBins pkgs appCfg.packages.scripts envs.${app}
   ) eachApp;
 
-  mkDjangoManage =
-    app: appCfg:
-    pkgs.writeShellApplication {
-      name = "${app}-manage";
-      text = ''
-        exec ${appCfg.packages.django-manage}/bin/manage "$@"
-      '';
-      runtimeEnv = envs.${app} // {
-        DJANGO_APP = appCfg.packages.django-app;
-        DJANGO_STATIC = appCfg.packages.django-static;
-      };
-    };
-
-  bins = lib.mapAttrs mkDjangoManage eachApp;
 in
 {
 
@@ -89,14 +87,14 @@ in
   config = lib.mkIf (eachApp != { }) {
     kompis-os.org.apps = config.kompis-os.django.apps;
 
-    environment.systemPackages = lib.mapAttrsToList (_: bin: bin) bins;
+    environment.systemPackages = lib.mapAttrsToList (_: script: script) scripts;
 
     kompis-os.paths = lib.mapAttrs' (
       _: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }
     ) eachApp;
 
     sops.secrets = lib.mapAttrs' (
-      app: appCfg:
+      _: appCfg:
       lib.nameValuePair "${appCfg.entity}/secret-key" {
         sopsFile = lib'.secrets "app" appCfg.entity;
         owner = appCfg.user;
@@ -118,19 +116,7 @@ in
           }
           // lib.optionalAttrs (appCfg.locationStatic != "") {
             ${appCfg.locationStatic} = {
-              alias = "${appCfg.packages.django-static}/";
-            };
-          }
-          // lib.optionalAttrs (appCfg.celery) {
-            "/auth" = {
-              recommendedProxySettings = true;
-              proxyPass = "http://localhost:${toString (lib'.ports app)}";
-            };
-            "/flower/" = {
-              proxyPass = "http://localhost:${toString (lib'.ports "${app}-flower")}";
-              extraConfig = ''
-                auth_request /auth/;
-              '';
+              alias = "${statics.${app}}/";
             };
           };
       }
@@ -166,43 +152,6 @@ in
         wantedBy = [ "multi-user.target" ];
       };
 
-      "${app}-celery" = lib.mkIf appCfg.celery {
-        description = "start ${app}-celery";
-        serviceConfig = {
-          ExecStart = "${appCfg.packages.django-app}/bin/celery -A ${appCfg.djangoApp} worker -l warning";
-          User = appCfg.user;
-          Group = appCfg.user;
-          Environment = lib'.envToList envs.${app};
-        };
-        wantedBy = [ "multi-user.target" ];
-        after = [ "${app}.service" ];
-        requires = [ "${app}.service" ];
-      };
-
-      "${app}-flower" = lib.mkIf appCfg.celery {
-        description = "start ${app}-flower";
-        serviceConfig = {
-          ExecStart = "${appCfg.packages.django-app}/bin/celery -A ${appCfg.djangoApp} flower --port=${toString (lib'.ports "${app}-flower")}";
-          User = appCfg.user;
-          Group = appCfg.user;
-          Environment = lib'.envToList envs.${app};
-        };
-        wantedBy = [ "multi-user.target" ];
-        after = [ "${app}.service" ];
-        requires = [ "${app}.service" ];
-      };
-
-      "${app}-migrate" = {
-        description = "migrate ${app}";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${appCfg.packages.django-app}/bin/django-admin migrate";
-          User = appCfg.user;
-          Group = appCfg.user;
-          Environment = lib'.envToList envs.${app};
-        };
-      };
-
       "${app}-pgsql-dump" = {
         description = "dump a snapshot of the postgresql database";
         serviceConfig = {
@@ -221,28 +170,7 @@ in
           Group = "postgres";
         };
       };
-      "${app}-pgsql-restore" = {
-        description = "restore postgresql database from snapshot";
-        after = [ "${app}-pgsql-init.service" ];
-        requires = [ "${app}-pgsql-init.service" ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-restore}/bin/pgsql-restore ${appCfg.user} ${appCfg.home}";
-          User = appCfg.user;
-          Group = appCfg.user;
-        };
-      };
     }) eachApp;
 
-    systemd.timers = lib'.mergeAttrs (app: appCfg: {
-      "${app}-pgsql-dump" = {
-        description = "Scheduled PostgreSQL database dump";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "daily";
-          Unit = "${app}-pgsql-dump.service";
-        };
-      };
-    }) eachApp;
   };
 }

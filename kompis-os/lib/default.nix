@@ -164,4 +164,26 @@ lib: inputs: rec {
         type = lib.types.lazyAttrsOf lib.types.raw;
       };
     };
+  wrapBins =
+    pkgs: pkg: env:
+    let
+      wrapperArgs = lib.concatLists (
+        lib.mapAttrsToList (name: value: [
+          "--set"
+          name
+          value
+        ]) env
+      );
+    in
+    pkgs.symlinkJoin {
+      name = "${pkg.name}-wrapped";
+      paths = [ pkg ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+
+      postBuild = ''
+        for binary in $out/bin/*; do
+          wrapProgram "$binary" ${lib.escapeShellArgs wrapperArgs}
+        done
+      '';
+    };
 }
