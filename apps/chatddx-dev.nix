@@ -1,6 +1,5 @@
 # kompis-os/apps/chatddx-dev.nix
 {
-  lib',
   org,
   ...
 }:
@@ -22,25 +21,12 @@ in
     postgresql.enable = true;
     users.${name}.class = "app";
 
-    redis.servers."${name}-redis" = {
-      enable = true;
-      entity = name;
-    };
-
-    svelte.apps."${name}-svelte" = {
-      enable = true;
-      entity = name;
-      inherit (cfg) endpoint;
-      ssr = "http://localhost:${toString (lib'.ports "${name}-django")}";
-    };
-
     django.apps."${name}-django" = {
       enable = true;
       entity = name;
       inherit (cfg) endpoint;
-      djangoApp = "chatddx_backend";
+      djangoApp = "chatddx.django";
       locationProxy = "/admin";
-      celery = true;
       timeout = 180;
     };
   };
