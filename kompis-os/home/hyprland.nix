@@ -11,7 +11,7 @@
 
 let
   inherit (org.theme) fonts;
-  colors = lib'.semantic-colors org.theme.colors;
+  colors = lib'.semantic-colors;
   cfg = config.kompis-os-hm.hyprland;
   host = org.host.${home.hostname};
 in
@@ -29,6 +29,7 @@ in
 
     kompis-os-hm.foot.enable = true;
 
+    wayland.windowManager.hyprland.configType = "hyprlang";
     xdg.mimeApps.enable = true;
 
     xdg.mimeApps.defaultApplications = {
@@ -138,29 +139,41 @@ in
               mode-mon-col = 3;
               weeks-pos = "left";
               format = with colors; {
-                months = "<span color='${green-400}'><b>{}</b></span>";
-                days = "<span color='${white-400}'><b>{}</b></span>";
-                weeks = "<span color='${purple-400}'><b>{}</b></span>";
-                weekdays = "<span color='${yellow-400}'><b>{}</b></span>";
-                today = "<span color='${red-400}'><b><u>{}</u></b></span>";
+                months = "<span color='${green-200}'><b>{}</b></span>";
+                days = "<span color='${neutral-500}'><b>{}</b></span>";
+                weeks = "<span color='${zinc-400}'><b>{}</b></span>";
+                weekdays = "<span color='${orange-300}'><b>{}</b></span>";
+                today = "<span color='${red-600}'><b><u>{}</u></b></span>";
               };
             };
           };
         };
       };
       style = with colors; ''
-        * {
+        window#waybar {
           font-family: ${fonts.monospace.name};
           background-color: ${bg-400};
         }
 
         #workspaces button.active {
           color: ${fg-300};
+          background-color: ${bg-500};
+        }
+
+        #workspaces {
+          padding: 0 6px;
+        }
+
+        #workspaces button {
+          margin: 3px 3px;
+          padding: 0 10px;
+          color: ${fg-500};
+          background-color: ${bg-400};
         }
 
         .module {
-          padding: 0 10px;
-          border-radius: 10px;
+          padding: 0 12px;
+          border-radius: 6px;
           background-color: ${bg-300};
           color: ${fg-300};
         }

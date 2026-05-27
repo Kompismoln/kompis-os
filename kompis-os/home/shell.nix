@@ -2,13 +2,12 @@
   config,
   lib,
   lib',
-  org,
   pkgs,
   ...
 }:
 
 let
-  colors = lib'.semantic-colors org.theme.colors;
+  colors = lib'.semantic-colors;
   cfg = config.kompis-os-hm.shell;
 in
 
@@ -103,7 +102,7 @@ in
           set -g set-clipboard on
 
           set -g status-bg "${bg-400}"
-          set -g status-fg "${fg-500}"
+          set -g status-fg "${fg-300}"
           set -g status-right "#{user}@#{host}"
 
           set -ga terminal-overrides ",256col:Tc"

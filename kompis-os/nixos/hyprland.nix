@@ -24,7 +24,6 @@
         };
       };
     };
-    wayland.windowManager.hyprland.configType = "lua";
 
     services.hypridle.enable = true;
 

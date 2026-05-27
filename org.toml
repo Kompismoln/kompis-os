@@ -161,7 +161,7 @@ stateVersion = "24.11"
 homes.alex.roles = ["hypr-devstation"]
 
 [host.lenovo.desktop]
-wifi-interface = "wlp1s0"
+wifi-interface = "wlp3s0"
 audio-bus-id = "pci-0000_00_1f.3"
 kb-layout = "us,se"
 
@@ -419,51 +419,6 @@ emoji = { package = "noto-fonts-color-emoji", name = "Noto Color Emoji" }
 monospace = { package = "source-code-pro", name = "Source Code Pro" }
 serif = { package = "merriweather", name = "Merriweather" }
 sansSerif = { package = "roboto", name = "Roboto" }
-
-[theme.colors]
-black-100 = "#717C7C"
-black-200 = "#727169"
-black-300 = "#54546D"
-black-400 = "#363646"
-black-500 = "#2A2A37"
-black-600 = "#1F1F28"
-black-700 = "#1a1a22"
-black-800 = "#181820"
-black-900 = "#16161D"
-black-1000 = "#000000"
-red-300 = "#FF5D62"
-red-400 = "#C34043"
-red-500 = "#E82424"
-pink-300 = "#D27E99"
-pink-400 = "#E46876"
-pink-500 = "#43242B"
-green-300 = "#98BB6C"
-green-400 = "#76946A"
-green-500 = "#2B3328"
-yellow-300 = "#E6C384"
-yellow-400 = "#DCA561"
-yellow-500 = "#FF9E3B"
-beige-300 = "#C0A36E"
-beige-400 = "#938056"
-beige-500 = "#49443C"
-orange-400 = "#FFA066"
-blue-200 = "#A3D4D5"
-blue-300 = "#7FB4CA"
-blue-400 = "#7E9CD8"
-blue-500 = "#2D4F67"
-blue-600 = "#223249"
-blue-700 = "#252535"
-purple-200 = "#b8b4d0"
-purple-300 = "#9CABCA"
-purple-400 = "#938AA9"
-purple-500 = "#957FB8"
-cyan-300 = "#7AA89F"
-cyan-400 = "#6A9589"
-cyan-500 = "#658594"
-white-200 = "#FCF7EA"
-white-300 = "#ECE7DA"
-white-400 = "#DCD7BA"
-white-500 = "#C8C093"
 
 [ids]
 admin = 1000

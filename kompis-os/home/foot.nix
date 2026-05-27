@@ -8,7 +8,7 @@
 
 let
   inherit (org.theme) fonts;
-  colors = lib'.semantic-colors org.theme.colors;
+  colors = lib'.semantic-colors;
   unhashedHexes = lib.mapAttrs (n: c: lib.substring 1 6 c) colors;
   cfg = config.kompis-os-hm.foot;
 in
@@ -28,7 +28,7 @@ in
         mouse.hide-when-typing = "yes";
         colors-dark = with unhashedHexes; {
           alpha = 0.8;
-          background = bg-300;
+          background = bg-400;
           foreground = fg-200;
 
           regular0 = base00;

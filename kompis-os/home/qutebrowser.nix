@@ -8,7 +8,7 @@
 
 let
   inherit (org.theme) fonts;
-  colors = lib'.semantic-colors org.theme.colors;
+  colors = lib'.semantic-colors;
   cfg = config.kompis-os-hm.qutebrowser;
 in
 
@@ -103,13 +103,13 @@ in
             system.fg = "rgb";
           };
           hints = {
-            bg = bg-400;
-            fg = fg-400;
+            bg = bg-hint;
+            fg = fg-hint;
             match.fg = fg-match;
           };
           keyhint = {
-            bg = bg-400;
-            fg = fg-400;
+            bg = bg-hint;
+            fg = fg-hint;
             suffix.fg = fg-match;
           };
           messages = {
