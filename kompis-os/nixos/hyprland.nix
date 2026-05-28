@@ -13,7 +13,10 @@
   config = lib.mkIf config.kompis-os.hyprland.enable {
 
     programs = {
-      hyprland.enable = true;
+      hyprland = {
+        enable = true;
+        withUWSM = true;
+      };
       hyprlock.enable = true;
       uwsm = {
         enable = true;
@@ -25,16 +28,29 @@
       };
     };
 
-    services.hypridle.enable = true;
-
     environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
     security.polkit.enable = true;
 
     xdg.portal = {
       enable = true;
-      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-      config.common.default = "*";
+      extraPortals = [
+        pkgs.xdg-desktop-portal-gtk
+      ];
+      config = {
+        common = {
+          default = [
+            "hyprland"
+            "gtk"
+          ];
+        };
+        hyprland = {
+          default = [
+            "hyprland"
+            "gtk"
+          ];
+        };
+      };
     };
   };
 }

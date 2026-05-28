@@ -1,17 +1,15 @@
+# home/hyprland.nix
 {
   config,
   home,
   inputs,
   lib,
-  lib',
   org,
   pkgs,
   ...
 }:
 
 let
-  inherit (org.theme) fonts;
-  colors = lib'.semantic-colors;
   cfg = config.kompis-os-hm.hyprland;
   host = org.host.${home.hostname};
 in
@@ -19,6 +17,10 @@ in
 {
   options.kompis-os-hm.hyprland = {
     enable = lib.mkEnableOption "hyprland et al";
+    screenshotPath = lib.mkOption {
+      type = lib.types.str;
+      default = "~/Pictures/Screenshots";
+    };
   };
 
   imports = [
@@ -28,8 +30,29 @@ in
   config = lib.mkIf cfg.enable {
 
     kompis-os-hm.foot.enable = true;
+    services.hypridle = {
+      enable = true;
+      settings = {
+        general = {
+          lock_cmd = "pidof hyprlock || hyprlock";
+          before_sleep_cmd = "loginctl lock-session";
+          after_sleep_cmd = "hyprctl dispatch dpms on";
+        };
 
-    wayland.windowManager.hyprland.configType = "hyprlang";
+        listener = [
+          {
+            timeout = 300;
+            on-timeout = "loginctl lock-session";
+          }
+          {
+            timeout = 330; # 5.5 minutes
+            on-timeout = "hyprctl dispatch dpms off";
+            on-resume = "hyprctl dispatch dpms on";
+          }
+        ];
+      };
+    };
+
     xdg.mimeApps.enable = true;
 
     xdg.mimeApps.defaultApplications = {
@@ -53,6 +76,112 @@ in
       target = ".config/hypr/wallpaper.jpg";
     };
 
+    programs.hyprlock = {
+      enable = true;
+      settings = {
+        general = {
+          ignore_empty_input = true;
+          hide_cursor = true;
+        };
+
+        input-field = [
+          {
+            position = "0, 0";
+          }
+        ];
+      };
+    };
+
+    wayland.windowManager.hyprland = {
+      enable = true;
+      configType = "hyprlang";
+      settings = {
+        monitorv2 = host.monitors;
+
+        exec-once = [
+          "${lib.getExe pkgs.swaybg} -i ${config.home.file.wallpaper.target}"
+          "${lib.getExe pkgs.waybar}"
+        ];
+
+        input = {
+          kb_layout = host.desktop.kb-layout;
+          kb_options = "grp:caps_switch";
+          repeat_rate = 35;
+          repeat_delay = 175;
+          follow_mouse = true;
+          touchpad = {
+            natural_scroll = true;
+            tap-and-drag = true;
+          };
+        };
+
+        misc = {
+          disable_hyprland_logo = true;
+          disable_splash_rendering = true;
+          disable_autoreload = true;
+        };
+
+        animations = {
+          enabled = true;
+          animation = [
+            "global, 1, 5, default"
+            "workspaces, 1, 1, default"
+          ];
+        };
+
+        device = host.devices;
+
+        "$mainMod" = "SUPER";
+
+        windowrule = [
+          "float on, size 550 350, center on, match:class negative:unbound-size, match:float 0"
+        ];
+
+        bind =
+          let
+            hyprctl = "${pkgs.hyprland}/bin/hyprctl";
+            activeMonitor = "${hyprctl} monitors | ${lib.getExe pkgs.gawk} '/Monitor/{mon=$2} /focused: yes/{print mon}'";
+            workspaces = builtins.genList (x: x) 10;
+            timestamp = "$(date +%Y%m%d_%H%M%S).png";
+            screenshotPath = "${cfg.screenshotPath}/${timestamp}";
+          in
+          with pkgs;
+          [
+            "$mainMod, return, togglefloating,"
+
+            "$mainMod, i, exec, ${lib.getExe foot}"
+            "$mainMod, b, exec, ${lib.getExe qutebrowser}"
+            "$mainMod, r, exec, ${lib.getExe fuzzel}"
+
+            "$mainMod, q, exit,"
+            "$mainMod, f, fullscreen, 0, toggle"
+
+            "$mainMod, h, movetoworkspacesilent, -1"
+            "$mainMod, l, movetoworkspacesilent, +1"
+
+            "$mainMod, o, workspace, emptynm"
+            "$mainMod, j, workspace, e+1"
+            "$mainMod, k, workspace, e-1"
+            "$mainMod, c, killactive,"
+
+            "$mainMod, n, cyclenext"
+            "$mainMod, p, cyclenext, prev"
+
+            "$mainMod, v, swapnext"
+            "$mainMod, x, swapnext, prev"
+
+            ''$mainMod, PRINT, exec, ${lib.getExe grim} -g "$(${lib.getExe slurp})" - | ${lib.getExe swappy} -f - -o ${screenshotPath}''
+            '', PRINT, exec, ${lib.getExe grim} -o "$(${activeMonitor})" - | ${lib.getExe swappy} -f - -o ${screenshotPath}''
+          ]
+          ++ map (i: "$mainMod, ${toString i}, workspace, ${toString i}") workspaces
+          ++ map (i: "$mainMod SHIFT, ${toString i}, movetoworkspacesilent, ${toString i}") workspaces;
+
+        bindm = [
+          "$mainMod, mouse:272, movewindow"
+          "$mainMod, mouse:273, resizewindow"
+        ];
+      };
+    };
     programs.waybar = {
       enable = true;
       settings = {
@@ -79,11 +208,12 @@ in
             "format" = "{ifname}";
             "format-wifi" = "{essid} ({signalStrength}%) ";
             "format-ethernet" = "{ipaddr}/{cidr} 󰊗";
-            "format-disconnected" = "";
+            "format-disconnected" = "Disconnected";
             "tooltip-format" = "{ifname} via {gwaddr} 󰊗";
             "tooltip-format-wifi" = "{essid} ({signalStrength}%) ";
             "tooltip-format-ethernet" = "{ifname} ";
             "tooltip-format-disconnected" = "Disconnected";
+            "on-click" = "${lib.getExe pkgs.foot} -a unbound-size -e nmtui";
             "max-length" = 50;
           };
           "pulseaudio#source" = {
@@ -133,161 +263,38 @@ in
           };
           clock = {
             tooltip-format = "<tt><small>{calendar}</small></tt>";
-            format-alt = "{:%A %Y-%m-%d}";
+            format = "{:%A, %H:%M, %Y-%m-%d}";
             calendar = {
               mode = "year";
               mode-mon-col = 3;
               weeks-pos = "left";
-              format = with colors; {
-                months = "<span color='${green-200}'><b>{}</b></span>";
-                days = "<span color='${neutral-500}'><b>{}</b></span>";
-                weeks = "<span color='${zinc-400}'><b>{}</b></span>";
-                weekdays = "<span color='${orange-300}'><b>{}</b></span>";
-                today = "<span color='${red-600}'><b><u>{}</u></b></span>";
-              };
             };
           };
-        };
-      };
-      style = with colors; ''
-        window#waybar {
-          font-family: ${fonts.monospace.name};
-          background-color: ${bg-400};
-        }
-
-        #workspaces button.active {
-          color: ${fg-300};
-          background-color: ${bg-500};
-        }
-
-        #workspaces {
-          padding: 0 6px;
-        }
-
-        #workspaces button {
-          margin: 3px 3px;
-          padding: 0 10px;
-          color: ${fg-500};
-          background-color: ${bg-400};
-        }
-
-        .module {
-          padding: 0 12px;
-          border-radius: 6px;
-          background-color: ${bg-300};
-          color: ${fg-300};
-        }
-      '';
-    };
-
-    programs.hyprlock = {
-      enable = true;
-      settings = {
-        general = {
-          ignore_empty_input = true;
-          hide_cursor = true;
-        };
-
-        background = [
-          {
-            color = "#000000";
-          }
-        ];
-
-        input-field = [
-          {
-            position = "0, 0";
-            font-family = fonts.monospace.name;
-          }
-        ];
-      };
-    };
-
-    wayland.windowManager.hyprland = {
-      enable = true;
-      settings = {
-        monitorv2 = host.monitors;
-
-        exec-once = [
-          "${lib.getExe pkgs.swaybg} -i ${config.home.file.wallpaper.target}"
-          "${lib.getExe pkgs.waybar}"
-        ];
-
-        general = {
-          gaps_out = 10;
-        };
-
-        input = {
-          kb_layout = host.desktop.kb-layout;
-          kb_options = "grp:caps_switch";
-          repeat_rate = 35;
-          repeat_delay = 175;
-          follow_mouse = true;
-          touchpad = {
-            natural_scroll = true;
-            tap-and-drag = true;
+          battery = {
+            states = {
+              good = 95;
+              warning = 30;
+              critical = 15;
+            };
+            format = "{capacity}% {icon}";
+            format-charging = "{capacity}% 󱐋";
+            format-plugged = "{capacity}% ";
+            format-alt = "{time} {icon}";
+            format-icons = [
+              "󰂎"
+              "󰁺"
+              "󰁻"
+              "󰁼"
+              "󰁽"
+              "󰁾"
+              "󰁿"
+              "󰂀"
+              "󰂁"
+              "󰂂"
+              "󰁹"
+            ];
           };
         };
-
-        misc = {
-          disable_hyprland_logo = true;
-          disable_splash_rendering = true;
-          disable_autoreload = true;
-        };
-
-        animations = {
-          enabled = true;
-          animation = [
-            "global, 1, 5, default"
-            "workspaces, 1, 1, default"
-          ];
-        };
-
-        dwindle = {
-          preserve_split = true;
-        };
-
-        device = host.devices;
-
-        windowrule = [
-          "float on, size 550 350, center on, match:class (.+), match:float 0"
-        ];
-        "$mainMod" = "SUPER";
-
-        bind =
-          let
-            e = lib.getExe;
-            hyprctl = "${pkgs.hyprland}/bin/hyprctl";
-            activeMonitor = "${hyprctl} monitors | ${e pkgs.gawk} '/Monitor/{mon=$2} /focused: yes/{print mon}'";
-            workspaces = builtins.genList (x: x) 10;
-          in
-          with pkgs;
-          [
-            "$mainMod, i, exec, ${e foot}"
-            "$mainMod, o, exec, ${e qutebrowser}"
-            "$mainMod, r, exec, ${e fuzzel}"
-            ''$mainMod, p, exec, ${e grim} -g "$(${e slurp})" - | ${e swappy} -f -''
-            '', PRINT, exec, ${e grim} -o "$(${activeMonitor})" - | ${e swappy} -f -''
-            "$mainMod, return, togglefloating,"
-            "$mainMod, c, killactive,"
-            "$mainMod, q, exit,"
-            "$mainMod, d, pseudo,"
-            "$mainMod, a, layoutmsg, togglesplit"
-            "$mainMod, s, exec, systemctl suspend,"
-            "$mainMod, h, movefocus, l"
-            "$mainMod, l, exec, hyprlock"
-            "$mainMod, k, movefocus, u"
-            "$mainMod, j, cyclenext, hist"
-            "$mainMod, mouse_down, workspace, e+1"
-            "$mainMod, mouse_up, workspace, e-1"
-          ]
-          ++ map (i: "$mainMod, ${toString i}, workspace, ${toString i}") workspaces
-          ++ map (i: "$mainMod SHIFT, ${toString i}, movetoworkspacesilent, ${toString i}") workspaces;
-
-        bindm = [
-          "$mainMod, mouse:272, movewindow"
-          "$mainMod, mouse:273, resizewindow"
-        ];
       };
     };
   };

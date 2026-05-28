@@ -10,7 +10,7 @@
 
 let
   cfg = config.kompis-os.users;
-  eachUser = lib.filterAttrs (user: cfg: cfg.enable) cfg;
+  eachUser = lib.filterAttrs (_user: cfg: cfg.enable) cfg;
 
   userOpts =
     { name, config, ... }:
@@ -89,7 +89,6 @@ in
   };
 
   config = lib.mkIf (cfg != { }) {
-    users.mutableUsers = false;
 
     sops.secrets = lib.mapAttrs' (
       user: userCfg:
@@ -97,49 +96,51 @@ in
         neededForUsers = true;
         sopsFile = lib'.secrets userCfg.class user;
       }
-    ) (lib.filterAttrs (user: userCfg: userCfg.passwd) eachUser);
+    ) (lib.filterAttrs (_user: userCfg: userCfg.passwd) eachUser);
 
-    users.users = lib.mapAttrs (
-      user: userCfg:
-      let
-        isNormalUser = userCfg.class == "user";
-        publicKey = lib'.public-artifacts userCfg.class user "ssh-key";
-        passwordFile = config.sops.secrets."${user}/passwd-sha512".path;
-        home =
-          if !userCfg.home then
-            "/var/empty"
-          else if isNormalUser then
-            "/home/${user}"
-          else
-            "/var/lib/${user}";
-      in
-      {
-        inherit (userCfg) homeMode;
-        inherit isNormalUser home;
-        isSystemUser = !isNormalUser;
-        description = userCfg.description;
-        uid = lib'.ids.${user};
-        group = user;
-        extraGroups = userCfg.groups;
-        openssh.authorizedKeys.keyFiles = lib.mkIf userCfg.publicKey [ publicKey ];
-        hashedPasswordFile = lib.mkIf userCfg.passwd passwordFile;
-        shell = lib.mkIf userCfg.shell pkgs.bash;
-        createHome = home != "/var/empty";
-      }
-    ) eachUser;
+    users = {
+      mutableUsers = false;
+      users = lib.mapAttrs (
+        user: userCfg:
+        let
+          isNormalUser = userCfg.class == "user";
+          publicKey = lib'.public-artifacts userCfg.class user "ssh-key";
+          passwordFile = config.sops.secrets."${user}/passwd-sha512".path;
+          home =
+            if !userCfg.home then
+              "/var/empty"
+            else if isNormalUser then
+              "/home/${user}"
+            else
+              "/var/lib/${user}";
+        in
+        {
+          inherit (userCfg) homeMode description;
+          inherit isNormalUser home;
+          isSystemUser = !isNormalUser;
+          uid = lib'.ids.${user};
+          group = user;
+          extraGroups = userCfg.groups;
+          openssh.authorizedKeys.keyFiles = lib.mkIf userCfg.publicKey [ publicKey ];
+          hashedPasswordFile = lib.mkIf userCfg.passwd passwordFile;
+          shell = lib.mkIf userCfg.shell pkgs.bash;
+          createHome = home != "/var/empty";
+        }
+      ) eachUser;
 
-    users.groups = lib.mapAttrs (user: userCfg: {
-      gid = lib'.ids.${user};
-      members = [ user ] ++ userCfg.members;
-    }) eachUser;
+      groups = lib.mapAttrs (user: userCfg: {
+        gid = lib'.ids.${user};
+        members = [ user ] ++ userCfg.members;
+      }) eachUser;
+    };
 
     # hack to prevent activation errors with service-users (with uid=2000+)
     systemd.services = lib.mapAttrs' (
-      user: userCfg:
+      user: _userCfg:
       lib.nameValuePair "user@${toString lib'.ids.${user}}" {
         restartIfChanged = false;
       }
-    ) (lib.filterAttrs (user: userCfg: lib'.ids.${user} > 1999) eachUser);
+    ) (lib.filterAttrs (user: _userCfg: lib'.ids.${user} > 1999) eachUser);
 
     assertions = lib.mapAttrsToList (
       user: userCfg:
@@ -152,10 +153,10 @@ in
       }
     ) eachUser;
 
-    kompis-os.preserve.directories = lib.mapAttrsToList (user: userCfg: {
+    kompis-os.preserve.directories = lib.mapAttrsToList (user: _userCfg: {
       directory = config.users.users.${user}.home;
-      user = user;
+      inherit user;
       group = user;
-    }) (lib.filterAttrs (user: userCfg: userCfg.stateful) eachUser);
+    }) (lib.filterAttrs (_user: userCfg: userCfg.stateful) eachUser);
   };
 }

@@ -16,7 +16,6 @@
   };
 
   config = lib.mkIf config.kompis-os.shell.enable {
-
     environment.sessionVariables = {
       SOPS_AGE_KEY_FILE = "/keys/user-$USER";
     };

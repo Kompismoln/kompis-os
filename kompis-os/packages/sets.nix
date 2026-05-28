@@ -24,6 +24,7 @@ pkgs: with pkgs; rec {
     ripgrep
     tree
     wget
+    python3
   ];
 
   terminal-env = [
@@ -37,6 +38,7 @@ pkgs: with pkgs; rec {
   ];
 
   system-tools = [
+    brightnessctl
     btrfs-progs
     dmidecode
     lsof

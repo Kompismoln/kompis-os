@@ -17,52 +17,55 @@ in
 with colors;
 colors
 // rec {
-  base00 = zinc-950;
-  base01 = red-600;
-  base02 = green-200;
-  base03 = orange-300;
-  base04 = indigo-300;
-  base05 = zinc-400;
-  base06 = emerald-200;
-  base07 = neutral-500;
+  none = "NONE";
+  background = neutral-950;
+  foreground = neutral-50;
 
-  base08 = amber-50;
-  base09 = red-500;
-  base0A = green-800;
-  base0B = orange-400;
-  base0C = slate-500;
-  base0D = violet-400;
-  base0E = slate-500;
-  base0F = stone-400;
+  regular-black = slate-900;
+  regular-red = red-400;
+  regular-green = green-400;
+  regular-yellow = yellow-400;
+  regular-blue = blue-400;
+  regular-magenta = violet-400;
+  regular-cyan = cyan-400;
+  regular-white = slate-400;
 
-  bg-200 = zinc-600;
-  bg-300 = zinc-800;
-  bg-400 = zinc-900;
-  bg-500 = zinc-900;
-  bg-inv = amber-100;
+  bright-black = slate-600;
+  bright-red = red-200;
+  bright-green = green-200;
+  bright-yellow = yellow-200;
+  bright-blue = blue-200;
+  bright-magenta = violet-200;
+  bright-cyan = cyan-200;
+  bright-white = slate-50;
 
-  fg-200 = amber-50;
-  fg-300 = amber-100;
-  fg-400 = stone-400;
-  fg-500 = neutral-500;
-  fg-inv = zinc-900;
+  bg-light = neutral-800;
+  bg-base = neutral-900;
+  bg-shade = background;
+
+  fg-bright = foreground;
+  fg-base = neutral-100;
+  fg-dimmed = neutral-400;
+
+  fg-inv = bg-base;
+  bg-inv = fg-base;
 
   bg-selected = bg-inv;
-  bg-success = green-200;
-  bg-disabled = stone-400;
-  bg-error = rose-400;
-  bg-warning = orange-300;
-  bg-info = sky-300;
-  bg-hint = zinc-900;
+  bg-success = regular-green;
+  bg-disabled = bright-black;
+  bg-error = regular-red;
+  bg-warning = regular-yellow;
+  bg-info = regular-blue;
+  bg-hint = regular-black;
 
   fg-selected = fg-inv;
-  fg-success = zinc-900;
-  fg-disabled = zinc-900;
-  fg-error = zinc-900;
-  fg-warning = zinc-900;
-  fg-info = zinc-900;
-  fg-hint = stone-400;
+  fg-success = regular-black;
+  fg-disabled = regular-black;
+  fg-error = regular-black;
+  fg-warning = regular-black;
+  fg-info = regular-black;
+  fg-hint = bright-white;
 
-  fg-match = red-500;
-  fg-match-selected = red-500;
+  fg-match = regular-magenta;
+  fg-match-selected = regular-magenta;
 }

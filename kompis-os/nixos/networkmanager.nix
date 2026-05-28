@@ -23,7 +23,7 @@
     };
 
     users.groups.networkmanager.members = lib.attrNames (
-      lib.filterAttrs (user: userCfg: userCfg.isNormalUser) config.users.users
+      lib.filterAttrs (_: userCfg: userCfg.isNormalUser) config.users.users
     );
   };
 }

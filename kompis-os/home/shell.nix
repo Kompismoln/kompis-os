@@ -7,7 +7,6 @@
 }:
 
 let
-  colors = lib'.semantic-colors;
   cfg = config.kompis-os-hm.shell;
 in
 
@@ -21,6 +20,12 @@ in
     home.packages = (lib'.package-sets pkgs).all;
 
     programs = {
+      readline = {
+        enable = true;
+        bindings = {
+          "\\ee" = "edit-and-execute-command";
+        };
+      };
       bash = {
         enable = true;
 
@@ -33,8 +38,7 @@ in
         };
 
         shellAliases = {
-          battery = "cat /sys/class/power_supply/BAT/capacity && cat /sys/class/power_supply/BAT/status";
-          f = "xdg-open \"$(fzf)\"";
+          f = "xdg-open \"$(${lib.getExe pkgs.fzf})\"";
           l = "eza -la --icons=auto";
           ll = "eza";
           cd = "z";
@@ -65,6 +69,14 @@ in
         ];
 
         initExtra = ''
+          # Unbind fzf defaults
+          bind -m emacs-standard -r '\C-t'
+          bind -m emacs-standard -r '\C-r'
+          bind -m emacs-standard -r '\ec'
+
+          # Rebind fzf
+          bind -x '"\er": __fzf_history__'
+
           pwu() {
             bw unlock --raw > ~/.bwsession
           }
@@ -81,9 +93,9 @@ in
         enable = true;
         nix-direnv.enable = true;
       };
-
       fzf = {
         enable = true;
+        tmux.enableShellIntegration = true;
       };
 
       ssh = {
@@ -97,12 +109,13 @@ in
         keyMode = "vi";
         escapeTime = 10;
         baseIndex = 1;
-        extraConfig = with colors; ''
+        extraConfig = ''
           set -g allow-passthrough on
           set -g set-clipboard on
 
-          set -g status-bg "${bg-400}"
-          set -g status-fg "${fg-300}"
+          set -g extended-keys on
+          set -ga terminal-features 'xterm*:extkeys'
+
           set -g status-right "#{user}@#{host}"
 
           set -ga terminal-overrides ",256col:Tc"
@@ -111,6 +124,19 @@ in
           set -ga update-environment TERM
           set -ga update-environment TERM_PROGRAM
           set -ga update-environment SSH_AUTH_SOCK
+
+          bind -n M-o new-window
+          bind -n M-j next-window
+          bind -n M-k previous-window
+          bind -n M-c kill-pane
+
+          bind -n M-x split-window -v -c "#{pane_current_path}"
+          bind -n M-v split-window -h -c "#{pane_current_path}"
+
+          bind -n M-p select-pane -t :.-
+          bind -n M-n select-pane -t :.+
+
+          bind -n M-y copy-mode
 
           bind -T copy-mode-vi y send -X copy-pipe-and-cancel '${pkgs.osc}/bin/osc copy'
         '';

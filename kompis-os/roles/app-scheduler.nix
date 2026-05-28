@@ -15,9 +15,7 @@
       );
     in
     {
-      imports = [
-      ]
-      ++ map (app: lib'.app-config app) apps;
+      imports = map (app: lib'.app-config app) apps;
 
       config = lib.mkMerge (
         map (
@@ -26,7 +24,7 @@
             appCfg = org.app.${app};
           in
           {
-            services.nginx.virtualHosts = lib.genAttrs (appCfg.altpoints or [ ]) (altpoint: {
+            services.nginx.virtualHosts = lib.genAttrs (appCfg.altpoints or [ ]) (_: {
               forceSSL = true;
               enableACME = true;
               locations."/".return = "301 https://${appCfg.endpoint}$request_uri";

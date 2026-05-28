@@ -153,12 +153,12 @@ mountpoint = "/srv/tungsten"
 [host.lenovo]
 id = 7
 facter = "hosts/lenovo/facter.json"
-roles = ["nixos", "peer"]
+roles = ["nixos", "peer", "rice"]
 subnets = ["wg0", "wg1"]
 system = "x86_64-linux"
 stateVersion = "24.11"
 # disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
-homes.alex.roles = ["hypr-devstation"]
+homes.alex.roles = ["hypr-devstation", "rice"]
 
 [host.lenovo.desktop]
 wifi-interface = "wlp3s0"
