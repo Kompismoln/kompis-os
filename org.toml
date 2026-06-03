@@ -226,7 +226,7 @@ system = "x86_64-linux"
 stateVersion = "25.11"
 facter = "hosts/adele/facter.json"
 subnets = ["wg0", "wg1"]
-roles = ["nixos", "peer"]
+roles = ["nixos", "peer", "comfy-root"]
 homes.ami.roles = ["cinnamon-office"]
 
 [host.adele.disk-layouts.main]
