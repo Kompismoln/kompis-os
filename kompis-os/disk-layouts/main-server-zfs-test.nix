@@ -37,9 +37,9 @@ in
       config = {
         sops.secrets.luks-key = { };
 
-        boot.zfs.devNodes = "/dev/disk/by-uuid";
-
         networking.hostId = lib.strings.fixedWidthString 8 "0" (toString inputs.org.host.${host.name}.id);
+
+        disko.devices = (self.diskoModules.${name} name cfg).disko.devices;
 
         kompis-os = {
           locksmith.luksDevice = "/dev/disk/by-partlabel/${cfg.luksPartitionLabel}";
@@ -49,28 +49,31 @@ in
           };
         };
 
-        boot.initrd.secrets."${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
-        boot.initrd.systemd = {
-          enable = true;
-          services."format-root" = {
+        boot = {
+          zfs.devNodes = "/dev/disk/by-uuid";
+          zfs.forceImportRoot = false;
+          initrd.secrets."${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
+          initrd.systemd = {
             enable = true;
-            description = "Format the root LV partition at boot";
-            unitConfig = {
-              DefaultDependencies = "no";
-              Requires = "dev-pool-root.device";
-              After = "dev-pool-root.device";
-              Before = "sysroot.mount";
-            };
+            services."format-root" = {
+              enable = true;
+              description = "Format the root LV partition at boot";
+              unitConfig = {
+                DefaultDependencies = "no";
+                Requires = "dev-pool-root.device";
+                After = "dev-pool-root.device";
+                Before = "sysroot.mount";
+              };
 
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-              ExecStart = "${pkgs.e2fsprogs}/bin/mkfs.ext4 -F /dev/pool/root";
+              serviceConfig = {
+                Type = "oneshot";
+                RemainAfterExit = true;
+                ExecStart = "${pkgs.e2fsprogs}/bin/mkfs.ext4 -F /dev/pool/root";
+              };
+              wantedBy = [ "initrd.target" ];
             };
-            wantedBy = [ "initrd.target" ];
           };
         };
-        disko.devices = (self.diskoModules.${name} name cfg).disko.devices;
       };
     };
 

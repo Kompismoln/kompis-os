@@ -10,7 +10,7 @@
 let
   cfg = config.kompis-os.nextcloud;
 
-  eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
+  eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
 
   appOpts = lib'.mkAppOpts host "nextcloud" {
     options = {
@@ -38,7 +38,7 @@ in
       _: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }
     ) eachApp;
 
-    sops.secrets = lib'.mergeAttrs (app: appCfg: {
+    sops.secrets = lib'.mergeAttrs (_app: appCfg: {
       "${appCfg.entity}/secret-key" = {
         sopsFile = lib'.secrets "app" appCfg.entity;
         owner = appCfg.user;
@@ -87,7 +87,7 @@ in
       };
     }) eachApp;
 
-    systemd.timers = lib'.mergeAttrs (app: appCfg: {
+    systemd.timers = lib'.mergeAttrs (app: _appCfg: {
       "${app}-pgsql-dump" = {
         description = "scheduled database dump";
         wantedBy = [ "timers.target" ];
@@ -179,7 +179,7 @@ in
           enable = true;
           https = true;
           hostName = "localhost";
-          package = pkgs.nextcloud32;
+          package = pkgs.nextcloud33;
           appstoreEnable = true;
           maxUploadSize = "1G";
           extraApps = {
