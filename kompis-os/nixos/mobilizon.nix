@@ -11,7 +11,7 @@ let
   cfg = config.kompis-os.mobilizon;
   settingsFormat = appCfg: pkgs.formats.elixirConf { elixir = appCfg.package.elixirPackage; };
 
-  eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
+  eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
   hostConfig = config;
 in
 {
@@ -31,17 +31,17 @@ in
   };
 
   config = lib.mkIf (eachApp != { }) {
-    kompis-os.org.apps = config.kompis-os.mobilizon.apps;
+    kompis-os.org = {
+      apps = config.kompis-os.mobilizon.apps;
 
-    kompis-os.paths = lib.mapAttrs' (
-      _: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }
-    ) eachApp;
+      paths = lib.mapAttrs' (_: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }) eachApp;
 
-    kompis-os.preserve.directories = lib.mapAttrsToList (app: appCfg: {
-      directory = appCfg.home;
-      user = appCfg.user;
-      group = appCfg.user;
-    }) eachApp;
+      preserve.directories = lib.mapAttrsToList (_app: appCfg: {
+        inherit (appCfg) user;
+        directory = appCfg.home;
+        group = appCfg.user;
+      }) eachApp;
+    };
 
     services.nginx.virtualHosts = lib.mapAttrs' (
       app: appCfg:
@@ -63,7 +63,7 @@ in
           };
         };
         locations."~ ^/(assets|img)" = {
-          root = "${appCfg.package}/lib/mobilizon-${(appCfg.package).version}/priv/static";
+          root = "${appCfg.package}/lib/mobilizon-${appCfg.package.version}/priv/static";
           extraConfig = ''
             access_log off;
             add_header Cache-Control "public, max-age=31536000, s-maxage=31536000, immutable";
@@ -83,7 +83,7 @@ in
     ) eachApp;
 
     systemd.services = lib.mapAttrs' (
-      app: appCfg:
+      app: _appCfg:
       lib.nameValuePair "container@${app}" {
         serviceConfig = {
           TimeoutStopSec = 10;
@@ -152,8 +152,8 @@ in
                 ];
               };
               "Mobilizon.Storage.Repo" = {
+                inherit (appCfg) database;
                 socket_dir = "/run/postgresql";
-                database = appCfg.database;
                 username = appCfg.user;
               };
               ":instance" = {

@@ -194,7 +194,6 @@ in
           modules-right = [
             "pulseaudio#source"
             "pulseaudio#sink"
-            "bluetooth"
             "network"
             "battery"
           ];
@@ -206,13 +205,21 @@ in
           network = {
             "interface" = host.desktop.wifi-interface;
             "format" = "{ifname}";
-            "format-wifi" = "{essid} ({signalStrength}%) ";
+            "format-wifi" = "{essid} ({signalStrength}%) {icon}";
+            "format-icons" = [
+              "󰤯"
+              "󰤟"
+              "󰤢"
+              "󰤥"
+              "󰤨"
+            ];
             "format-ethernet" = "{ipaddr}/{cidr} 󰊗";
             "format-disconnected" = "Disconnected";
             "tooltip-format" = "{ifname} via {gwaddr} 󰊗";
             "tooltip-format-wifi" = "{essid} ({signalStrength}%) ";
             "tooltip-format-ethernet" = "{ifname} ";
             "tooltip-format-disconnected" = "Disconnected";
+
             "on-click" = "${lib.getExe pkgs.foot} -a unbound-size -e nmtui";
             "max-length" = 50;
           };
@@ -231,8 +238,8 @@ in
             "format-bluetooth" = "{volume}% {icon}";
             "format-muted" = "";
             "format-icons" = {
-              "alsa_output.${host.desktop.audio-bus-id}.analog-stereo" = "";
-              "alsa_output.${host.desktop.audio-bus-id}.analog-stereo-muted" = "";
+              "alsa_output.${host.desktop.audio-bus-id}.analog-stereo" = "";
+              "alsa_output.${host.desktop.audio-bus-id}.analog-stereo-muted" = "";
               "headphone" = "";
               "hands-free" = "";
               "headset" = "";
@@ -249,17 +256,6 @@ in
             "on-click" = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
             "on-click-middle" = "pavucontrol";
             "ignored-sinks" = [ "Easy Effects Sink" ];
-          };
-          bluetooth = {
-            format = " {status}";
-            "format-connected" = " {device_alias}";
-            "format-connected-battery" = " {device_alias} {device_battery_percentage}%";
-            "tooltip-format" = "{controller_alias}\t{controller_address}\n\n{num_connections} connected";
-            "tooltip-format-connected" =
-              "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}";
-            "tooltip-format-enumerate-connected" = "{device_alias}\t{device_address}";
-            "tooltip-format-enumerate-connected-battery" =
-              "{device_alias}\t{device_address}\t{device_battery_percentage}%";
           };
           clock = {
             tooltip-format = "<tt><small>{calendar}</small></tt>";

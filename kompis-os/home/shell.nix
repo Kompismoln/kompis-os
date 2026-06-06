@@ -114,7 +114,7 @@ in
           set -g set-clipboard on
 
           set -g extended-keys on
-          set -ga terminal-features 'xterm*:extkeys'
+          set -ga terminal-features ',foot:extkeys'
 
           set -g status-right "#{user}@#{host}"
 
@@ -136,7 +136,7 @@ in
           bind -n M-p select-pane -t :.-
           bind -n M-n select-pane -t :.+
 
-          bind -n M-y copy-mode
+          bind -n M-S-K copy-mode
 
           bind -T copy-mode-vi y send -X copy-pipe-and-cancel '${pkgs.osc}/bin/osc copy'
         '';

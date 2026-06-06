@@ -198,7 +198,33 @@ in
         colorizer.enable = true;
         fugitive.enable = true;
         gitignore.enable = false;
-        direnv.enable = true;
+
+        direnv = {
+          enable = true;
+          autoLoad = true;
+        };
+
+        project-nvim = {
+          enable = true;
+          enableTelescope = true;
+          settings = {
+            detection_methods = [
+              "lsp"
+              "pattern"
+            ];
+            patterns = [
+              ".git"
+              "_darcs"
+              ".hg"
+              "bzr"
+              ".svn"
+              "Makefile"
+              "package.json"
+              "flake.nix"
+            ];
+          };
+        };
+
         none-ls = {
           enable = true;
           sources = {

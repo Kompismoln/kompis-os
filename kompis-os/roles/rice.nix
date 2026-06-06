@@ -150,6 +150,10 @@ in
               background-color: ${bg-light};
               color: ${fg-bright};
             }
+            .modules-right .module {
+              font-family: ${fonts.sansSerif.name};
+              font-size: 11px;
+            }
           '';
           settings.mainBar = {
             clock.calendar = {
@@ -313,8 +317,8 @@ in
                 error.fg = fg-error;
                 fg = fg-base;
                 hover.fg = fg-base;
-                success.http.fg = fg-success;
-                success.https.fg = fg-success;
+                success.http.fg = fg-dimmed;
+                success.https.fg = fg-bright;
                 warn.fg = fg-warning;
               };
             };
