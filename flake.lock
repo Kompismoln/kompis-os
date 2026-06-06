@@ -49,11 +49,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1779414384,
-        "narHash": "sha256-SuASyN9r2qknHluC8WR2CfUAOE5ATHXWt0JipYRVCrY=",
+        "lastModified": 1780775261,
+        "narHash": "sha256-h3QwCnRcRaVES69V9O1q9KvP2WZDqoF8ExTr/BG0V7Q=",
         "ref": "refs/heads/main",
-        "rev": "33bb909dd8b903434eb2a651f736fae90ec29576",
-        "revCount": 184,
+        "rev": "1254111cf09ff56aa87613a1c52442b26bd1381c",
+        "revCount": 202,
         "type": "git",
         "url": "ssh://git@github.com/LigninDDX/chatddx"
       },
@@ -266,11 +266,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779366551,
-        "narHash": "sha256-9K7mBhcwMWV87en94UqBXxOdE7wYd56aRe5wQoSx28g=",
+        "lastModified": 1780577385,
+        "narHash": "sha256-tiws8W3BIrvedE4jKxAKK11Nvm9B7NgrhizxaJUK3Dg=",
         "owner": "Kompismoln",
         "repo": "klimatkalendern",
-        "rev": "a960875f1c90b9d02a35a5667e241ffdf0d86d62",
+        "rev": "c394a5634534f16e82d85cd2b6721908f738306f",
         "type": "github"
       },
       "original": {
@@ -515,11 +515,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776659114,
-        "narHash": "sha256-qapCOQmR++yZSY43dzrp3wCrkOTLpod+ONtJWBk6iKU=",
+        "lastModified": 1779676664,
+        "narHash": "sha256-MbXylBTkWqVm8/VYjoULtMoVRgWBN1gSHbeRKsOsPlU=",
         "owner": "pyproject-nix",
         "repo": "build-system-pkgs",
-        "rev": "ffaa2161dd5d63e0e94591f86b54fc239660fb2e",
+        "rev": "7bff980f37fc24e09dbc986643719900c139bf12",
         "type": "github"
       },
       "original": {
@@ -615,11 +615,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778901413,
-        "narHash": "sha256-GSKXTAnFqRAMlZkJrIPcQMYf+lpMr66K3i60mB9STvc=",
+        "lastModified": 1780416763,
+        "narHash": "sha256-rRK3IFixgsrK6S3e14Xz9HAZm7+kMAIl3oi5zZlcwYI=",
         "owner": "pyproject-nix",
         "repo": "pyproject.nix",
-        "rev": "a228447c3e179d477c1b6246ef3efa8cfe3c469a",
+        "rev": "ad83f1ead0e78e57b188f35cb57298affb06fc5f",
         "type": "github"
       },
       "original": {
@@ -688,7 +688,8 @@
         "preservation": "preservation",
         "sops-nix": "sops-nix",
         "sverigesval": "sverigesval",
-        "sverigesval-dev": "sverigesval-dev"
+        "sverigesval-dev": "sverigesval-dev",
+        "swift-dev": "swift-dev"
       }
     },
     "sops-nix": {
@@ -757,6 +758,26 @@
         "url": "ssh://git@github.com/ahbk/sverigesval.org"
       }
     },
+    "swift-dev": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780742118,
+        "narHash": "sha256-HOo4+qIAQ02B0ozsFy2pPyjHtRtcBQQKpTNx9gv2nbM=",
+        "owner": "Kompismoln",
+        "repo": "swift-dx-guide",
+        "rev": "f276622d54ed62bb2db8c1c22b237cf1b82d622a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Kompismoln",
+        "repo": "swift-dx-guide",
+        "type": "github"
+      }
+    },
     "systems": {
       "locked": {
         "lastModified": 1681028828,
@@ -809,11 +830,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778664018,
-        "narHash": "sha256-ogNyNANNLo0SMFevIeUpbTMOL9uUDu/hXvp7JlOYbwQ=",
+        "lastModified": 1780418295,
+        "narHash": "sha256-yZVQNvmDx1SFjvlwevywsXWJnieSRqmQr7/fCTMyyd0=",
         "owner": "pyproject-nix",
         "repo": "uv2nix",
-        "rev": "b48abe99ef639cd100c224898529370e5d935294",
+        "rev": "0497ccef038da091002be7c05263a7f27820974f",
         "type": "github"
       },
       "original": {

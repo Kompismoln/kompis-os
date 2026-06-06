@@ -31,6 +31,16 @@ let
         example = "~ ^/(api|admin)";
         default = "/";
       };
+      trustedOrigins = lib.mkOption {
+        description = "Origins that this backend trusts";
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+      };
+      workers = lib.mkOption {
+        description = "The number of worker processes for handling requests.";
+        type = lib.types.int;
+        default = 2;
+      };
       timeout = lib.mkOption {
         description = "Workers silent for more than this many seconds are killed and restarted.";
         type = lib.types.int;
@@ -51,6 +61,7 @@ let
     DJANGO_MODE = "main";
     DJANGO_LOG_LEVEL = "WARNING";
     SCHEME = if appCfg.ssl then "https" else "http";
+    TRUSTED_ORIGINS = builtins.concatStringsSep "," appCfg.trustedOrigins;
     SECRET_KEY_FILE = config.sops.secrets."${appCfg.entity}/secret-key".path;
     STATIC_URL = appCfg.locationStatic;
     STATE_DIR = appCfg.home;
@@ -112,6 +123,10 @@ in
             ${appCfg.locationProxy} = {
               recommendedProxySettings = true;
               proxyPass = "http://localhost:${toString (lib'.ports app)}";
+              extraConfig = ''
+                proxy_read_timeout ${toString appCfg.timeout}s;
+                proxy_connect_timeout ${toString appCfg.timeout}s;
+              '';
             };
           }
           // lib.optionalAttrs (appCfg.locationStatic != "") {
@@ -139,11 +154,11 @@ in
         serviceConfig = {
           ExecStart = lib.escapeShellArgs [
             "${appCfg.packages.django-app}/bin/gunicorn"
-            "${appCfg.djangoApp}.wsgi:application"
-            "--bind"
-            "localhost:${toString (lib'.ports app)}"
-            "--timeout"
-            (toString appCfg.timeout)
+            "${appCfg.djangoApp}.asgi:application"
+            "--bind=localhost:${toString (lib'.ports app)}"
+            "--timeout=${toString appCfg.timeout}"
+            "--workers=${toString appCfg.workers}"
+            "--worker-class=uvicorn.workers.UvicornWorker"
           ];
           User = appCfg.user;
           Group = appCfg.user;
@@ -152,24 +167,6 @@ in
         wantedBy = [ "multi-user.target" ];
       };
 
-      "${app}-pgsql-dump" = {
-        description = "dump a snapshot of the postgresql database";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-dump}/bin/pgsql-dump ${app} ${appCfg.home}";
-          User = appCfg.user;
-          Group = appCfg.user;
-        };
-      };
-      "${app}-pgsql-init" = {
-        description = "create database/user-pair";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-init}/bin/pgsql-init ${app}";
-          User = "postgres";
-          Group = "postgres";
-        };
-      };
     }) eachApp;
 
   };

@@ -41,6 +41,9 @@
     chatddx-dev.url = "git+ssh://git@github.com/LigninDDX/chatddx";
     chatddx-dev.inputs.nixpkgs.follows = "nixpkgs";
 
+    swift-dev.url = "github:Kompismoln/swift-dx-guide";
+    swift-dev.inputs.nixpkgs.follows = "nixpkgs";
+
     kompismoln-site.url = "github:Kompismoln/site";
     kompismoln-site.inputs.nixpkgs.follows = "nixpkgs";
 
