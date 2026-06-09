@@ -376,7 +376,7 @@ grants = ["host:app-scheduler"]
 
 [app.opencloud-kompismoln]
 endpoint = "opencloud.kompismoln.se"
-run-on-hosts = ["helsinki"]
+run-on-hosts = []
 grants = ["host:app-scheduler"]
 
 [app.nextcloud-kompismoln]

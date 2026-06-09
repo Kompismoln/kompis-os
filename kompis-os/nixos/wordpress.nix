@@ -10,7 +10,7 @@
 let
   cfg = config.kompis-os.wordpress;
   webserver = config.services.nginx;
-  eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
+  eachApp = lib.filterAttrs (_: appCfg: appCfg.enable) cfg.apps;
 
   appOpts = lib'.mkAppOpts host "wordpress" { };
 
@@ -47,9 +47,9 @@ in
       pkgs.wp-cli
     ];
 
-    kompis-os.preserve.directories = lib.mapAttrsToList (app: appCfg: {
+    kompis-os.preserve.directories = lib.mapAttrsToList (_: appCfg: {
       directory = appCfg.home;
-      user = appCfg.user;
+      inherit (appCfg) user;
       group = appCfg.user;
     }) eachApp;
 
@@ -93,6 +93,7 @@ in
           "~ \\.php$" = {
             priority = 300;
             extraConfig = ''
+              try_files $uri =404;
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
               fastcgi_pass unix:${config.services.phpfpm.pools.${app}.socket};
               fastcgi_index index.php;
@@ -106,17 +107,17 @@ in
 
           "~ /\\." = {
             priority = 800;
-            extraConfig = ''deny all;'';
+            extraConfig = "deny all;";
           };
 
           "~ \.(log|sql)$" = {
             priority = 800;
-            extraConfig = ''deny all;'';
+            extraConfig = "deny all;";
           };
 
           "~* /(?:uploads|files)/.*\\.php$" = {
             priority = 900;
-            extraConfig = ''deny all;'';
+            extraConfig = "deny all;";
           };
 
           "~* \\.(js|css|png|jpg|jpeg|gif|ico)$" = {
@@ -130,8 +131,8 @@ in
       }
     ) eachApp;
 
-    services.phpfpm.pools = lib.mapAttrs (app: appCfg: {
-      user = appCfg.user;
+    services.phpfpm.pools = lib.mapAttrs (_: appCfg: {
+      inherit (appCfg) user;
       group = appCfg.user;
       phpPackage = wpPhp;
       phpOptions = ''
@@ -176,7 +177,7 @@ in
       };
     }) eachApp;
 
-    systemd.timers = lib'.mergeAttrs (app: appCfg: {
+    systemd.timers = lib'.mergeAttrs (app: _: {
       "${app}-mysql-dump" = {
         description = "scheduled database dump";
         wantedBy = [ "timers.target" ];

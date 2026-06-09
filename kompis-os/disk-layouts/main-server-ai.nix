@@ -35,12 +35,15 @@ in
 
       config = {
         sops.secrets.luks-key = { };
-        boot.initrd.secrets."${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
+        boot = {
+          zfs.devNodes = "/dev/disk/by-uuid";
+          zfs.forceImportRoot = false;
+          initrd.secrets."${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
+        };
         kompis-os = {
           locksmith.luksDevice = "/dev/disk/by-partlabel/${cfg.luksPartitionLabel}";
           preserve.enable = true;
         };
-        boot.zfs.devNodes = "/dev/disk/by-uuid";
 
         networking.hostId = lib.strings.fixedWidthString 8 "0" (toString inputs.org.host.${host.name}.id);
         disko.devices = (self.diskoModules.${name} name cfg).disko.devices;

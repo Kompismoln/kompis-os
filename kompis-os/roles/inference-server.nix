@@ -19,6 +19,7 @@
           pkg:
           (pkgs._cuda.lib.allowUnfreeCudaPredicate pkg)
           || (builtins.elem (lib.getName pkg) [
+            "nvidia-kernel-modules"
             "nvidia-x11"
             "nvidia-settings"
           ]);
