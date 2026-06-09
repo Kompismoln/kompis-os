@@ -50,6 +50,7 @@ pkgs: with pkgs; rec {
     strace
     usbutils
     htop
+    iotop
     smem
   ];
 

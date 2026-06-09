@@ -10,7 +10,7 @@ let
 in
 {
   imports = [
-    ../kompis-os/nixos/django.nix
+    ../kompis-os/nixos/django-old.nix
     ../kompis-os/nixos/nginx.nix
     ../kompis-os/nixos/postgresql.nix
     ../kompis-os/nixos/redis.nix
@@ -34,7 +34,7 @@ in
       ssr = "http://localhost:${toString (lib'.ports "${name}-django")}";
     };
 
-    django.apps."${name}-django" = {
+    django-old.apps."${name}-django" = {
       enable = true;
       entity = name;
       inherit (cfg) endpoint;

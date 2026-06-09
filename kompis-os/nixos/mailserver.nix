@@ -10,8 +10,8 @@
 
 let
   cfg = config.kompis-os.mailserver;
-  relayDomains = lib.filterAttrs (_: cfg: !cfg.mailbox) cfg.domains;
-  mailboxDomains = lib.filterAttrs (_: cfg: cfg.mailbox) cfg.domains;
+  relayDomains = lib.filterAttrs (_: domainCfg: !domainCfg.mailbox) cfg.domains;
+  mailboxDomains = lib.filterAttrs (_: domainCfg: domainCfg.mailbox) cfg.domains;
 in
 {
   imports = [
@@ -77,9 +77,8 @@ in
     (lib.mkIf cfg.enable {
 
       kompis-os.preserve.directories = with config.mailserver; [
-        dkimKeyDirectory
-        mailDirectory
-        sieveDirectory
+        dkim.keyDirectory
+        storage.path
       ];
 
       preservation.preserveAt."/srv/database" = {
@@ -116,7 +115,7 @@ in
         enable = true;
         stateVersion = 3;
         fqdn = "mail.${cfg.domain}";
-        inherit (cfg) dkimSelector;
+        dkim.defaults.selector = cfg.dkimSelector;
         domains = lib.mapAttrsToList (domain: _: domain) mailboxDomains;
         domainsWithoutMailbox = lib.mapAttrsToList (domain: _: domain) relayDomains;
         enableSubmission = true;
@@ -124,27 +123,27 @@ in
         mailboxes = {
           Drafts = {
             auto = "subscribe";
-            specialUse = "Drafts";
+            special_use = "\\Drafts";
           };
           Junk = {
             auto = "subscribe";
-            specialUse = "Junk";
+            special_use = "\\Junk";
           };
           Sent = {
             auto = "subscribe";
-            specialUse = "Sent";
+            special_use = "\\Sent";
           };
           Trash = {
             auto = "subscribe";
-            specialUse = "Trash";
+            special_use = "\\Trash";
           };
           Archive = {
             auto = "subscribe";
-            specialUse = "Archive";
+            special_use = "\\Archive";
           };
         };
 
-        loginAccounts = lib.mkMerge [
+        accounts = lib.mkMerge [
           (lib.mapAttrs' (user: userCfg: {
             name = userCfg.email;
             value = {

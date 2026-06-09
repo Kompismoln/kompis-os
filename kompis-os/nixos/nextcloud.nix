@@ -183,7 +183,7 @@ in
           appstoreEnable = true;
           maxUploadSize = "1G";
           extraApps = {
-            inherit (pkgs.nextcloud32Packages.apps) calendar;
+            inherit (pkgs.nextcloud33Packages.apps) calendar;
           };
           settings = {
             trusted_proxies = [
