@@ -18,7 +18,7 @@
     nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixos-mailserver.url = "gitlab:ahbk/nixos-mailserver/relay";
+    nixos-mailserver.url = "gitlab:ahbk/nixos-mailserver/relay-26.05";
     nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
 
     disko.url = "github:nix-community/disko";
@@ -35,7 +35,7 @@
     sverigesval-dev.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
     sverigesval-dev.inputs.nixpkgs.follows = "nixpkgs";
 
-    chatddx.url = "git+ssh://git@github.com/LigninDDX/chatddx";
+    chatddx.url = "git+ssh://git@github.com/LigninDDX/chatddx?ref=old";
     chatddx.inputs.nixpkgs.follows = "nixpkgs";
 
     chatddx-dev.url = "git+ssh://git@github.com/LigninDDX/chatddx";
