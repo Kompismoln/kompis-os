@@ -12,7 +12,9 @@ in
 {
   options.kompis-os-hm.neovim = {
     enable = lib.mkEnableOption "neovim";
-    livepatch = lib.mkEnableOption "livepatch.lua";
+    livepatch = lib.mkEnableOption "livepatch.lua" // {
+      default = true;
+    };
   };
 
   imports = [
@@ -202,27 +204,6 @@ in
         direnv = {
           enable = true;
           autoLoad = true;
-        };
-
-        project-nvim = {
-          enable = true;
-          enableTelescope = true;
-          settings = {
-            detection_methods = [
-              "lsp"
-              "pattern"
-            ];
-            patterns = [
-              ".git"
-              "_darcs"
-              ".hg"
-              "bzr"
-              ".svn"
-              "Makefile"
-              "package.json"
-              "flake.nix"
-            ];
-          };
         };
 
         none-ls = {
