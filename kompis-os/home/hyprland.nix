@@ -17,6 +17,7 @@ in
 {
   options.kompis-os-hm.hyprland = {
     enable = lib.mkEnableOption "hyprland et al";
+    hyprlock = lib.mkEnableOption "hyprlock";
     screenshotPath = lib.mkOption {
       type = lib.types.str;
       default = "~/Pictures/Screenshots";
@@ -31,7 +32,7 @@ in
 
     kompis-os-hm.foot.enable = true;
     services.hypridle = {
-      enable = true;
+      enable = cfg.hyprlock;
       settings = {
         general = {
           lock_cmd = "pidof hyprlock || hyprlock";
@@ -233,7 +234,7 @@ in
             "on-scroll-up" = "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1%+";
             "on-scroll-down" = "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1%-";
           };
-          "pulseaudio#sink" = {
+          "pulseaudio#sink" = lib.mkIf host.desktop.audio-bus-id or false {
             "format" = "{volume}% {icon}";
             "format-bluetooth" = "{volume}% {icon}";
             "format-muted" = "";

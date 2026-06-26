@@ -1,36 +1,43 @@
+{ org, config, ... }:
 {
-  lib,
-  ...
-}:
-{
-  imports = [
-    ./hardware-configuration.nix
-  ];
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-
-  boot.loader.grub = {
+  systemd.network = {
     enable = true;
-    device = "/dev/sda";
-  };
-
-  networking = {
-    networkmanager = {
-      enable = true;
+    links."10-wol" = {
+      matchConfig.Type = "ether";
+      linkConfig.WakeOnLan = "magic";
+    };
+    networks."10-ethernet" = {
+      matchConfig.Type = "ether";
+      networkConfig.DHCP = "yes";
     };
   };
-
-  kompis-os = {
-    nix.facter = false;
-    sysadm.rescueMode = true;
+  networking = {
+    useDHCP = false;
   };
+  boot = {
+    blacklistedKernelModules = [
+      "ax88179_178a"
+      "asix"
+      "cdc_ncm"
+    ];
 
-  # Purism librem 13v2 has unusual keycode for pipe/backslash
-  # https://forums.puri.sm/t/keyboard-layout-unable-to-recognize-pipe/2022
-  systemd.services.pipefix = {
-    wantedBy = [ "multi-user.target" ];
-    after = [ "nix-daemon.socket" ];
-    before = [ "systemd-user-sessions.service" ];
-    script = "/run/current-system/sw/bin/setkeycodes 56 43";
+    extraModulePackages = [
+      (config.boot.kernelPackages.callPackage ../../kompis-os/kernel/mod-ax88179.nix { })
+    ];
+
+    kernelModules = [ "ax_usb_nic" ];
+    loader = {
+      grub.enable = true;
+    };
+  };
+  kompis-os = {
+    sysadm.rescueMode = true;
+    users = {
+      alex = {
+        description = org.user.alex.description;
+        groups = [ "wheel" ];
+      };
+    };
   };
 }

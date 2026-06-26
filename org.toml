@@ -187,10 +187,19 @@ output = "HDMI-A-1"
 
 [host.laptop]
 id = 2
-roles = ["nixos", "peer"]
+roles = ["nixos", "peer", "hypr-mediastation"]
 subnets = ["wg0", "wg1"]
 system = "x86_64-linux"
-stateVersion = "23.11"
+stateVersion = "26.05"
+homes.alex.roles = ["hypr-mediastation"]
+
+[host.laptop.desktop]
+wifi-interface = "wlp1s0"
+kb-layout = "us,se"
+
+[host.laptop.disk-layouts.main]
+module = "main-media"
+device = "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B77858A5120"
 
 [host.phone]
 id = 4
@@ -284,7 +293,12 @@ mail = true
 description = "Alexander Holmbäck"
 email = "alex@kompismoln.se"
 inboxes = ["alex@ahbk.se", "alex@klimatkalendern.nu"]
-grants = ["host-lenovo", "host-pelle", "host-helsinki"]
+grants = [
+  "host-lenovo",
+  "host-pelle",
+  "host-helsinki",
+  "host-laptop",
+]
 
 [user.johanna]
 grants = ["host-friday"]

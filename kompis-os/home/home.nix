@@ -15,8 +15,7 @@
     programs.home-manager.enable = true;
 
     home = {
-      stateVersion = home.stateVersion;
-      username = home.username;
+      inherit (home) stateVersion username;
       homeDirectory = lib.mkDefault /home/${home.username};
     };
   };

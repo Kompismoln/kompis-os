@@ -1,7 +1,10 @@
 # kompis-os/lib/default.nix
 lib: inputs: rec {
   # pick a list of attributes from an attrSet
-  pick = names: attrSet: lib.filterAttrs (name: value: lib.elem name names) attrSet;
+  pick = names: attrSet: lib.filterAttrs (name: _value: lib.elem name names) attrSet;
+
+  pad32 =
+    s: builtins.substring 0 (32 - builtins.stringLength s) "00000000000000000000000000000000" + s;
 
   # create an env-file that can be sourced to set environment variables
   envToList = env: lib.mapAttrsToList (name: value: "${name}=${toString value}") env;

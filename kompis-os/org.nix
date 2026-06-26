@@ -341,19 +341,19 @@ let
         type = lib.types.attrsOf lib.types.anything;
       };
       desktop = lib.mkOption {
-        description = "list of desktop settings";
+        description = "attrset of desktop settings";
         default = { };
-        type = lib.types.attrsOf (lib.types.anything);
+        type = lib.types.attrsOf lib.types.anything;
       };
       monitors = lib.mkOption {
         description = "list of monitors possibly connected to the host";
-        default = { };
-        type = lib.types.listOf (lib.types.attrsOf (lib.types.anything));
+        default = [ ];
+        type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
       };
       devices = lib.mkOption {
         description = "list of devices possibly connected to the host";
-        default = { };
-        type = lib.types.listOf (lib.types.attrsOf (lib.types.anything));
+        default = [ ];
+        type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
       };
     };
   };
