@@ -62,22 +62,36 @@ push() {
     rsync -av --ignore-existing --info=NAME,SKIP --partial --progress "$src" "$user"@"$address":"$dest"
 }
 
+ssh_cleanup() {
+    ssh-agent -k > >(log info)
+}
+
 reset() {
+    trap ssh_cleanup EXIT
     local extra_files="$tmpdir/extra-files"
     local luks_key="$tmpdir/luks_key"
     local age_key="$extra_files/keys/host-$host"
+    local rescue_ssh_key=$tmpdir/keys/rescue-ssh-key
+
+    mkdir -p "$tmpdir/keys"
 
     install -d -m700 "$(dirname "$age_key")"
 
     id-entities.sh -h "$host" cat-secret luks-key >"$luks_key" || die 1 "no luks-key"
     id-entities.sh -h "$host" cat-secret age-key >"$age_key" || die 1 "no age-key"
+    id-entities.sh -s rescue cat-secret ssh-key >"$rescue_ssh_key" || die 1 "no ssh-key for rescue"
 
     chmod 600 "$age_key"
+    chmod 600 "$rescue_ssh_key"
 
     log info "luks key prepared: $(cat "$luks_key")"
     log info "age key prepared: $(cat "$age_key")"
 
-    anywhere.sh \
+    eval "$(ssh-agent -s)" > >(log info)
+    "$km_root/bin/id-entities.sh" "rescue" cat-secret ssh-key | ssh-add - 2> >(log info)
+
+    nixos-anywhere \
+        -i "$rescue_ssh_key" \
         --flake ".#$host" \
         --target-host "root@$address" \
         --ssh-option GlobalKnownHostsFile=/dev/null \

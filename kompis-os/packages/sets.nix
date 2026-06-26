@@ -41,13 +41,16 @@ pkgs: with pkgs; rec {
     brightnessctl
     btrfs-progs
     dmidecode
+    exfat
     lsof
     openssl
     pciutils
     psmisc
     smartmontools
     memtester
+    parted
     strace
+    tftp-hpa
     usbutils
     htop
     iotop
@@ -56,6 +59,7 @@ pkgs: with pkgs; rec {
 
   networking = [
     dig
+    ethtool
     iproute2
     nethogs
     nmap
@@ -66,6 +70,8 @@ pkgs: with pkgs; rec {
     iftop
     vnstat
     mtr
+    unixtools.arp
+    wakeonlan
   ];
 
   data-processing = [
@@ -95,6 +101,7 @@ pkgs: with pkgs; rec {
 
   nix-tools = [
     nixos-facter
+    nixos-anywhere
     nix-serve-ng
     statix
     deadnix
