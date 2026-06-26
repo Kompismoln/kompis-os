@@ -51,11 +51,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1781005790,
-        "narHash": "sha256-GyjTX9aNIrCMSPdRjS+q/n7jaAAv6iTVqzTb6Y2L9Vc=",
+        "lastModified": 1781258911,
+        "narHash": "sha256-GYRADyDp3todZqz+UlgBazVm3xYsxSGULf0D7c089C4=",
         "ref": "refs/heads/main",
-        "rev": "2c60040a8e7fc4e9101fd7a2884bed6ed7ed88b0",
-        "revCount": 203,
+        "rev": "de86a39383ec34065b656f4adab17c056d435665",
+        "revCount": 207,
         "type": "git",
         "url": "ssh://git@github.com/LigninDDX/chatddx"
       },
