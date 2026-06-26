@@ -12,7 +12,7 @@
 let
   cfg = config.kompis-os.wireguard;
 
-  eachSubnet = lib.filterAttrs (iface: ifaceCfg: ifaceCfg.enable) org.subnet;
+  eachSubnet = lib.filterAttrs (_iface: ifaceCfg: ifaceCfg.enable) org.subnet;
 
   peerAddress =
     ifaceCfg: peerCfg: builtins.replaceStrings [ "x" ] [ (toString peerCfg.id) ] ifaceCfg.peerAddress;
@@ -53,7 +53,7 @@ in
     default = lib.elem "peer" host.roles;
   };
 
-  config = lib.mkIf (cfg.enable) {
+  config = lib.mkIf cfg.enable {
 
     systemd.services."systemd-networkd".preStop = lib.concatStringsSep "\n" (
       lib.mapAttrsToList (iface: _: "${pkgs.iproute2}/bin/ip link delete ${iface}") (
@@ -69,8 +69,8 @@ in
         inherit (ifaceCfg) allowedTCPPortRanges;
       }) eachSubnet;
 
-      firewall.allowedUDPPorts = lib.mapAttrsToList (iface: ifaceCfg: ifaceCfg.port) (
-        lib.filterAttrs (iface: ifaceCfg: host.name == ifaceCfg.gateway) eachSubnet
+      firewall.allowedUDPPorts = lib.mapAttrsToList (_iface: ifaceCfg: ifaceCfg.port) (
+        lib.filterAttrs (_iface: ifaceCfg: host.name == ifaceCfg.gateway) eachSubnet
       );
     };
 

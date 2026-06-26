@@ -21,10 +21,6 @@
       };
     };
   };
-  systemd.services.nix-daemon.environment = {
-    # Tells Node.js to prioritize IPv4 DNS resolutions over broken/cluttered IPv6 addresses
-    NODE_OPTIONS = "--dns-result-order=ipv4first";
-  };
 
   boot = {
     loader = {
@@ -35,7 +31,6 @@
 
   networking = {
     useDHCP = false;
-    enableIPv6 = false;
   };
 
   systemd.network = {

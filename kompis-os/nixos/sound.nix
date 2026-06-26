@@ -29,7 +29,7 @@
     };
 
     users.groups.pipewire.members = lib.attrNames (
-      lib.filterAttrs (user: userCfg: userCfg.isNormalUser) config.users.users
+      lib.filterAttrs (_user: userCfg: userCfg.isNormalUser) config.users.users
     );
   };
 }
