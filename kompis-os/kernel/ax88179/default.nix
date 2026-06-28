@@ -5,12 +5,16 @@ stdenv.mkDerivation rec {
   version = "4.1.0";
 
   src = ./ASIX_USB_NIC_Linux_Driver_Source_v4.1.0.tar.bz2;
+  patches = [ ./0001-fix-napi-del-disconnect-warn.patch ];
 
   nativeBuildInputs = kernel.moduleBuildDependencies;
 
   hardeningDisable = [
     "pic"
     "format"
+    # uncomment if needed on kernel upgrade
+    # "fortify"
+    # "stackprotector"
   ];
 
   KDIR = "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build";
@@ -28,7 +32,7 @@ stdenv.mkDerivation rec {
     cp ax_usb_nic.ko "$long_mod_dir/"
 
     mkdir -p "$out/bin"
-    cp axcmd *_programmer *_ieee "$out/bin/" 2>/dev/null || true
+    cp axcmd *_programmer *_ieee "$out/bin/"
 
     runHook postInstall
   '';

@@ -1,0 +1,17 @@
+--- a/ax_main.c
++++ b/ax_main.c
+@@ -2647,14 +2647,10 @@ static void ax_disconnect(struct usb_interface *intf)
+ 		ax_set_unplug(axdev);
+ #ifdef ENABLE_RX_TASKLET
+ 		tasklet_kill(&axdev->rx_tl);
+-#else
+-		netif_napi_del(&axdev->rx_napi);
+ #endif
+ 		for (i = 0; i < axdev->driver_info->tx_num; i++)
+ #ifdef ENABLE_TX_TASKLET
+ 			tasklet_kill(&axdev->tx_tl[i]);
+-#else
+-			netif_napi_del(&axdev->tx_napi[i]);
+ #endif
+ 		unregister_netdev(axdev->netdev);
+ 		free_netdev(axdev->netdev);
