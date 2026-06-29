@@ -16,27 +16,20 @@
     owner = "ami";
   };
 
-  services.pipewire.extraConfig.pipewire-pulse = {
-    "99-echo-cancel" = {
-      "pulse.cmd" = [
-        {
-          cmd = "load-module";
-          args = "module-echo-cancel";
-        }
-      ];
-      "stream.properties" = {
-        "default.configured.audio.sink" = "echo-cancel-sink";
-        "default.configured.audio.source" = "echo-cancel-source";
-      };
-    };
-    "92-low-latency" = {
-      stream.properties = {
-        resample.quality = 10;
-      };
-    };
+  services.pipewire.extraConfig.pipewire."99-echo-cancel" = {
+    "context.modules" = [
+      {
+        name = "libpipewire-module-echo-cancel";
+        args = {
+          "node.latency" = "1024/48000";
+          "capture.props" = {
+            "node.name" = "echo-cancel-source";
+          };
+          "sink.props" = {
+            "node.name" = "echo-cancel-sink";
+          };
+        };
+      }
+    ];
   };
-
-  boot.extraModprobeConfig = ''
-    options snd-hda-intel dmic_detect
-  '';
 }
