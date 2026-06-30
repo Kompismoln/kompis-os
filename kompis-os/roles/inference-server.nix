@@ -14,6 +14,15 @@
 
       environment.systemPackages = with pkgs; [ vllm ];
 
+      boot = {
+        kernelModules = [ "nvidia" ];
+        blacklistedKernelModules = [ "nouveau" ];
+        extraModprobeConfig = ''
+          blacklist nouveau
+          options nouveau modeset=0
+        '';
+      };
+
       nixpkgs.config = {
         allowUnfreePredicate =
           pkg:
@@ -23,23 +32,16 @@
             "nvidia-x11"
             "nvidia-settings"
           ]);
-        cudaCapabilities = [ "8.6" ];
-        cudaForwardCompat = true;
         cudaSupport = true;
       };
 
-      nix.settings = {
-        substituters = [
-          "https://cache.nixos-cuda.org"
-        ];
-        trusted-public-keys = [
-          "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
-        ];
+      hardware = {
+        nvidia.open = true;
+        nvidia.modesetting.enable = true;
+        graphics.enable = true;
       };
 
-      hardware.nvidia.open = false;
       services.xserver.videoDrivers = [ "nvidia" ];
-      hardware.graphics.enable = true;
 
       kompis-os = {
         huggingface = {
@@ -52,6 +54,7 @@
           model = "Qwen/Qwen3-8B-AWQ";
           host = "0.0.0.0";
           extraArgs = [
+            "--enforce-eager"
             "--gpu-memory-utilization=0.95"
             "--max-model-len=8192"
             "--max-num-seqs=1"

@@ -267,7 +267,7 @@ roles = [
   "nixos",
   "peer",
   "server",
-  # "inference-server",
+  "inference-server",
 ]
 subnets = ["wg0", "wg1", "wg2"]
 system = "x86_64-linux"
