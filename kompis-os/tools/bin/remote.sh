@@ -84,11 +84,14 @@ reset() {
     chmod 600 "$age_key"
     chmod 600 "$rescue_ssh_key"
 
-    log info "luks key prepared: $(cat "$luks_key")"
-    log info "age key prepared: $(cat "$age_key")"
-
     eval "$(ssh-agent -s)" > >(log info)
-    "$km_root/bin/id-entities.sh" "rescue" cat-secret ssh-key | ssh-add - 2> >(log info)
+    ssh-add "$rescue_ssh_key" |& log info
+
+    if ssh -o BatchMode=yes -o ConnectTimeout=5 "root@$address" true |& log error; then
+        log success "SSH connection to root@$address successful"
+    else
+        die 1 "SSH to root@$address connection failed"
+    fi
 
     nixos-anywhere \
         -i "$rescue_ssh_key" \
