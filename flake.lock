@@ -18,7 +18,6 @@
     },
     "chatddx": {
       "inputs": {
-        "flake-utils": "flake-utils",
         "nixpkgs": [
           "nixpkgs"
         ],
@@ -27,16 +26,15 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1768736386,
-        "narHash": "sha256-/mksMPqe42ZFWaq59wplNK3GOHbChPFGcdV2MPPNijw=",
-        "ref": "old",
-        "rev": "f4548790ee5c435ac18a8b16227e617bca504603",
-        "revCount": 136,
+        "lastModified": 1781258911,
+        "narHash": "sha256-GYRADyDp3todZqz+UlgBazVm3xYsxSGULf0D7c089C4=",
+        "ref": "refs/heads/main",
+        "rev": "de86a39383ec34065b656f4adab17c056d435665",
+        "revCount": 207,
         "type": "git",
         "url": "ssh://git@github.com/LigninDDX/chatddx"
       },
       "original": {
-        "ref": "old",
         "type": "git",
         "url": "ssh://git@github.com/LigninDDX/chatddx"
       }
@@ -170,24 +168,6 @@
       "original": {
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "type": "github"
-      }
-    },
-    "flake-utils": {
-      "inputs": {
-        "systems": "systems"
-      },
-      "locked": {
-        "lastModified": 1731533236,
-        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
         "type": "github"
       }
     },
@@ -434,7 +414,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "systems": "systems_2"
+        "systems": "systems"
       },
       "locked": {
         "lastModified": 1779415812,
@@ -506,11 +486,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1757296493,
-        "narHash": "sha256-6nzSZl28IwH2Vx8YSmd3t6TREHpDbKlDPK+dq1LKIZQ=",
+        "lastModified": 1779676664,
+        "narHash": "sha256-MbXylBTkWqVm8/VYjoULtMoVRgWBN1gSHbeRKsOsPlU=",
         "owner": "pyproject-nix",
         "repo": "build-system-pkgs",
-        "rev": "5b8e37fe0077db5c1df3a5ee90a651345f085d38",
+        "rev": "7bff980f37fc24e09dbc986643719900c139bf12",
         "type": "github"
       },
       "original": {
@@ -614,11 +594,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1758265079,
-        "narHash": "sha256-amLaLNwKSZPShQHzfgmc/9o76dU8xzN0743dWgvYlr8=",
+        "lastModified": 1780416763,
+        "narHash": "sha256-rRK3IFixgsrK6S3e14Xz9HAZm7+kMAIl3oi5zZlcwYI=",
         "owner": "pyproject-nix",
         "repo": "pyproject.nix",
-        "rev": "02e9418fd4af638447dca4b17b1280da95527fc9",
+        "rev": "ad83f1ead0e78e57b188f35cb57298affb06fc5f",
         "type": "github"
       },
       "original": {
@@ -709,6 +689,7 @@
         "sops-nix": "sops-nix",
         "sverigesval": "sverigesval",
         "sverigesval-dev": "sverigesval-dev",
+        "swift": "swift",
         "swift-dev": "swift-dev"
       }
     },
@@ -778,6 +759,26 @@
         "url": "ssh://git@github.com/ahbk/sverigesval.org"
       }
     },
+    "swift": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780742118,
+        "narHash": "sha256-HOo4+qIAQ02B0ozsFy2pPyjHtRtcBQQKpTNx9gv2nbM=",
+        "owner": "Kompismoln",
+        "repo": "swift-dx-guide",
+        "rev": "f276622d54ed62bb2db8c1c22b237cf1b82d622a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Kompismoln",
+        "repo": "swift-dx-guide",
+        "type": "github"
+      }
+    },
     "swift-dev": {
       "inputs": {
         "nixpkgs": [
@@ -813,21 +814,6 @@
         "type": "github"
       }
     },
-    "systems_2": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
     "uv2nix": {
       "inputs": {
         "nixpkgs": [
@@ -840,11 +826,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1758933732,
-        "narHash": "sha256-HAmm1GBS1myZCFuog0DC2ZLaynvZtiUI2Crmo+cdQI0=",
+        "lastModified": 1780418295,
+        "narHash": "sha256-yZVQNvmDx1SFjvlwevywsXWJnieSRqmQr7/fCTMyyd0=",
         "owner": "pyproject-nix",
         "repo": "uv2nix",
-        "rev": "273ce18f913d8559e0d04f820d724308966d7c4d",
+        "rev": "0497ccef038da091002be7c05263a7f27820974f",
         "type": "github"
       },
       "original": {

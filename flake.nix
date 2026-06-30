@@ -35,11 +35,14 @@
     sverigesval-dev.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
     sverigesval-dev.inputs.nixpkgs.follows = "nixpkgs";
 
-    chatddx.url = "git+ssh://git@github.com/LigninDDX/chatddx?ref=old";
+    chatddx.url = "git+ssh://git@github.com/LigninDDX/chatddx";
     chatddx.inputs.nixpkgs.follows = "nixpkgs";
 
     chatddx-dev.url = "git+ssh://git@github.com/LigninDDX/chatddx";
     chatddx-dev.inputs.nixpkgs.follows = "nixpkgs";
+
+    swift.url = "github:Kompismoln/swift-dx-guide";
+    swift.inputs.nixpkgs.follows = "nixpkgs";
 
     swift-dev.url = "github:Kompismoln/swift-dx-guide";
     swift-dev.inputs.nixpkgs.follows = "nixpkgs";

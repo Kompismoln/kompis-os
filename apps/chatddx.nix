@@ -1,7 +1,8 @@
 # kompis-os/apps/chatddx.nix
 {
-  lib',
+  config,
   org,
+  inputs,
   ...
 }:
 let
@@ -10,37 +11,39 @@ let
 in
 {
   imports = [
-    ../kompis-os/nixos/django-old.nix
+    ../kompis-os/nixos/django.nix
     ../kompis-os/nixos/nginx.nix
     ../kompis-os/nixos/postgresql.nix
-    ../kompis-os/nixos/redis.nix
-    ../kompis-os/nixos/svelte.nix
   ];
 
+  services.nginx.virtualHosts.${cfg.endpoint} = {
+    root = inputs.swift.packages."x86_64-linux".default;
+
+    locations."/" = {
+      tryFiles = "$uri $uri/ =404";
+    };
+
+    forceSSL = true;
+    enableACME = true;
+  };
+
   kompis-os = {
-    nginx.enable = true;
-    postgresql.enable = true;
     users.${name}.class = "app";
 
-    redis.servers."${name}-redis" = {
+    nginx.enable = true;
+
+    postgresql.databases.${name} = {
       enable = true;
-      entity = name;
+      dumpPath = "${config.kompis-os.django.apps."${name}-django".home}/dbdump.sql";
     };
 
-    svelte.apps."${name}-svelte" = {
+    django.apps."${name}-django" = {
       enable = true;
       entity = name;
       inherit (cfg) endpoint;
-      ssr = "http://localhost:${toString (lib'.ports "${name}-django")}";
-    };
-
-    django-old.apps."${name}-django" = {
-      enable = true;
-      entity = name;
-      inherit (cfg) endpoint;
-      djangoApp = "chatddx_backend";
-      locationProxy = "/admin";
-      celery = true;
+      djangoApp = "chatddx.django";
+      locationProxy = "~ ^/(admin|api)";
+      trustedOrigins = [ "https://${cfg.endpoint}" ];
       timeout = 180;
     };
   };

@@ -8,7 +8,7 @@
 
 let
   cfg = config.kompis-os.postgresql;
-  eachDatabase = lib.filterAttrs (db: dbCfg: dbCfg.enable) cfg.databases;
+  eachDatabase = lib.filterAttrs (_db: dbCfg: dbCfg.enable) cfg.databases;
 in
 {
   options.kompis-os.postgresql = {
@@ -61,7 +61,7 @@ in
     };
 
     systemd.services = lib.mapAttrs' (
-      db: dbCfg:
+      _db: dbCfg:
       lib.nameValuePair "${dbCfg.name}-pgsql-dump" {
         description = "dump a snapshot of the postgresql database";
         serviceConfig = {
@@ -71,6 +71,6 @@ in
           Group = dbCfg.user;
         };
       }
-    ) (lib.filterAttrs (db: dbCfg: dbCfg.dumpPath != null) eachDatabase);
+    ) (lib.filterAttrs (_db: dbCfg: dbCfg.dumpPath != null) eachDatabase);
   };
 }

@@ -141,16 +141,6 @@ in
       "${app}" = {
         path = [ pkgs.postgresql ];
         description = "serve ${app}";
-        preStart =
-          let
-            query = "SELECT * FROM django_migrations WHERE name='${appCfg.migration}'";
-          in
-          lib.mkIf (appCfg.migration != null) (
-            lib.mkBefore ''
-              echo "Validating database state for ${app}..."
-              psql -U "${appCfg.user}" -d "${appCfg.database}" -c "${query}" | grep -q 1;
-            ''
-          );
         serviceConfig = {
           ExecStart = lib.escapeShellArgs [
             "${appCfg.packages.django-app}/bin/gunicorn"

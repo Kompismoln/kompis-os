@@ -1,5 +1,6 @@
 # kompis-os/apps/chatddx-dev.nix
 {
+  config,
   org,
   inputs,
   ...
@@ -27,9 +28,14 @@ in
   };
 
   kompis-os = {
-    nginx.enable = true;
-    postgresql.enable = true;
     users.${name}.class = "app";
+
+    nginx.enable = true;
+
+    postgresql.databases.${name} = {
+      enable = true;
+      dumpPath = "${config.kompis-os.django.apps."${name}-django".home}/dbdump.sql";
+    };
 
     django.apps."${name}-django" = {
       enable = true;
