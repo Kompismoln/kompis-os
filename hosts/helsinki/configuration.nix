@@ -1,4 +1,3 @@
-{ inputs, ... }:
 {
   boot = {
     loader.grub.enable = true;
@@ -22,15 +21,13 @@
       networkConfig = {
         Address = [
           "65.108.214.112/32"
-          "2a01:4f9:c012:e514::/64"
-        ];
-        Gateway = [
-          "172.31.1.1"
-          "fe80::1"
+          "2a01:4f9:c012:e514::1/64"
         ];
         DNS = [
           "185.12.64.1"
           "185.12.64.2"
+          "2a01:4ff:ff00::add:1"
+          "2a01:4ff:ff00::add:2"
         ];
       };
       routes = [
@@ -41,7 +38,12 @@
         {
           Destination = "0.0.0.0/0";
           Gateway = "172.31.1.1";
-          GatewayOnLink = "yes";
+          GatewayOnLink = true;
+        }
+        {
+          Destination = "::/0";
+          Gateway = "fe80::1";
+          GatewayOnLink = true;
         }
       ];
     };
