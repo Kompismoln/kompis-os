@@ -234,7 +234,7 @@ in
             "on-scroll-up" = "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1%+";
             "on-scroll-down" = "wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1%-";
           };
-          "pulseaudio#sink" = lib.mkIf host.desktop.audio-bus-id or false {
+          "pulseaudio#sink" = lib.mkIf (host.desktop.audio-bus-id or null != null) {
             "format" = "{volume}% {icon}";
             "format-bluetooth" = "{volume}% {icon}";
             "format-muted" = "";
