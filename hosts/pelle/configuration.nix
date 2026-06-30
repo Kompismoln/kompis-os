@@ -3,17 +3,8 @@
   ...
 }:
 {
-  imports = [
-    ../../kompis-os/nixos/glesys-updaterecord.nix
-  ];
-
   kompis-os = {
     sysadm.rescueMode = true;
-    glesys.updaterecord = {
-      enable = true;
-      recordid = "3959183";
-      device = "enp5s0";
-    };
     users = {
       alex = {
         description = org.user.alex.description;
@@ -37,7 +28,7 @@
     enable = true;
     networks."10-enp5s0" = {
       matchConfig.Name = "enp5s0";
-      networkConfig.DHCP = "ipv4";
+      networkConfig.DHCP = "yes";
     };
   };
 }
