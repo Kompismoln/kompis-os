@@ -21,15 +21,17 @@
       {
         name = "libpipewire-module-echo-cancel";
         args = {
+          "monitor.mode" = true;
           "node.latency" = "1024/48000";
           "capture.props" = {
             "node.name" = "echo-cancel-source";
           };
-          "sink.props" = {
-            "node.name" = "echo-cancel-sink";
+          "source.props" = {
+            "node.name" = "Echo Cancellation Source";
           };
         };
       }
     ];
   };
+
 }
