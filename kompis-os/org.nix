@@ -2,7 +2,7 @@
 { lib, ... }:
 let
   orgOpts =
-    { name, config, ... }:
+    { config, ... }:
     let
       orgCfg = config;
     in
@@ -18,7 +18,7 @@ let
         };
         contact = lib.mkOption {
           description = "contact";
-          default = "info@${config.domain}";
+          default = "info@${orgCfg.domain}";
           type = lib.types.str;
         };
         timezone = lib.mkOption {
@@ -218,49 +218,56 @@ let
       };
     };
   };
-  subnetOpts = {
-    options = {
-      enable = lib.mkEnableOption "a wireguard subnet";
-      address = lib.mkOption {
-        description = "CIDR for the subnet";
-        type = lib.types.str;
-      };
-      namespace = lib.mkOption {
-        description = "top domain in the subnets";
-        type = lib.types.str;
-      };
-      port = lib.mkOption {
-        description = "port allocated for the subnet";
-        type = lib.types.port;
-      };
-      keepalive = lib.mkOption {
-        description = "port allocated for the subnet";
-        type = lib.types.number;
-      };
-      gateway = lib.mkOption {
-        description = "designated gateway host";
-        type = lib.types.str;
-      };
-      dns = lib.mkOption {
-        description = "list of name servers";
-        type = with lib.types; listOf str;
-      };
-      resetOnRebuild = lib.mkOption {
-        description = "destroy and recreate network device post rebuild";
-        type = lib.types.bool;
-      };
-      peerAddress = lib.mkOption {
-        description = "template for peer addresses (hack)";
-        example = "10.0.0.x";
-        type = lib.types.str;
-      };
-      allowedTCPPortRanges = lib.mkOption {
-        description = "user's entity class";
-        default = [ ];
-        type = with lib.types; listOf anything;
+  subnetOpts =
+    { name, ... }:
+    {
+      options = {
+        enable = lib.mkEnableOption "a wireguard subnet";
+        interface = lib.mkOption {
+          description = "interface for the subnet";
+          type = lib.types.str;
+          default = name;
+        };
+        address = lib.mkOption {
+          description = "CIDR for the subnet";
+          type = lib.types.str;
+        };
+        namespace = lib.mkOption {
+          description = "top domain in the subnets";
+          type = lib.types.str;
+        };
+        port = lib.mkOption {
+          description = "port allocated for the subnet";
+          type = lib.types.port;
+        };
+        keepalive = lib.mkOption {
+          description = "port allocated for the subnet";
+          type = lib.types.number;
+        };
+        gateway = lib.mkOption {
+          description = "designated gateway host";
+          type = lib.types.str;
+        };
+        dns = lib.mkOption {
+          description = "list of name servers";
+          type = with lib.types; listOf str;
+        };
+        resetOnRebuild = lib.mkOption {
+          description = "destroy and recreate network device post rebuild";
+          type = lib.types.bool;
+        };
+        peerAddress = lib.mkOption {
+          description = "template for peer addresses (hack)";
+          example = "10.0.0.x";
+          type = lib.types.str;
+        };
+        allowedTCPPortRanges = lib.mkOption {
+          description = "user's entity class";
+          default = [ ];
+          type = with lib.types; listOf anything;
+        };
       };
     };
-  };
 
   mailserverOpts = {
     options = {

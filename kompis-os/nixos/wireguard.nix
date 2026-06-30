@@ -12,39 +12,40 @@
 let
   cfg = config.kompis-os.wireguard;
 
-  eachSubnet = lib.filterAttrs (_iface: ifaceCfg: ifaceCfg.enable) org.subnet;
+  eachSubnet = map (subnet: org.subnet.${subnet}) host.subnets;
 
   peerAddress =
-    ifaceCfg: peerCfg: builtins.replaceStrings [ "x" ] [ (toString peerCfg.id) ] ifaceCfg.peerAddress;
+    subnet: peerCfg: builtins.replaceStrings [ "x" ] [ (toString peerCfg.id) ] subnet.peerAddress;
 
   createPeer =
-    iface: ifaceCfg: peer: peerCfg:
+    subnet: peer: peerCfg:
     let
       base = {
-        PublicKey = builtins.readFile (lib'.public-artifacts "host" peer "${iface}-key");
+        PublicKey = builtins.readFile (lib'.public-artifacts "host" peer "${subnet.interface}-key");
         AllowedIPs = [
-          (if peer == ifaceCfg.gateway then ifaceCfg.address else "${peerAddress ifaceCfg peerCfg}/32")
+          (if peer == subnet.gateway then subnet.address else "${peerAddress subnet peerCfg}/32")
         ];
       };
       serverConfig = {
-        Endpoint = "${peerCfg.endpoint}:${toString ifaceCfg.port}";
+        Endpoint = "${peerCfg.endpoint}:${toString subnet.port}";
       };
       clientConfig = {
-        PersistentKeepalive = ifaceCfg.keepalive;
+        PersistentKeepalive = subnet.keepalive;
       };
     in
-    base // (if peer == ifaceCfg.gateway then serverConfig else clientConfig);
+    base // (if peer == subnet.gateway then serverConfig else clientConfig);
 
   peers =
-    iface: ifaceCfg:
+    subnet:
     lib.filterAttrs (
       otherHostName: otherHostCfg:
       otherHostName != host.name
       && lib.elem "peer" otherHostCfg.roles
-      && lib.elem iface otherHostCfg.subnets
-      && (otherHostName == ifaceCfg.gateway || host.name == ifaceCfg.gateway)
+      && lib.elem subnet.interface otherHostCfg.subnets
+      && (otherHostName == subnet.gateway || host.name == subnet.gateway)
     ) org.host;
 
+  isGateway = lib.any (subnet: host.name == subnet.gateway) eachSubnet;
 in
 {
   options.kompis-os.wireguard.enable = lib.mkOption {
@@ -56,70 +57,82 @@ in
   config = lib.mkIf cfg.enable {
 
     systemd.services."systemd-networkd".preStop = lib.concatStringsSep "\n" (
-      lib.mapAttrsToList (iface: _: "${pkgs.iproute2}/bin/ip link delete ${iface}") (
-        lib.filterAttrs (_: ifaceCfg: ifaceCfg.resetOnRebuild) eachSubnet
+      map (subnet: "${pkgs.iproute2}/bin/ip link delete ${subnet.interface}") (
+        lib.filter (subnet: subnet.resetOnRebuild) eachSubnet
       )
     );
 
     networking = {
       wireguard.enable = true;
-      networkmanager.unmanaged = map (iface: "interface-name:${iface}") (lib.attrNames eachSubnet);
+      networkmanager.unmanaged = map (interface: "interface-name:${interface}") host.subnets;
 
-      firewall.interfaces = lib.mapAttrs (_: ifaceCfg: {
-        inherit (ifaceCfg) allowedTCPPortRanges;
-      }) eachSubnet;
+      firewall.interfaces = lib.listToAttrs (
+        map (
+          subnet:
+          lib.nameValuePair subnet.interface {
+            inherit (subnet) allowedTCPPortRanges;
+          }
+        ) eachSubnet
+      );
 
-      firewall.allowedUDPPorts = lib.mapAttrsToList (_iface: ifaceCfg: ifaceCfg.port) (
-        lib.filterAttrs (_iface: ifaceCfg: host.name == ifaceCfg.gateway) eachSubnet
+      firewall.allowedUDPPorts = map (subnet: subnet.port) (
+        lib.filter (subnet: host.name == subnet.gateway) eachSubnet
       );
     };
 
-    sops.secrets = lib.mapAttrs' (
-      iface: _:
-      lib.nameValuePair "${iface}-key" {
-        owner = "systemd-network";
-        group = "systemd-network";
-      }
-    ) eachSubnet;
-
-    boot.kernel.sysctl."net.ipv4.ip_forward" = lib.any (ifaceCfg: host.name == ifaceCfg.gateway) (
-      lib.attrValues eachSubnet
+    sops.secrets = lib.listToAttrs (
+      map (
+        interface:
+        lib.nameValuePair "${interface}-key" {
+          owner = "systemd-network";
+          group = "systemd-network";
+        }
+      ) host.subnets
     );
+
+    boot.kernel.sysctl = lib.mkIf isGateway {
+      "net.ipv4.ip_forward" = 1;
+      "net.ipv6.conf.all.forwarding" = 1;
+    };
 
     systemd.network = {
       enable = true;
 
-      netdevs = lib.mapAttrs' (
-        iface: ifaceCfg:
-        lib.nameValuePair "10-${iface}" {
-          netdevConfig = {
-            Kind = "wireguard";
-            Name = iface;
-          };
-          wireguardConfig = {
-            PrivateKeyFile = config.sops.secrets."${iface}-key".path;
-            ListenPort = lib.mkIf (host.name == ifaceCfg.gateway) ifaceCfg.port;
-          };
-          wireguardPeers = lib.mapAttrsToList (createPeer iface ifaceCfg) (peers iface ifaceCfg);
-        }
-      ) eachSubnet;
+      netdevs = lib.listToAttrs (
+        map (
+          subnet:
+          lib.nameValuePair "10-${subnet.interface}" {
+            netdevConfig = {
+              Kind = "wireguard";
+              Name = subnet.interface;
+            };
+            wireguardConfig = {
+              PrivateKeyFile = config.sops.secrets."${subnet.interface}-key".path;
+              ListenPort = lib.mkIf (host.name == subnet.gateway) subnet.port;
+            };
+            wireguardPeers = lib.mapAttrsToList (createPeer subnet) (peers subnet);
+          }
+        ) eachSubnet
+      );
 
-      networks = lib.mapAttrs' (
-        iface: ifaceCfg:
-        lib.nameValuePair "10-${iface}" {
-          matchConfig.Name = iface;
-          address = [ "${peerAddress ifaceCfg host}/24" ];
-          dns = map (dns: peerAddress ifaceCfg org.host.${dns}) ifaceCfg.dns;
-          routes = lib.optional (host.name == ifaceCfg.gateway) {
-            Destination = ifaceCfg.address;
-            Scope = "link";
-          };
-          networkConfig = {
-            DHCP = "no";
-            IPv6PrivacyExtensions = "kernel";
-          };
-        }
-      ) eachSubnet;
+      networks = lib.listToAttrs (
+        map (
+          subnet:
+          lib.nameValuePair "10-${subnet.interface}" {
+            matchConfig.Name = subnet.interface;
+            address = [ "${peerAddress subnet host}/24" ];
+            dns = map (dns: peerAddress subnet org.host.${dns}) subnet.dns;
+            routes = lib.optional (host.name == subnet.gateway) {
+              Destination = subnet.address;
+              Scope = "link";
+            };
+            networkConfig = {
+              DHCP = "no";
+              IPv6PrivacyExtensions = "kernel";
+            };
+          }
+        ) eachSubnet
+      );
     };
   };
 }

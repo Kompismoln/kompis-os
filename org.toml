@@ -35,6 +35,18 @@ resetOnRebuild = true
 peerAddress = "10.0.1.x"
 allowedTCPPortRanges = [{ from = 0, to = 65535 }]
 
+[subnet.wg2]
+enable = true
+address = "10.0.2.0/24"
+port = 51822
+keepalive = 25
+gateway = "pelle"
+namespace = "km2"
+dns = ["pelle"]
+resetOnRebuild = true
+peerAddress = "10.0.2.x"
+allowedTCPPortRanges = [{ from = 0, to = 65535 }]
+
 [mailserver]
 dkimSelector = "k1"
 host = "helsinki"
@@ -154,7 +166,11 @@ mountpoint = "/srv/tungsten"
 id = 7
 facter = "hosts/lenovo/facter.json"
 roles = ["nixos", "peer", "rice"]
-subnets = ["wg0", "wg1"]
+subnets = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
 system = "x86_64-linux"
 stateVersion = "24.11"
 # disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
@@ -244,9 +260,16 @@ device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 
 [host.pelle]
 facter = "hosts/pelle/facter.json"
+endpoint = "pelle.kompismoln.se"
+dnsFor = "wg2"
 id = 9
-roles = ["nixos", "peer", "server", "inference-server"]
-subnets = ["wg0", "wg1"]
+roles = [
+  "nixos",
+  "peer",
+  "server",
+  # "inference-server",
+]
+subnets = ["wg0", "wg1", "wg2"]
 system = "x86_64-linux"
 stateVersion = "25.11"
 
