@@ -19,11 +19,10 @@
     blacklistedKernelModules = [
       "ax88179_178a"
       "asix"
-      "cdc_ncm"
     ];
 
     extraModulePackages = [
-      (config.boot.kernelPackages.callPackage ../../kompis-os/kernel/mod-ax88179.nix { })
+      (config.boot.kernelPackages.callPackage ../../kompis-os/kernel/ax88179 { })
     ];
 
     kernelModules = [ "ax_usb_nic" ];
