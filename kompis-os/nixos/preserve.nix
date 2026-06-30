@@ -1,8 +1,10 @@
 # kompis-os/nixos/preserve.nix
 {
   config,
+  host,
   inputs,
   lib,
+  lib',
   options,
   ...
 }:
@@ -21,7 +23,7 @@ in
   options.kompis-os.preserve = rec {
     inherit (preserveAtOptions) files directories;
     databases = directories;
-    enable = lib.mkEnableOption ''ephemeral root on this host'';
+    enable = lib.mkEnableOption "ephemeral root on this host";
     storage = lib.mkOption {
       description = "permanent storage";
       type = lib.types.str;
@@ -44,13 +46,7 @@ in
           "/var/lib/systemd"
         ]
         ++ cfg.directories;
-        files = [
-          {
-            file = "/etc/machine-id";
-            inInitrd = true;
-          }
-        ]
-        ++ cfg.files;
+        inherit (cfg) files;
       };
       preserveAt.${cfg.database} = {
         directories = cfg.databases;
@@ -65,7 +61,7 @@ in
 
     fileSystems."/keys".neededForBoot = true;
 
-    systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
+    environment.etc."machine-id".text = lib'.pad32 (toString host.id) + "\n";
 
     boot.initrd.systemd.enable = true;
 
