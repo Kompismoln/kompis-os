@@ -65,7 +65,7 @@ in
     facter.reportPath = lib.mkIf cfg.facter "${inputs.self}/${org.host.${host.name}.facter}";
 
     sops.secrets."nix-serve/nix-sign" = {
-      sopsFile = lib'.secrets "service" "nix-serve";
+      inherit (org.service.nix-serve) sopsFile;
       restartUnits = [
         "nix-serve.service"
       ];
@@ -78,7 +78,7 @@ in
 
     programs.ssh.knownHosts.github = {
       hostNames = [ "github.com" ];
-      publicKeyFile = lib'.public-artifacts "unmanaged" "github" "ssh-key";
+      publicKeyFile = ../../public-artifacts/unmanaged-github-ssh-key.pub;
     };
 
     nix = {

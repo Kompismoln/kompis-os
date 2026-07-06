@@ -48,7 +48,8 @@ in
         {
           ExecStart = pkgs.writeShellScript "glesys-updaterecord" ''
             ipv4="$(${pkgs.iproute2}/bin/ip -4 -o addr show ${cfg.device} | ${pkgs.gawk}/bin/awk '{split($4, a, "/"); print a[1]}')"
-            ${lib.getExe pkgs.curl} -sSX POST -d "${data}" -u ${user} ${url} | ${pkgs.util-linux}/bin/logger -t dhcpcd
+            ipv6="$(${pkgs.iproute2}/bin/ip -6 -o addr show ${cfg.device} scope global | ${pkgs.gawk}/bin/awk '{split($4, a, "/"); print a[1]; exit}')"
+            ${lib.getExe pkgs.curl} -sSX POST -d "${data}" -u ${user} ${url} | ${pkgs.util-linux}/bin/logger -t glesys-updaterecord
           '';
         };
     };

@@ -6,7 +6,7 @@
   ...
 }:
 let
-  lib' = (import ./lib) lib inputs;
+  lib' = (import ./lib) lib inputs self.org;
   importDir = dir: (lib.mapAttrsToList (name: _: ./${dir}/${name}) (builtins.readDir ./${dir}));
 in
 {

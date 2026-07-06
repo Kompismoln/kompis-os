@@ -3,12 +3,11 @@
   flake.nixosModules.nixos =
     {
       host,
-      lib',
       ...
     }:
     {
       imports = [
-        "${lib'.host-config host.name}"
+        host.configurationFile
         ../nixos/system.nix
         ../nixos/paths.nix
         ../nixos/org.nix

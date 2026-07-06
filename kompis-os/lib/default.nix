@@ -1,5 +1,5 @@
 # kompis-os/lib/default.nix
-lib: inputs: rec {
+lib: inputs: org: rec {
   # pick a list of attributes from an attrSet
   pick = names: attrSet: lib.filterAttrs (name: _value: lib.elem name names) attrSet;
 
@@ -46,39 +46,18 @@ lib: inputs: rec {
     in
     "${inputs.self}/${location}";
 
-  host-config =
-    host:
-    let
-      location = builtins.replaceStrings [ "$host" ] [ host ] inputs.org.host-config;
-    in
-    "${inputs.self}/${location}";
-
-  home-config =
-    home:
-    let
-      location = builtins.replaceStrings [ "$home" ] [ home ] inputs.org.home-config;
-    in
-    "${inputs.self}/${location}";
-
-  app-config =
-    app:
-    let
-      location = builtins.replaceStrings [ "$app" ] [ app ] inputs.org.app-config;
-    in
-    "${inputs.self}/${location}";
-
   home-args =
     user: host:
     let
-      hostCfg = inputs.org.host.${host} or (throw "Host '${host}' not found in org.host");
-      homeCfg = hostCfg.homes.${user} or (throw "User '${user}' not found in org.host.${host}.home");
+      hostCfg = org.host.${host} or (throw "Host '${host}' not found in org.host");
+      homeCfg = hostCfg.home.${user} or (throw "User '${user}' not found in org.host.${host}.home");
     in
     {
       inherit (hostCfg) system stateVersion;
       roles = homeCfg.roles or [ ];
       hostname = host;
       username = user;
-      configPath = home-config "${user}@${host}";
+      configPath = homeCfg.configurationFile;
     };
 
   package-sets = import ../packages/sets.nix;

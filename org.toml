@@ -1,27 +1,27 @@
 # org.toml
 name = "Kompismoln"
-domain = "kompismoln.se"
+endpoint = "kompismoln.se"
 contact = "info@kompismoln.se"
 timezone = "Europe/Stockholm"
 locale = "en_US.UTF-8"
 prefix = "fd17:9247:d916"
 prefix4 = "10.0"
-host-config = "hosts/$host/configuration.nix"
-home-config = "homes/$home.nix"
-app-config = "apps/$app.nix"
 build-hosts = ["pelle", "stationary"]
-root-identities = ["root-1"]
 namespaces = ["km1", "km", "kompismoln.se"]
 
-[subnet.wg0]
+[flake]
+type = "github"
+owner = "Kompismoln"
+repo = "kompis-os"
+
+[vpn.wg0]
 id = 0
-ipv4 = true
 trusted = true
 gateway = "helsinki"
 namespace = "km"
 dns = ["helsinki"]
 
-[subnet.wg1]
+[vpn.wg1]
 id = 1
 trusted = true
 gateway = "stationary"
@@ -29,7 +29,7 @@ proxy = true
 namespace = "km1"
 dns = ["stationary"]
 
-[subnet.wg2]
+[vpn.wg2]
 id = 2
 trusted = true
 gateway = "pelle"
@@ -42,121 +42,44 @@ host = "helsinki"
 int = "helsinki.km"
 ext = "mail.kompismoln.se"
 
-[flake]
-type = "github"
-owner = "Kompismoln"
-repo = "kompis-os"
-
-[dns."kompismoln.se"]
+[domain."kompismoln.se"]
 mailbox = true
 
-[dns."chatddx.com"]
+[domain."chatddx.com"]
 mailbox = true
 
-[dns."sverigesval.org"]
+[domain."sverigesval.org"]
 mailbox = true
 
-[dns."ahbk.se"]
+[domain."ahbk.se"]
 mailbox = true
 
-[dns."esse.nu"]
+[domain."esse.nu"]
 mailbox = false
 
-[dns."klimatkalendern.nu"]
+[domain."klimatkalendern.nu"]
 mailbox = false
-
-[public-artifacts]
-default = "public-keys/$class-$entity-$key.pub"
-tls-cert = "public-keys/$class-$entity-$key.pem"
-
-[secrets]
-default = "enc/$class-$entity.yaml"
-root = "keys/$class-$entity"
-
-[class.root]
-keys = ["age-key"]
-
-[class.host]
-keys = [
-  "age-key",
-  "ssh-key",
-  "wg0-key",
-  "wg1-key",
-  "wg2-key",
-  "luks-key",
-]
-
-[class.user]
-keys = [
-  "age-key",
-  "ssh-key",
-  "mail",
-  "passwd",
-  "restic-key",
-]
-
-[class.service]
-keys = [
-  "age-key",
-  "ssh-key",
-  "mail",
-  "passwd",
-  "secret-key",
-  "tls-cert",
-  "nix-sign",
-]
-
-[class.app]
-keys = [
-  "age-key",
-  "ssh-key",
-  "secret-key",
-  "restic-key",
-]
-
-[ops.rebuild]
-"*" = ["rebuild:age-key"]
-
-[ops.align]
-"*" = ["align:age-key"]
-
-[ops.check]
-"host:luks+server" = ["check:luks-key"]
-"host:server" = ["check:age-key", "check:ssh-key"]
-"host-lenovo" = ["check:age-key", "check:ssh-key"]
-
-[ops.verify-identities]
-"*" = ["verify:age-key"]
-
-[ops.verify-users]
-"user-*" = ["verify:ssh-key", "verify:passwd", "verify:mail"]
-
-[ops.verify-hosts]
-"host-*" = ["verify:wg0-key", "verify:wg1-key"]
-
-[ops.verify-services]
-"service-*" = [
-  "verify:ssh-key",
-  "verify:tls-cert",
-  "verify:passwd",
-  "verify:mail",
-]
-
-[root.1]
 
 [host.stationary]
-facter = "hosts/stationary/facter.json"
 id = 1
-roles = ["nixos", "peer", "server", "app-scheduler"]
-endpoint = "stationary.kompismoln.se"
-externalInterface = "enp3s0"
-subnets = [
+roles = [
+  "nixos",
+  "peer",
+  "server",
+  "app-scheduler",
+]
+vpns = [
   "wg0",
   "wg1",
   "wg2",
 ]
+endpoint = "stationary.kompismoln.se"
 system = "x86_64-linux"
 stateVersion = "25.05"
+
+[host.stationary.network.enp3s0]
+role = "external"
+mode = "dhcp"
 
 [host.stationary.disk-layouts.main]
 module = "main-server-zfs-test"
@@ -175,9 +98,12 @@ mountpoint = "/srv/tungsten"
 
 [host.lenovo]
 id = 7
-facter = "hosts/lenovo/facter.json"
-roles = ["nixos", "peer", "rice"]
-subnets = [
+roles = [
+  "nixos",
+  "peer",
+  "rice",
+]
+vpns = [
   "wg0",
   "wg1",
   "wg2",
@@ -187,8 +113,15 @@ stateVersion = "24.11"
 # disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
 home.alex.roles = ["hypr-devstation", "rice"]
 
+[host.lenovo.network.eth0]
+role = "external"
+mode = "dhcp"
+
+[host.lenovo.network.wlp3s0]
+role = "wifi"
+mode = "dhcp"
+
 [host.lenovo.desktop]
-wifi-interface = "wlp3s0"
 audio-bus-id = "pci-0000_00_1f.3"
 kb-layout = "us,se"
 
@@ -214,9 +147,12 @@ output = "HDMI-A-1"
 
 [host.laptop]
 id = 2
-roles = ["nixos", "peer", "hypr-mediastation"]
-externalInterface = "eth0"
-subnets = [
+roles = [
+  "nixos",
+  "peer",
+  "hypr-mediastation",
+]
+vpns = [
   "wg0",
   "wg1",
   "wg2",
@@ -225,8 +161,15 @@ system = "x86_64-linux"
 stateVersion = "26.05"
 home.alex.roles = ["hypr-mediastation"]
 
+[host.laptop.network.eth0]
+role = "external"
+mode = "dhcp"
+
+[host.laptop.network.wlp1s0]
+role = "wifi"
+mode = "dhcp"
+
 [host.laptop.desktop]
-wifi-interface = "wlp1s0"
 kb-layout = "us,se"
 
 [host.laptop.disk-layouts.main]
@@ -236,23 +179,44 @@ device = "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B77858A5120"
 [host.phone]
 id = 4
 roles = ["peer"]
-subnets = ["wg0", "wg1"]
-system = "aarch64-linux"
-stateVersion = ""
-
-[host.helsinki]
-id = 5
-system = "x86_64-linux"
-stateVersion = "25.05"
-facter = "hosts/helsinki/facter.json"
-endpoint = "helsinki.kompismoln.se"
-externalInterface = "enp1s0"
-subnets = [
+vpns = [
   "wg0",
   "wg1",
   "wg2",
 ]
-roles = ["nixos", "peer", "server", "mailserver", "app-scheduler"]
+system = "aarch64-linux"
+
+[host.helsinki]
+id = 5
+endpoint = "helsinki.kompismoln.se"
+roles = [
+  "nixos",
+  "peer",
+  "server",
+  "mailserver",
+  "app-scheduler",
+]
+vpns = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
+system = "x86_64-linux"
+stateVersion = "25.05"
+
+[host.helsinki.network.enp1s0]
+role = "external"
+mode = "static"
+address4 = "65.108.214.112/32"
+gateway4 = "172.31.1.1"
+address = "2a01:4f9:c012:e514::1/64"
+gateway = "fe80::1"
+dns = [
+  "185.12.64.1",
+  "185.12.64.2",
+  "2a01:4ff:ff00::add:1",
+  "2a01:4ff:ff00::add:2",
+]
 
 [host.helsinki.disk-layouts.main]
 module = "main-server-btrfs"
@@ -260,8 +224,15 @@ device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]
 id = 6
-roles = ["nixos", "peer"]
-subnets = ["wg0", "wg1"]
+roles = [
+  "nixos",
+  "peer",
+]
+vpns = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
 system = "x86_64-linux"
 stateVersion = "20.03"
 
@@ -269,40 +240,51 @@ stateVersion = "20.03"
 id = 8
 system = "x86_64-linux"
 stateVersion = "25.11"
-facter = "hosts/adele/facter.json"
-subnets = [
+roles = [
+  "nixos",
+  "peer",
+  "comfy-root",
+]
+vpns = [
   "wg0",
   "wg1",
   "wg2",
 ]
-roles = ["nixos", "peer", "comfy-root"]
 home.ami.roles = ["cinnamon-office"]
+
+[host.adele.network.wlp1s0]
+role = "wifi"
+mode = "dhcp"
+
+[host.adele.network.enp0s31f6]
+role = "external"
+mode = "dhcp"
 
 [host.adele.disk-layouts.main]
 module = "main-workstation"
 device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 
 [host.pelle]
-facter = "hosts/pelle/facter.json"
-endpoint = "pelle.kompismoln.se"
-externalInterface = "enp5s0"
 id = 9
+endpoint = "pelle.kompismoln.se"
 roles = [
   "nixos",
   "peer",
   "server",
   "inference-server",
 ]
-subnets = [
+vpns = [
   "wg0",
   "wg1",
   "wg2",
 ]
 system = "x86_64-linux"
 stateVersion = "25.11"
+home.alex.roles = ["cli-devstation"]
 
-[host.pelle.home]
-alex.roles = ["cli-devstation"]
+[host.pelle.network.enp5s0]
+role = "external"
+mode = "dhcp"
 
 [host.pelle.disk-layouts.main]
 module = "main-server-ai"
@@ -311,24 +293,27 @@ device = "/dev/disk/by-id/nvme-WDC_WD_BLACK_SDBPNTY-1T00-1106_21351R802985"
 [host.bootstrap]
 id = 254
 roles = ["nixos", "peer"]
-subnets = ["wg0"]
 system = "x86_64-linux"
 stateVersion = "25.11"
 
 [host.debian]
+id = 253
 system = "x86_64-linux"
 stateVersion = "23.11"
 users = ["alex"]
 roles = ["home-manager", "workstation"]
 
 [host.arch]
+id = 252
 system = "x86_64-linux"
 stateVersion = "24.05"
 users = ["alex"]
 roles = ["home-manager", "workstation"]
 
 [user.admin]
+description = "Administrator"
 mail = true
+email = "admin@kompismoln.se"
 grants = ["host-*"]
 inboxes = [
   "info@kompismoln.se",
@@ -337,6 +322,7 @@ inboxes = [
 ]
 
 [user.ami]
+description = "AMI"
 grants = ["host-adele"]
 
 [user.alex]
@@ -351,7 +337,8 @@ grants = [
   "host-laptop",
 ]
 
-[user.johanna]
+[user.jo]
+description = "Jo"
 grants = ["host-friday"]
 
 [service.backup]
