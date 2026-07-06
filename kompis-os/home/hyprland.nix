@@ -203,27 +203,31 @@ in
             "hyprland/submap"
           ];
           modules-center = [ "clock" ];
-          network = {
-            "interface" = host.desktop.wifi-interface;
-            "format" = "{ifname}";
-            "format-wifi" = "{essid} ({signalStrength}%) {icon}";
-            "format-icons" = [
-              "󰤯"
-              "󰤟"
-              "󰤢"
-              "󰤥"
-              "󰤨"
-            ];
-            "format-ethernet" = "{ipaddr}/{cidr} 󰊗";
-            "format-disconnected" = "Disconnected";
-            "tooltip-format" = "{ifname} via {gwaddr} 󰊗";
-            "tooltip-format-wifi" = "{essid} ({signalStrength}%) ";
-            "tooltip-format-ethernet" = "{ifname} ";
-            "tooltip-format-disconnected" = "Disconnected";
+          network =
+            let
+              wifi = lib.findFirst (n: n.role == "wifi") null (builtins.attrValues host.network);
+            in
+            lib.mkIf (wifi != null) {
+              "interface" = wifi.interface;
+              "format" = "{ifname}";
+              "format-wifi" = "{essid} ({signalStrength}%) {icon}";
+              "format-icons" = [
+                "󰤯"
+                "󰤟"
+                "󰤢"
+                "󰤥"
+                "󰤨"
+              ];
+              "format-ethernet" = "{ipaddr}/{cidr} 󰊗";
+              "format-disconnected" = "Disconnected";
+              "tooltip-format" = "{ifname} via {gwaddr} 󰊗";
+              "tooltip-format-wifi" = "{essid} ({signalStrength}%) ";
+              "tooltip-format-ethernet" = "{ifname} ";
+              "tooltip-format-disconnected" = "Disconnected";
 
-            "on-click" = "${lib.getExe pkgs.foot} -a unbound-size -e nmtui";
-            "max-length" = 50;
-          };
+              "on-click" = "${lib.getExe pkgs.foot} -a unbound-size -e nmtui";
+              "max-length" = 50;
+            };
           "pulseaudio#source" = {
             "format-source" = "{volume}% ";
             "format-source-muted" = "{volume}% ";
