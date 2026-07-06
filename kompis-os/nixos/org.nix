@@ -1,7 +1,9 @@
+# kompis-os/nixos/org.nix
 {
   config,
   lib,
   pkgs,
+  org,
   ...
 }:
 {
@@ -18,6 +20,7 @@
   };
 
   config = {
+    kompis-os.org = org;
     kompis-os.org-json = pkgs.writeTextFile {
       name = "org.json";
       text = builtins.toJSON config.kompis-os.org;

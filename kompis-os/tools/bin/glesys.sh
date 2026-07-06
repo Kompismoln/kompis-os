@@ -40,7 +40,7 @@ glesys-api() {
 recordid:() {
     with domainname cloudaccount apikey endpoint
     local url="$endpoint/domain/listrecords?domainname=$domainname"
-    local path="//response/records/item[host='$1']/recordid/text()"
+    local path="//response/records/item[host='$1' and type='AAAA']/recordid/text()"
     xmllint --xpath "$path" <(curl -sSX GET -u "$cloudaccount:$apikey" "$url")
 }
 

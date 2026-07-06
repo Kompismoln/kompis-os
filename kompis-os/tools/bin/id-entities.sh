@@ -93,6 +93,8 @@ preflight-input() {
 }
 
 preflight-org-toml() {
+    with org
+    log info "using $org"
     log info "org name: $(org-toml.sh "name")"
 }
 
@@ -619,6 +621,7 @@ declare -g \
     id \
     json_secret_ \
     next_slot_ \
+    org \
     secret_file \
     secret_path \
     secret_seed \
@@ -744,6 +747,9 @@ tmp_path() {
 }
 
 # === misc helpers
+org() {
+    nix eval "$FLAKE#org" --json
+}
 
 usage() {
     sed -n '/^USAGE$/,/^$/p' "$km_root/share/doc/id-entities-usage.txt"
