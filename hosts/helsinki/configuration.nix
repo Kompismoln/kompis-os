@@ -1,23 +1,20 @@
+{ host, ... }:
 {
   boot = {
     loader.grub.enable = true;
   };
 
   networking = {
-    useDHCP = false;
-    dhcpcd.enable = false;
     useNetworkd = true;
     firewall = {
-      allowedTCPPorts = [ 53 ];
-      allowedUDPPorts = [ 53 ];
       logRefusedConnections = false;
     };
   };
 
   systemd.network = {
     enable = true;
-    networks."10-lan" = {
-      matchConfig.Name = "enp1s0";
+    networks."10-${host.externalInterface}" = {
+      matchConfig.Name = host.externalInterface;
       networkConfig = {
         Address = [
           "65.108.214.112/32"
@@ -31,10 +28,6 @@
         ];
       };
       routes = [
-        {
-          Destination = "172.31.1.1/32";
-          Scope = "link";
-        }
         {
           Destination = "0.0.0.0/0";
           Gateway = "172.31.1.1";

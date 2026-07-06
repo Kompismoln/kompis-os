@@ -80,6 +80,7 @@
               ];
               shellHook = ''
                 export SOPS_AGE_KEY_FILE=/keys/root-1
+                export FLAKE=.
                 export BUILD_HOST=pelle
                 export BUILD_WORKING_TREE=true
                 export RESTIC_REPOSITORY="$HOME/.restic"

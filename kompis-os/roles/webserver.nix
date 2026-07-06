@@ -4,7 +4,6 @@
   flake.nixosModules.webserver = {
     imports = [
       ../nixos/collabora.nix
-      ../nixos/dns-hints.nix
       ../nixos/egress-proxy.nix
       ../nixos/fail2ban.nix
       ../nixos/mobilizon.nix

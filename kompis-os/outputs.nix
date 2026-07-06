@@ -18,6 +18,8 @@ in
   ++ (importDir "roles")
   ++ (importDir "disk-layouts");
 
+  _module.args.lib' = lib';
+
   flake = {
     inherit (inputs) org;
 
@@ -58,7 +60,7 @@ in
             lib.mapAttrs' (username: _: {
               name = "${username}@${host}";
               value = lib'.home-args username host;
-            }) (hostCfg.homes or { })
+            }) (hostCfg.home or { })
           ) inputs.org.host
         );
 
@@ -78,7 +80,7 @@ in
             lib.unique (
               hostCfg.roles
               ++ (lib.mapAttrsToList (_: diskCfg: "disk-layout-${diskCfg.module}") hostCfg.disk-layouts)
-              ++ (lib.concatLists (lib.mapAttrsToList (_: userCfg: userCfg.roles) hostCfg.homes))
+              ++ (lib.concatLists (lib.mapAttrsToList (_: userCfg: userCfg.roles) hostCfg.home))
             )
           );
       }

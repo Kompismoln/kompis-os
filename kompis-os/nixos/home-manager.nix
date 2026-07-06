@@ -40,7 +40,7 @@
           ]
           ++ map (role: inputs.self.homeModules.${role}) homeCfg.roles;
         }
-      ) org.host.${host.name}.homes;
+      ) org.host.${host.name}.home;
     };
   };
 }

@@ -18,7 +18,7 @@ in
       maxretry = 1;
       bantime = "1d";
       bantime-increment.enable = true;
-      ignoreIP = lib.mapAttrsToList (subnet: subnetCfg: subnetCfg.address) org.subnet;
+      ignoreIP = map (subnet: subnet.address4) (lib.attrValues org.subnet);
     };
   };
 }

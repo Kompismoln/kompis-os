@@ -22,6 +22,7 @@
       };
       tls-certs = inputs.org.namespaces;
       locksmith.enable = true;
+      wireguard.enable = true;
       sops.enable = true;
       ssh.enable = true;
       #state.enable = true;

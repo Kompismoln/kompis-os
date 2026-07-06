@@ -4,13 +4,11 @@
   flake.nixosModules.server =
     {
       host,
-      lib,
       org,
       ...
     }:
     {
       imports = [
-        ../nixos/dns-hints.nix
         ../nixos/egress-proxy.nix
         ../nixos/fail2ban.nix
         ../nixos/monitor.nix
@@ -25,11 +23,6 @@
       ];
 
       kompis-os = {
-        dns-hints = lib.mkIf (org.host.${host.name}.dnsFor != null) {
-          enable = true;
-          subnet = org.host.${host.name}.dnsFor;
-        };
-
         # msmtp conflicts with postfix
         sendmail.enable = host.name != self.org.mailserver.host;
 

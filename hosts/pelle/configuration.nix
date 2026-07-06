@@ -1,9 +1,14 @@
 {
-  lib,
+  host,
+  #lib,
   org,
   ...
 }:
 {
+  imports = [
+    ../../kompis-os/nixos/glesys-updaterecord.nix
+  ];
+
   nix = {
 
     settings = {
@@ -19,6 +24,13 @@
   };
   kompis-os = {
     sysadm.rescueMode = true;
+
+    glesys.updaterecord = {
+      enable = false;
+      recordid = "4069983";
+      device = host.externalInterface;
+    };
+
     users = {
       alex = {
         description = org.user.alex.description;
@@ -35,13 +47,16 @@
   };
 
   networking = {
-    useDHCP = false;
+    useNetworkd = true;
+    firewall = {
+      logRefusedConnections = false;
+    };
   };
 
   systemd.network = {
     enable = true;
-    networks."10-enp5s0" = {
-      matchConfig.Name = "enp5s0";
+    networks."10-${host.externalInterface}" = {
+      matchConfig.Name = host.externalInterface;
       networkConfig.DHCP = "yes";
     };
   };

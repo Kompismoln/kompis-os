@@ -1,23 +1,31 @@
+{ host, ... }:
 {
+  imports = [
+    ../../kompis-os/nixos/glesys-updaterecord.nix
+  ];
   kompis-os = {
     sysadm.rescueMode = true;
+
+    glesys.updaterecord = {
+      enable = false;
+      recordid = "4069984";
+      device = host.externalInterface;
+    };
   };
 
   boot.loader.grub.enable = true;
 
   networking = {
-    useDHCP = false;
+    useNetworkd = true;
     firewall = {
       logRefusedConnections = false;
-      allowedTCPPorts = [ 53 ];
-      allowedUDPPorts = [ 53 ];
     };
   };
 
   systemd.network = {
     enable = true;
-    networks."10-enp3s0" = {
-      matchConfig.Name = "enp3s0";
+    networks."10-${host.externalInterface}" = {
+      matchConfig.Name = host.externalInterface;
       networkConfig.DHCP = "yes";
     };
   };

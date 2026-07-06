@@ -3,6 +3,7 @@ lib: inputs: rec {
   # pick a list of attributes from an attrSet
   pick = names: attrSet: lib.filterAttrs (name: _value: lib.elem name names) attrSet;
 
+  hex = id: lib.toLower (lib.fixedWidthString 4 "0" (lib.toHexString id));
   pad32 =
     s: builtins.substring 0 (32 - builtins.stringLength s) "00000000000000000000000000000000" + s;
 

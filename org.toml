@@ -4,48 +4,37 @@ domain = "kompismoln.se"
 contact = "info@kompismoln.se"
 timezone = "Europe/Stockholm"
 locale = "en_US.UTF-8"
+prefix = "fd17:9247:d916"
+prefix4 = "10.0"
 host-config = "hosts/$host/configuration.nix"
 home-config = "homes/$home.nix"
 app-config = "apps/$app.nix"
 build-hosts = ["pelle", "stationary"]
 root-identities = ["root-1"]
-namespaces = ["km", "km1", "kompismoln.se"]
+namespaces = ["km1", "km", "kompismoln.se"]
 
 [subnet.wg0]
-enable = true
-address = "10.0.0.0/24"
-port = 51820
-keepalive = 25
+id = 0
+ipv4 = true
+trusted = true
 gateway = "helsinki"
 namespace = "km"
 dns = ["helsinki"]
-resetOnRebuild = true
-peerAddress = "10.0.0.x"
-allowedTCPPortRanges = [{ from = 0, to = 65535 }]
 
 [subnet.wg1]
-enable = true
-address = "10.0.1.0/24"
-port = 51821
-keepalive = 25
+id = 1
+trusted = true
 gateway = "stationary"
+proxy = true
 namespace = "km1"
 dns = ["stationary"]
-resetOnRebuild = true
-peerAddress = "10.0.1.x"
-allowedTCPPortRanges = [{ from = 0, to = 65535 }]
 
 [subnet.wg2]
-enable = true
-address = "10.0.2.0/24"
-port = 51822
-keepalive = 25
+id = 2
+trusted = true
 gateway = "pelle"
 namespace = "km2"
 dns = ["pelle"]
-resetOnRebuild = true
-peerAddress = "10.0.2.x"
-allowedTCPPortRanges = [{ from = 0, to = 65535 }]
 
 [mailserver]
 dkimSelector = "k1"
@@ -88,10 +77,23 @@ root = "keys/$class-$entity"
 keys = ["age-key"]
 
 [class.host]
-keys = ["age-key", "ssh-key", "wg0-key", "wg1-key", "wg2-key", "luks-key"]
+keys = [
+  "age-key",
+  "ssh-key",
+  "wg0-key",
+  "wg1-key",
+  "wg2-key",
+  "luks-key",
+]
 
 [class.user]
-keys = ["age-key", "ssh-key", "mail", "passwd", "restic-key"]
+keys = [
+  "age-key",
+  "ssh-key",
+  "mail",
+  "passwd",
+  "restic-key",
+]
 
 [class.service]
 keys = [
@@ -105,7 +107,12 @@ keys = [
 ]
 
 [class.app]
-keys = ["age-key", "ssh-key", "secret-key", "restic-key"]
+keys = [
+  "age-key",
+  "ssh-key",
+  "secret-key",
+  "restic-key",
+]
 
 [ops.rebuild]
 "*" = ["rebuild:age-key"]
@@ -142,8 +149,12 @@ facter = "hosts/stationary/facter.json"
 id = 1
 roles = ["nixos", "peer", "server", "app-scheduler"]
 endpoint = "stationary.kompismoln.se"
-dnsFor = "wg1"
-subnets = ["wg0", "wg1"]
+externalInterface = "enp3s0"
+subnets = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
 system = "x86_64-linux"
 stateVersion = "25.05"
 
@@ -174,7 +185,7 @@ subnets = [
 system = "x86_64-linux"
 stateVersion = "24.11"
 # disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
-homes.alex.roles = ["hypr-devstation", "rice"]
+home.alex.roles = ["hypr-devstation", "rice"]
 
 [host.lenovo.desktop]
 wifi-interface = "wlp3s0"
@@ -204,10 +215,15 @@ output = "HDMI-A-1"
 [host.laptop]
 id = 2
 roles = ["nixos", "peer", "hypr-mediastation"]
-subnets = ["wg0", "wg1"]
+externalInterface = "eth0"
+subnets = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
 system = "x86_64-linux"
 stateVersion = "26.05"
-homes.alex.roles = ["hypr-mediastation"]
+home.alex.roles = ["hypr-mediastation"]
 
 [host.laptop.desktop]
 wifi-interface = "wlp1s0"
@@ -230,8 +246,12 @@ system = "x86_64-linux"
 stateVersion = "25.05"
 facter = "hosts/helsinki/facter.json"
 endpoint = "helsinki.kompismoln.se"
-dnsFor = "wg0"
-subnets = ["wg0", "wg1"]
+externalInterface = "enp1s0"
+subnets = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
 roles = ["nixos", "peer", "server", "mailserver", "app-scheduler"]
 
 [host.helsinki.disk-layouts.main]
@@ -250,9 +270,13 @@ id = 8
 system = "x86_64-linux"
 stateVersion = "25.11"
 facter = "hosts/adele/facter.json"
-subnets = ["wg0", "wg1"]
+subnets = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
 roles = ["nixos", "peer", "comfy-root"]
-homes.ami.roles = ["cinnamon-office"]
+home.ami.roles = ["cinnamon-office"]
 
 [host.adele.disk-layouts.main]
 module = "main-workstation"
@@ -261,7 +285,7 @@ device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 [host.pelle]
 facter = "hosts/pelle/facter.json"
 endpoint = "pelle.kompismoln.se"
-dnsFor = "wg2"
+externalInterface = "enp5s0"
 id = 9
 roles = [
   "nixos",
@@ -269,11 +293,15 @@ roles = [
   "server",
   "inference-server",
 ]
-subnets = ["wg0", "wg1", "wg2"]
+subnets = [
+  "wg0",
+  "wg1",
+  "wg2",
+]
 system = "x86_64-linux"
 stateVersion = "25.11"
 
-[host.pelle.homes]
+[host.pelle.home]
 alex.roles = ["cli-devstation"]
 
 [host.pelle.disk-layouts.main]
