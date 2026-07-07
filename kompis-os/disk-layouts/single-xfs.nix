@@ -15,10 +15,6 @@ in
       cfg = config.kompis-os.disk-layouts.${name};
     in
     {
-      imports = [
-        inputs.disko.nixosModules.disko
-      ];
-
       options.kompis-os.disk-layouts.${name} = lib.mkOption {
         type = lib.types.attrsOf (
           lib.types.submodule {

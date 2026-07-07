@@ -21,7 +21,7 @@
       acc: disk: diskCfg:
       let
         name = diskCfg.module;
-        value = builtins.removeAttrs diskCfg [ "module" ];
+        value = removeAttrs diskCfg [ "module" ];
       in
       acc
       // {

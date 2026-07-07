@@ -248,9 +248,6 @@ let
         enable = lib.mkEnableOption "a wireguard vpn" // {
           default = true;
         };
-        ipv4 = lib.mkEnableOption {
-          description = "force ipv4";
-        };
         id = lib.mkOption {
           description = "unique integer identifier for the vpn";
           type = lib.types.int;
@@ -395,10 +392,18 @@ let
           type = lib.types.str;
           default = name;
         };
-        facter = lib.mkOption {
-          description = "use this facter.json instead of hardware-configuration";
-          default = null;
-          type = with lib.types; nullOr str;
+        hardwareReport = lib.mkOption {
+          description = "hardware report method";
+          type = lib.types.enum [
+            "standard"
+            "facter"
+          ];
+          default = "facter";
+        };
+        facterFile = lib.mkOption {
+          description = "facter report path";
+          default = ../hosts/${host.name}/facter.json;
+          type = lib.types.path;
         };
         id = lib.mkOption {
           description = "internal host id";

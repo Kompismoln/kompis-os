@@ -203,8 +203,8 @@ in
             "hyprland/submap"
           ];
           modules-center = [ "clock" ];
-          network = {
-            "interface" = host.desktop.wifi-interface;
+          network = lib.mkIf (host.network ? wifi) {
+            "interface" = host.network.wifi.interface;
             "format" = "{ifname}";
             "format-wifi" = "{essid} ({signalStrength}%) {icon}";
             "format-icons" = [

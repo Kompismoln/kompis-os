@@ -3,17 +3,13 @@
 
   systemd.network = {
     enable = true;
-    links."10-wol" = {
+    links."10-wake-on-lan" = {
       matchConfig.Type = "ether";
       linkConfig.WakeOnLan = "magic";
     };
-    networks."10-ethernet" = {
-      matchConfig.Type = "ether";
-      networkConfig.DHCP = "yes";
-    };
   };
   networking = {
-    useDHCP = false;
+    useNetworkd = true;
   };
   boot = {
     blacklistedKernelModules = [

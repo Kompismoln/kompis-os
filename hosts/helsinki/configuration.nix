@@ -4,7 +4,12 @@
     loader.grub.enable = true;
   };
 
+  hardware.facter.detected.dhcp = {
+    interfaces = [ ];
+  };
+
   networking = {
+    useDHCP = false;
     useNetworkd = true;
     firewall = {
       logRefusedConnections = false;

@@ -141,7 +141,6 @@ keys = [
 [root.1]
 
 [host.stationary]
-facter = "hosts/stationary/facter.json"
 id = 1
 roles = ["nixos", "peer", "server", "app-scheduler"]
 endpoint = "stationary.kompismoln.se"
@@ -171,7 +170,6 @@ mountpoint = "/srv/tungsten"
 
 [host.lenovo]
 id = 7
-facter = "hosts/lenovo/facter.json"
 roles = ["nixos", "peer", "rice"]
 vpns = [
   "wg0",
@@ -187,7 +185,6 @@ network.eth.interface = "enp0s31f6"
 network.wifi.interface = "wlp3s0"
 
 [host.lenovo.desktop]
-wifi-interface = "wlp3s0"
 audio-bus-id = "pci-0000_00_1f.3"
 kb-layout = "us,se"
 
@@ -227,7 +224,6 @@ network.eth.interface = "eth0"
 network.wifi.interface = "wlp1s0"
 
 [host.laptop.desktop]
-wifi-interface = "wlp1s0"
 kb-layout = "us,se"
 
 [host.laptop.disk-layouts.main]
@@ -245,7 +241,6 @@ stateVersion = ""
 id = 5
 system = "x86_64-linux"
 stateVersion = "25.05"
-facter = "hosts/helsinki/facter.json"
 endpoint = "helsinki.kompismoln.se"
 vpns = [
   "wg0",
@@ -281,6 +276,7 @@ device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]
 id = 6
+hardwareReport = "standard"
 roles = ["nixos", "peer"]
 vpns = ["wg0", "wg1"]
 system = "x86_64-linux"
@@ -290,7 +286,6 @@ stateVersion = "20.03"
 id = 8
 system = "x86_64-linux"
 stateVersion = "25.11"
-facter = "hosts/adele/facter.json"
 vpns = [
   "wg0",
   "wg1",
@@ -299,12 +294,14 @@ vpns = [
 roles = ["nixos", "peer", "comfy-root"]
 home.ami.roles = ["cinnamon-office"]
 
+network.wifi.interface = "wlp1s0"
+network.eth.interface = "enp0s31f6"
+
 [host.adele.disk-layouts.main]
 module = "main-workstation"
 device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 
 [host.pelle]
-facter = "hosts/pelle/facter.json"
 endpoint = "pelle.kompismoln.se"
 id = 9
 roles = [

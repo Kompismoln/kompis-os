@@ -3,6 +3,7 @@
   host,
   lib,
   lib',
+  org,
   ...
 }:
 let
@@ -15,11 +16,12 @@ in
 
   config = lib.mkMerge [
     {
-      time.timeZone = "Europe/Stockholm";
-      i18n.defaultLocale = "en_US.UTF-8";
+      time.timeZone = org.timezone;
+      i18n.defaultLocale = org.locale;
       system.stateVersion = host.stateVersion;
       networking.hostName = host.name;
-      nixpkgs.hostPlatform = host.system;
+      #nixpkgs.hostPlatform = host.system;
+      hardware.facter.reportPath = if host.hardwareReport == "facter" then host.facterFile else null;
     }
 
     (lib.mkIf cfg.rescueMode {

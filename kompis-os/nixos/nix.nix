@@ -35,18 +35,11 @@ let
       '';
 in
 {
-  imports = [
-    inputs.nixos-facter-modules.nixosModules.facter
-  ];
-
   options.kompis-os.nix = {
     serveStore = lib.mkOption {
       description = "enable nix-serve on this host";
       type = lib.types.bool;
       default = lib.elem host.name org.build-hosts;
-    };
-    facter = (lib.mkEnableOption "facter hardware configuration") // {
-      default = org.host.${host.name}.facter != null;
     };
     repo = lib.mkOption {
       description = "repo for this config";
@@ -62,8 +55,6 @@ in
 
   config = {
 
-    facter.reportPath = lib.mkIf cfg.facter "${inputs.self}/${org.host.${host.name}.facter}";
-
     sops.secrets."nix-serve/nix-sign" = {
       sopsFile = lib'.secrets "service" "nix-serve";
       restartUnits = [
@@ -72,7 +63,7 @@ in
     };
     services.nix-serve = {
       enable = cfg.serveStore;
-      bindAddress = "0.0.0.0";
+      bindAddress = "";
       secretKeyFile = config.sops.secrets."nix-serve/nix-sign".path;
     };
 

@@ -22,12 +22,4 @@
     };
   };
 
-  systemd.network = {
-    enable = true;
-    networks."10-${host.network.eth.interface}" = {
-      matchConfig.Name = host.network.eth.interface;
-      networkConfig.DHCP = "yes";
-    };
-  };
-
 }
