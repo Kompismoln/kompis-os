@@ -14,9 +14,9 @@ let
     ;
 
   cfg = config.kompis-os.nginx;
-  subnet = org.subnet.wg0;
-  hostname = "${host.name}.${subnet.namespace}";
-  endpoint = "${config.kompis-os.monitor.endpoint}.${subnet.namespace}";
+  vpn = org.vpn.wg0;
+  hostname = "${host.name}.${vpn.namespace}";
+  endpoint = "${config.kompis-os.monitor.endpoint}.${vpn.namespace}";
 in
 {
   options.kompis-os.nginx = {
@@ -91,7 +91,7 @@ in
           stub_status on;
           access_log off;
           allow 127.0.0.1;
-          allow ${subnet.address};
+          allow ${vpn.address};
           ${optionalString config.networking.enableIPv6 "allow ::1;"}
           deny all;
         '';

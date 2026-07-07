@@ -10,8 +10,6 @@
 
 let
   cfg = config.kompis-os.mailserver;
-  relayDomains = lib.filterAttrs (_: domainCfg: !domainCfg.mailbox) cfg.domains;
-  mailboxDomains = lib.filterAttrs (_: domainCfg: domainCfg.mailbox) cfg.domains;
 in
 {
   imports = [
@@ -20,8 +18,8 @@ in
 
   options.kompis-os.mailserver = {
     enable = lib.mkEnableOption "mailserver on this host";
-    domain = lib.mkOption {
-      description = "The domain name of this mailserver.";
+    endpoint = lib.mkOption {
+      description = "The fqdn of this mailserver.";
       type = lib.types.str;
     };
     dkimSelector = lib.mkOption {
@@ -41,7 +39,7 @@ in
               email = lib.mkOption {
                 description = "User email";
                 type = lib.types.str;
-                default = "${name}@${org.domain}";
+                default = "${name}@${org.endpoint}";
               };
               catchAll = lib.mkOption {
                 description = "Make the user recipient of a whole domain.";
@@ -58,18 +56,13 @@ in
         )
       );
     };
-    domains = lib.mkOption {
-      description = "List of domains to manage.";
-      type = lib.types.attrsOf (
-        lib.types.submodule {
-          options = {
-            mailbox = lib.mkOption {
-              description = "Enable if this host is the domain's final destination.";
-              type = lib.types.bool;
-            };
-          };
-        }
-      );
+    relayDomains = lib.mkOption {
+      description = "List of domains to relay";
+      type = with lib.types; listOf str;
+    };
+    mailboxDomains = lib.mkOption {
+      description = "List of domains to manage";
+      type = with lib.types; listOf str;
     };
   };
 
@@ -114,10 +107,10 @@ in
       mailserver = {
         enable = true;
         stateVersion = 3;
-        fqdn = "mail.${cfg.domain}";
+        fqdn = "mail.${cfg.endpoint}";
         dkim.defaults.selector = cfg.dkimSelector;
-        domains = lib.mapAttrsToList (domain: _: domain) mailboxDomains;
-        domainsWithoutMailbox = lib.mapAttrsToList (domain: _: domain) relayDomains;
+        domains = cfg.mailboxDomains;
+        domainsWithoutMailbox = cfg.relayDomains;
         enableSubmission = true;
         enableSubmissionSsl = false;
         mailboxes = {
@@ -152,7 +145,7 @@ in
             };
           }) cfg.users)
           {
-            "dmarc-reports@${cfg.domain}" = {
+            "dmarc-reports@${cfg.endpoint}" = {
               hashedPasswordFile = config.sops.secrets."dmarc-reports/mail-sha512".path;
               catchAll = [ ];
               aliases = [ ];
@@ -180,16 +173,19 @@ in
       services = {
         postfix = {
           settings.main = {
-            myorigin = cfg.domain;
+            myorigin = cfg.endpoint;
             mynetworks = [
-              "127.0.0.1/32"
               "[::1]/128"
+              "127.0.0.1/32"
             ]
-            ++ (lib.mapAttrsToList (_: ifaceCfg: ifaceCfg.address) org.subnet);
+            ++ (builtins.concatMap (vpn: [
+              vpn.addressWithBrackets
+              vpn.address4
+            ]) (lib.attrValues org.vpn));
           };
           transport =
             let
-              transportsList = lib.mapAttrsToList (domain: _: "${domain} smtp:") relayDomains;
+              transportsList = map (domain: "${domain} smtp:") cfg.relayDomains;
               transportsCfg = lib.concatStringsSep "\n" transportsList;
             in
             transportsCfg;

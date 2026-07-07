@@ -65,7 +65,7 @@ let
         };
         email = lib.mkOption {
           description = "user's primary email";
-          default = "${name}@${org.domain}";
+          default = "${name}@${org.endpoint}";
           type = with lib.types; nullOr str;
         };
         groups = lib.mkOption {

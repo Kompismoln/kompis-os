@@ -43,8 +43,8 @@ in
         logfile = "~/.msmtp.log";
         host = org.mailserver.ext;
         auth = true;
-        user = "${user}@${org.domain}";
-        from = "${user}@${org.domain}";
+        user = "${user}@${org.endpoint}";
+        from = "${user}@${org.endpoint}";
         passwordeval = "${pkgs.coreutils}/bin/cat ${config.sops.secrets."${user}/mail".path}";
       }) eachUser;
     };

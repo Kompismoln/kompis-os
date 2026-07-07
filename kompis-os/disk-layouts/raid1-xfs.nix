@@ -49,8 +49,8 @@ in
           boot.swraid = {
             enable = true;
             mdadmConf = ''
-              MAILADDR postmaster@${inputs.org.domain}
-              MAILFROM ${host.name}@${inputs.org.domain}
+              MAILADDR postmaster@${inputs.org.endpoint}
+              MAILFROM ${host.name}@${inputs.org.endpoint}
             '';
           };
 

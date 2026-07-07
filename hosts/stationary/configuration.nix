@@ -9,7 +9,7 @@
     glesys.updaterecord = {
       enable = false;
       recordid = "4069984";
-      device = host.externalInterface;
+      device = host.network.eth.interface;
     };
   };
 
@@ -24,8 +24,8 @@
 
   systemd.network = {
     enable = true;
-    networks."10-${host.externalInterface}" = {
-      matchConfig.Name = host.externalInterface;
+    networks."10-${host.network.eth.interface}" = {
+      matchConfig.Name = host.network.eth.interface;
       networkConfig.DHCP = "yes";
     };
   };

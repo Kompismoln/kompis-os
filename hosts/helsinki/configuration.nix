@@ -11,36 +11,35 @@
     };
   };
 
-  systemd.network = {
-    enable = true;
-    networks."10-${host.externalInterface}" = {
-      matchConfig.Name = host.externalInterface;
-      networkConfig = {
-        Address = [
-          "65.108.214.112/32"
-          "2a01:4f9:c012:e514::1/64"
-        ];
-        DNS = [
-          "185.12.64.1"
-          "185.12.64.2"
-          "2a01:4ff:ff00::add:1"
-          "2a01:4ff:ff00::add:2"
+  systemd.network =
+    let
+      cfg = host.network.eth;
+    in
+    {
+      enable = true;
+      networks."10-${cfg.interface}" = {
+        matchConfig.Name = cfg.interface;
+        networkConfig = {
+          Address = [
+            cfg.address4
+            cfg.address
+          ];
+          DNS = cfg.dns;
+        };
+        routes = [
+          {
+            Destination = "0.0.0.0/0";
+            Gateway = cfg.gateway4;
+            GatewayOnLink = true;
+          }
+          {
+            Destination = "::/0";
+            Gateway = cfg.gateway;
+            GatewayOnLink = true;
+          }
         ];
       };
-      routes = [
-        {
-          Destination = "0.0.0.0/0";
-          Gateway = "172.31.1.1";
-          GatewayOnLink = true;
-        }
-        {
-          Destination = "::/0";
-          Gateway = "fe80::1";
-          GatewayOnLink = true;
-        }
-      ];
     };
-  };
 
   #services.nginx.virtualHosts."kompismoln.se" = {
   #  root = inputs.kompismoln-site.packages."x86_64-linux".default;

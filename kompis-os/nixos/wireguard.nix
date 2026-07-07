@@ -12,27 +12,25 @@
 let
   cfg = config.kompis-os.wireguard;
 
-  subnets = builtins.filter (subnet: subnet.enable) (
-    map (subnetName: org.subnet.${subnetName}) host.subnets
-  );
+  vpns = builtins.filter (vpn: vpn.enable) (map (vpnName: org.vpn.${vpnName}) host.vpns);
 
   peers =
-    subnet:
+    vpn:
     lib.filter (
       peer:
       lib.elem "peer" peer.roles
-      && lib.elem subnet.interface peer.subnets
-      && (peer.name == subnet.gateway || host.name == subnet.gateway)
+      && lib.elem vpn.interface peer.vpns
+      && (peer.name == vpn.gateway || host.name == vpn.gateway)
     ) (lib.attrValues org.host);
 
-  isGateway = lib.any (subnet: host.name == subnet.gateway) subnets;
-  dnsFor = lib.filter (subnet: lib.elem host.name subnet.dns) subnets;
-  proxyFor = lib.filter (subnet: host.name == subnet.gateway && subnet.proxy) subnets;
+  isGateway = lib.any (vpn: host.name == vpn.gateway) vpns;
+  dnsFor = lib.filter (vpn: lib.elem host.name vpn.dns) vpns;
+  proxyFor = lib.filter (vpn: host.name == vpn.gateway && vpn.proxy) vpns;
 in
 {
   options.kompis-os.wireguard = {
     enable = lib.mkOption {
-      description = "enable wireguard subnets on this host";
+      description = "enable wireguard vpns on this host";
       type = lib.types.bool;
     };
   };
@@ -41,66 +39,62 @@ in
     services.kresd = lib.mkIf (dnsFor != [ ]) {
       enable = true;
 
-      listenPlain = builtins.concatMap (subnet: [
-        "[${subnet.prefix}::${lib'.hex host.id}]:53"
-        "${subnet.prefix4}.${toString host.id}:53"
+      listenPlain = builtins.concatMap (vpn: [
+        "[${host.network.${vpn.name}.address}]:53"
+        "${host.network.${vpn.name}.address4}:53"
       ]) dnsFor;
 
       extraConfig = ''
         modules = { 'hints > iterate' }
         ${lib.concatStringsSep "\n" (
           builtins.concatMap (
-            subnet:
+            vpn:
             map (peer: ''
-              hints['${peer.name}.${subnet.namespace}'] = '${subnet.prefix}::${lib'.hex peer.id}'
-              hints['${peer.name}.${subnet.namespace}'] = '${subnet.prefix4}.${toString peer.id}'
-            '') (peers subnet)
+              hints['${peer.name}.${vpn.namespace}'] = '${peer.network.${vpn.name}.address}'
+              hints['${peer.name}.${vpn.namespace}'] = '${peer.network.${vpn.name}.address4}'
+            '') (peers vpn)
           ) dnsFor
         )}
       '';
     };
 
     systemd.services."systemd-networkd".preStop = lib.concatStringsSep "\n" (
-      map (subnet: "${pkgs.iproute2}/bin/ip link delete ${subnet.interface}") (
-        lib.filter (subnet: subnet.resetOnRebuild) subnets
+      map (vpn: "${pkgs.iproute2}/bin/ip link delete ${vpn.interface}") (
+        lib.filter (vpn: vpn.resetOnRebuild) vpns
       )
     );
 
     networking = {
       wireguard.enable = true;
-      networkmanager.unmanaged = map (interface: "interface-name:${interface}") host.subnets;
+      networkmanager.unmanaged = map (interface: "interface-name:${interface}") host.vpns;
 
       nat = lib.mkIf (proxyFor != [ ]) {
         enable = true;
         enableIPv6 = true;
-        internalInterfaces = map (subnet: subnet.interface) proxyFor;
-        inherit (host) externalInterface;
+        internalInterfaces = map (vpn: vpn.interface) proxyFor;
+        externalInterface = host.network.eth.interface;
       };
 
       firewall = {
-        allowedUDPPorts = map (subnet: subnet.port) (
-          lib.filter (subnet: host.name == subnet.gateway) subnets
-        );
-        trustedInterfaces = map (subnet: subnet.interface) (
-          builtins.filter (subnet: subnet.trusted) subnets
-        );
+        allowedUDPPorts = map (vpn: vpn.port) (lib.filter (vpn: host.name == vpn.gateway) vpns);
+        trustedInterfaces = map (vpn: vpn.interface) (builtins.filter (vpn: vpn.trusted) vpns);
         interfaces = lib.mkMerge [
           (lib.listToAttrs (
             map (
-              subnet:
-              lib.nameValuePair subnet.interface {
-                inherit (subnet) allowedTCPPorts allowedUDPPorts;
+              vpn:
+              lib.nameValuePair vpn.interface {
+                inherit (vpn) allowedTCPPorts allowedUDPPorts;
               }
-            ) (builtins.filter (subnet: !subnet.trusted) subnets)
+            ) (builtins.filter (vpn: !vpn.trusted) vpns)
           ))
           (lib.listToAttrs (
             map (
-              subnet:
-              lib.nameValuePair subnet.interface {
+              vpn:
+              lib.nameValuePair vpn.interface {
                 allowedTCPPorts = [ 53 ];
                 allowedUDPPorts = [ 53 ];
               }
-            ) (builtins.filter (subnet: !subnet.trusted) dnsFor)
+            ) (builtins.filter (vpn: !vpn.trusted) dnsFor)
           ))
         ];
       };
@@ -113,7 +107,7 @@ in
           owner = "systemd-network";
           group = "systemd-network";
         }
-      ) host.subnets
+      ) host.vpns
     );
 
     boot.kernel.sysctl = lib.mkIf isGateway {
@@ -126,81 +120,82 @@ in
 
       netdevs = lib.listToAttrs (
         map (
-          subnet:
-          lib.nameValuePair "10-${subnet.interface}" {
+          vpn:
+          lib.nameValuePair "20-${vpn.interface}" {
             netdevConfig = {
               Kind = "wireguard";
-              Name = subnet.interface;
+              Name = vpn.interface;
             };
             wireguardConfig = {
-              PrivateKeyFile = config.sops.secrets."${subnet.interface}-key".path;
-              ListenPort = lib.mkIf (host.name == subnet.gateway) subnet.port;
+              PrivateKeyFile = config.sops.secrets."${vpn.interface}-key".path;
+              ListenPort = lib.mkIf (host.name == vpn.gateway) vpn.port;
             };
             wireguardPeers = map (
               peer:
               let
                 base = {
-                  PublicKey = builtins.readFile (lib'.public-artifacts "host" peer.name "${subnet.interface}-key");
+                  PublicKey = builtins.readFile (lib'.public-artifacts "host" peer.name "${vpn.interface}-key");
                   AllowedIPs =
-                    if peer.name == subnet.gateway then
+                    if peer.name == vpn.gateway then
                       [
-                        subnet.address
-                        subnet.address4
-                        "::/0"
+                        vpn.address
+                        vpn.address4
                       ]
+                      ++ (lib.optionals vpn.proxy [ "::/0" ])
                     else
                       [
-                        "${subnet.prefix}::${lib'.hex peer.id}/128"
-                        "${subnet.prefix4}.${toString peer.id}/32"
+                        "${peer.network.${vpn.name}.address}/128"
+                        "${peer.network.${vpn.name}.address}/32"
                       ];
                 };
                 serverConfig = {
-                  Endpoint = "${peer.endpoint}:${toString subnet.port}";
+                  Endpoint = "${peer.endpoint}:${toString vpn.port}";
                 };
                 clientConfig = {
-                  PersistentKeepalive = subnet.keepalive;
+                  PersistentKeepalive = vpn.keepalive;
                 };
               in
-              base // (if peer.name == subnet.gateway then serverConfig else clientConfig)
-            ) (lib.filter (peer: peer.name != host.name) (peers subnet));
+              base // (if peer.name == vpn.gateway then serverConfig else clientConfig)
+            ) (lib.filter (peer: peer.name != host.name) (peers vpn));
           }
-        ) subnets
+        ) vpns
       );
 
       networks = lib.listToAttrs (
         map (
-          subnet:
-          lib.nameValuePair "10-${subnet.interface}" {
-            matchConfig.Name = subnet.interface;
+          vpn:
+          lib.nameValuePair "30-${vpn.interface}" {
+            matchConfig.Name = vpn.interface;
             address = [
-              "${subnet.prefix}::${lib'.hex host.id}/${toString subnet.prefix-length}"
-              "${subnet.prefix4}.${toString host.id}/${toString subnet.prefix4-length}"
+              "${host.network.${vpn.name}.address}/${toString vpn.prefix-length}"
+              "${host.network.${vpn.name}.address4}/${toString vpn.prefix4-length}"
             ];
             dns = builtins.concatMap (dns: [
-              "${subnet.prefix}::${lib'.hex org.host.${dns}.id}"
-              "${subnet.prefix4}.${toString org.host.${dns}.id}"
-            ]) subnet.dns;
+              org.host.${dns}.network.${vpn.name}.address
+              org.host.${dns}.network.${vpn.name}.address4
+            ]) vpn.dns;
             routes =
-              (lib.optionals (host.name == subnet.gateway) [
+              (lib.optionals (host.name == vpn.gateway) [
                 {
-                  Destination = subnet.address;
+                  Destination = vpn.address;
                 }
                 {
-                  Destination = subnet.address4;
+                  Destination = vpn.address4;
                   Scope = "link";
                 }
               ])
-              ++ (lib.optionals (subnet.proxy && host.name != subnet.gateway) [
+              ++ (lib.optionals (vpn.proxy && host.name != vpn.gateway) [
                 {
-                  Gateway = "${subnet.prefix}::${lib'.hex org.host.${subnet.gateway}.id}";
+                  Gateway = org.host.${vpn.gateway}.network.${vpn.name}.address;
                   Destination = "::/0";
+                  Metric = 2048;
                 }
               ]);
             networkConfig = {
               DHCP = "no";
             };
           }
-        ) subnets
+        ) vpns
       );
     };
   };

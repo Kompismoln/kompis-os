@@ -129,7 +129,7 @@ grants = [
 id = 1
 roles = ["testrole"]
 endpoint = "stationary.kompismoln.se"
-subnets = [
+vpns = [
   "wg0",
   "wg1",
 ]
@@ -140,13 +140,13 @@ roles = [
   "testrole",
   "lorem",
 ]
-subnets = [
+vpns = [
   "wg0",
 ]
 system = "x86_64-linux"
 stateVersion = "20.03"
 
-[subnet.test0]
+[vpn.test0]
 enable = true
 address = "10.0.0.0/24"
 port = 51820

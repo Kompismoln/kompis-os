@@ -18,7 +18,7 @@ in
       maxretry = 1;
       bantime = "1d";
       bantime-increment.enable = true;
-      ignoreIP = map (subnet: subnet.address4) (lib.attrValues org.subnet);
+      ignoreIP = map (vpn: vpn.address4) (lib.attrValues org.vpn);
     };
   };
 }
