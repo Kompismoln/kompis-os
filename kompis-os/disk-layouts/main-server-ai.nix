@@ -1,6 +1,5 @@
 # kompis-os/disk-layouts/main-server-ai.nix
 {
-  inputs,
   self,
   ...
 }:
@@ -10,47 +9,29 @@ in
 {
   flake.nixosModules."disk-layout-${name}" =
     {
-      config,
       host,
       lib,
       ...
     }:
     let
-      cfg = config.kompis-os.disk-layouts.${name}.main;
+      disks = builtins.filter (disk: disk.module == name) (lib.attrValues host.disk);
     in
     {
-      options.kompis-os.disk-layouts.${name}.main = {
-        device = lib.mkOption {
-          type = lib.types.str;
-        };
-        luksKeyFile = lib.mkOption {
-          type = lib.types.str;
-          default = "/luks-key";
-        };
-        luksPartitionLabel = lib.mkOption {
-          type = lib.types.str;
-          default = "disk-main-luks";
-        };
-      };
-
       config = {
-        sops.secrets.luks-key = { };
         boot = {
           zfs.devNodes = "/dev/disk/by-uuid";
           zfs.forceImportRoot = false;
-          initrd.secrets."${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
         };
         kompis-os = {
-          locksmith.luksDevice = "/dev/disk/by-partlabel/${cfg.luksPartitionLabel}";
           preserve.enable = true;
         };
 
-        networking.hostId = lib.strings.fixedWidthString 8 "0" (toString inputs.org.host.${host.name}.id);
-        disko.devices = (self.diskoModules.${name} name cfg).disko.devices;
+        networking.hostId = host.machine-id;
+        disko = lib.mkMerge (map (disk: (self.diskoModules.${name} disk).disko) disks);
       };
     };
 
-  flake.diskoModules.${name} = disk: diskCfg: {
+  flake.diskoModules.${name} = disk: {
     disko.devices = {
       nodev = {
         "/" = {
@@ -63,7 +44,7 @@ in
       };
       disk.main = {
         type = "disk";
-        device = diskCfg.device;
+        inherit (disk) devices;
         content = {
           type = "gpt";
           partitions = {
@@ -83,7 +64,7 @@ in
                 name = "cryptswap";
                 extraFormatArgs = [ "--pbkdf pbkdf2" ];
                 settings = {
-                  keyFile = diskCfg.luksKeyFile;
+                  keyFile = disk.luksKeyFile;
                   allowDiscards = true;
                 };
                 content = {
@@ -124,7 +105,7 @@ in
               options = {
                 encryption = "aes-256-gcm";
                 keyformat = "passphrase";
-                keylocation = "file://${diskCfg.luksKeyFile}";
+                keylocation = "file://${disk.luksKeyFile}";
                 quota = "1G";
                 compression = "zstd";
               };
@@ -144,7 +125,7 @@ in
                 recordsize = "4k";
                 encryption = "aes-256-gcm";
                 keyformat = "passphrase";
-                keylocation = "file://${diskCfg.luksKeyFile}";
+                keylocation = "file://${disk.luksKeyFile}";
               };
             };
             "srv/storage" = {
@@ -153,7 +134,7 @@ in
               options = {
                 encryption = "aes-256-gcm";
                 keyformat = "passphrase";
-                keylocation = "file://${diskCfg.luksKeyFile}";
+                keylocation = "file://${disk.luksKeyFile}";
                 compression = "zstd";
               };
             };
@@ -163,7 +144,7 @@ in
               options = {
                 encryption = "aes-256-gcm";
                 keyformat = "passphrase";
-                keylocation = "file://${diskCfg.luksKeyFile}";
+                keylocation = "file://${disk.luksKeyFile}";
                 recordsize = "16k";
                 logbias = "throughput";
                 primarycache = "metadata";

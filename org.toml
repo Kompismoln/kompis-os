@@ -153,19 +153,21 @@ system = "x86_64-linux"
 stateVersion = "25.05"
 network.eth.interface = "enp3s0"
 
-[host.stationary.disk-layouts.main]
+[host.stationary.disk.main]
 module = "main-server-zfs-test"
-device = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
+devices = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
 
-[host.stationary.disk-layouts.single-xfs]
+[host.stationary.disk.single-xfs]
 module = "single-xfs"
-device = "/dev/disk/by-id/ata-TOSHIBA_MK2555GSX_59EIS0BNS"
+devices = "/dev/disk/by-id/ata-TOSHIBA_MK2555GSX_59EIS0BNS"
 mountpoint = "/srv/xfs-1"
 
-[host.stationary.disk-layouts.tungsten]
+[host.stationary.disk.tungsten]
 module = "raid1-xfs"
-disks.one.device = "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44065762"
-disks.two.device = "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44323396"
+devices = [
+  "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44065762",
+  "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44323396",
+]
 mountpoint = "/srv/tungsten"
 
 [host.lenovo]
@@ -178,7 +180,7 @@ vpns = [
 ]
 system = "x86_64-linux"
 stateVersion = "24.11"
-# disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
+# disk.main-workstation.devices = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
 home.alex.roles = ["hypr-devstation", "rice"]
 
 network.eth.interface = "enp0s31f6"
@@ -226,9 +228,9 @@ network.wifi.interface = "wlp1s0"
 [host.laptop.desktop]
 kb-layout = "us,se"
 
-[host.laptop.disk-layouts.main]
+[host.laptop.disk.main]
 module = "main-media"
-device = "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B77858A5120"
+devices = "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B77858A5120"
 
 [host.phone]
 id = 4
@@ -270,9 +272,9 @@ dns = [
   "2a01:4ff:ff00::add:2",
 ]
 
-[host.helsinki.disk-layouts.main]
+[host.helsinki.disk.main]
 module = "main-server-btrfs"
-device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
+devices = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]
 id = 6
@@ -297,9 +299,9 @@ home.ami.roles = ["cinnamon-office"]
 network.wifi.interface = "wlp1s0"
 network.eth.interface = "enp0s31f6"
 
-[host.adele.disk-layouts.main]
+[host.adele.disk.main]
 module = "main-workstation"
-device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
+devices = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 
 [host.pelle]
 endpoint = "pelle.kompismoln.se"
@@ -322,9 +324,9 @@ network.eth.interface = "enp5s0"
 [host.pelle.home]
 alex.roles = ["cli-devstation"]
 
-[host.pelle.disk-layouts.main]
+[host.pelle.disk.main]
 module = "main-server-ai"
-device = "/dev/disk/by-id/nvme-WDC_WD_BLACK_SDBPNTY-1T00-1106_21351R802985"
+devices = "/dev/disk/by-id/nvme-WDC_WD_BLACK_SDBPNTY-1T00-1106_21351R802985"
 
 [host.bootstrap]
 id = 254

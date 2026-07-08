@@ -12,30 +12,6 @@ in
   flake.nixosModules."disk-layout-${name}" =
     { config, host, ... }:
     {
-      options.kompis-os.disk-layouts.${name} = lib.mkOption {
-        default = { };
-        type = lib.types.attrsOf (
-          lib.types.submodule {
-            options = {
-              mountpoint = lib.mkOption {
-                default = null;
-                type = lib.types.nullOr lib.types.str;
-              };
-              disks = lib.mkOption {
-                type = lib.types.attrsOf (
-                  lib.types.submodule {
-                    options = {
-                      device = lib.mkOption {
-                        type = lib.types.str;
-                      };
-                    };
-                  }
-                );
-              };
-            };
-          }
-        );
-      };
       config =
         let
           cfg = config.kompis-os.disk-layouts.${name};
@@ -69,27 +45,29 @@ in
         };
     };
 
-  flake.diskoModules.${name} = disk: diskCfg: {
+  flake.diskoModules.${name} = disk: {
     disko.devices = {
-      disk = lib.mapAttrs' (
-        rDisk: rDiskCfg:
-        lib.nameValuePair "${disk}-${rDisk}" {
-          type = "disk";
-          device = rDiskCfg.device;
-          content = {
-            type = "gpt";
-            partitions = {
-              raid = {
-                size = "100%";
-                content = {
-                  type = "mdraid";
-                  name = disk;
+      disk = lib.listToAttrs (
+        lib.imap0 (
+          i: device:
+          lib.nameValuePair "${disk.name}-${toString i}" {
+            inherit device;
+            type = "disk";
+            content = {
+              type = "gpt";
+              partitions = {
+                raid = {
+                  size = "100%";
+                  content = {
+                    type = "mdraid";
+                    inherit (disk) name;
+                  };
                 };
               };
             };
-          };
-        }
-      ) diskCfg.disks;
+          }
+        ) disk.devices
+      );
       mdadm = {
         ${disk} = {
           type = "mdadm";
@@ -102,7 +80,7 @@ in
                 content = {
                   type = "filesystem";
                   format = "xfs";
-                  mountpoint = diskCfg.mountpoint or null;
+                  inherit (disk) mountpoint;
                 };
               };
             };
