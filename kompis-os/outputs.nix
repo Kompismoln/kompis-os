@@ -24,13 +24,12 @@ in
     inherit (inputs) org;
 
     diskoConfigurations = lib.foldlAttrs (
-      acc: host: hostCfg:
+      acc: host:
       acc
       // (lib.mapAttrs' (
-        disk: diskCfg:
-        lib.nameValuePair "${host}-${disk}" (self.diskoModules.${diskCfg.module} disk diskCfg)
-      ) hostCfg.disk-layouts)
-    ) { } self.org.host;
+        disk: lib.nameValuePair "${host.name}-${disk.name}" (self.diskoModules.${disk.module} disk)
+      ) (lib.attrValues host.disk))
+    ) { } (lib.attrValues self.org.host);
 
     homeConfigurations =
       lib.mapAttrs
@@ -75,11 +74,11 @@ in
           inherit inputs lib';
         };
         modules =
-          (lib.optionals (hostCfg.disk-layouts != { }) [ nixos/disko.nix ])
+          (lib.optionals (hostCfg.disk != { }) [ nixos/disko.nix ])
           ++ map (role: self.nixosModules.${role}) (
             lib.unique (
               hostCfg.roles
-              ++ (lib.mapAttrsToList (_: diskCfg: "disk-layout-${diskCfg.module}") hostCfg.disk-layouts)
+              ++ (lib.mapAttrsToList (_: diskCfg: "disk-layout-${diskCfg.module}") hostCfg.disk)
               ++ (lib.concatLists (lib.mapAttrsToList (_: userCfg: userCfg.roles) hostCfg.home))
             )
           );

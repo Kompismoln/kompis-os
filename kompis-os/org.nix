@@ -392,6 +392,11 @@ let
           type = lib.types.str;
           default = name;
         };
+        machine-id = lib.mkOption {
+          description = "systemd machine id";
+          type = lib.types.str;
+          default = lib.strings.fixedWidthString 8 "0" (toString host.id);
+        };
         hardwareReport = lib.mkOption {
           description = "hardware report method";
           type = lib.types.enum [
@@ -441,10 +446,10 @@ let
           default = { };
           type = lib.types.attrsOf (lib.types.submodule networkModule);
         };
-        disk-layouts = lib.mkOption {
+        disk = lib.mkOption {
           description = "record of disk layouts that applies to host";
           default = { };
-          type = lib.types.attrsOf lib.types.anything;
+          type = lib.types.attrsOf (lib.types.submodule ({ name, ... }: diskModule { inherit name host; }));
         };
         desktop = lib.mkOption {
           description = "attrset of desktop settings";
@@ -490,6 +495,35 @@ let
       };
     };
 
+  diskModule =
+    { name, host, ... }:
+    {
+      options = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          default = name;
+        };
+        module = lib.mkOption {
+          type = lib.types.str;
+        };
+        devices = lib.mkOption {
+          description = "unix path to device(s)";
+          type = with lib.types; coercedTo str lib.singleton (listOf str);
+        };
+        luksKeyFile = lib.mkOption {
+          type = lib.types.str;
+          default = "/${name}-luks-key";
+        };
+        mountpoint = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+        };
+        grants = lib.mkOption {
+          type = with lib.types; listOf str;
+          default = [ "host-${host.name}" ];
+        };
+      };
+    };
   networkModule =
     { name, ... }:
     {

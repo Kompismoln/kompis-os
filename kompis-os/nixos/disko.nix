@@ -3,6 +3,7 @@
   lib,
   host,
   inputs,
+  config,
   ...
 }:
 {
@@ -11,24 +12,13 @@
     ../nixos/preserve.nix
   ];
 
-  config = lib.mkIf (host.disk-layouts != { }) {
+  config = lib.mkIf (host.disk != { }) {
 
     environment.systemPackages = [
       inputs.disko.packages.${host.system}.default
     ];
+    sops.secrets.luks-key = { };
+    boot.initrd.secrets."${host.luksKeyFile}" = config.sops.secrets.luks-key.path;
 
-    kompis-os.disk-layouts = lib.foldlAttrs (
-      acc: disk: diskCfg:
-      let
-        name = diskCfg.module;
-        value = removeAttrs diskCfg [ "module" ];
-      in
-      acc
-      // {
-        ${name} = (acc.${name} or { }) // {
-          ${disk} = value;
-        };
-      }
-    ) { } host.disk-layouts;
   };
 }
