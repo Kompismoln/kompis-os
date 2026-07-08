@@ -145,7 +145,7 @@ in
                     else
                       [
                         "${peer.network.${vpn.name}.address}/128"
-                        "${peer.network.${vpn.name}.address}/32"
+                        "${peer.network.${vpn.name}.address4}/32"
                       ];
                 };
                 serverConfig = {
