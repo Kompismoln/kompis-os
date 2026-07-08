@@ -1,8 +1,9 @@
 # kompis-os/nixos/disko.nix
 {
-  lib,
+  config,
   host,
   inputs,
+  lib,
   ...
 }:
 {
@@ -11,24 +12,17 @@
     ../nixos/preserve.nix
   ];
 
-  config = lib.mkIf (host.disk-layouts != { }) {
+  config = lib.mkMerge (
+    (map (disk: inputs.self.diskoConfigurations."${host.name}-${disk.name}") (
+      lib.attrValues host.disk-layouts
+    ))
+    ++ [
+      (lib.mkIf (host.disk-layouts != { }) {
+        sops.secrets.luks-key = { };
 
-    environment.systemPackages = [
-      inputs.disko.packages.${host.system}.default
-    ];
+        boot.initrd.secrets."${host.luksKeyFile}" = config.sops.secrets.luks-key.path;
+      })
+    ]
+  );
 
-    kompis-os.disk-layouts = lib.foldlAttrs (
-      acc: disk: diskCfg:
-      let
-        name = diskCfg.module;
-        value = removeAttrs diskCfg [ "module" ];
-      in
-      acc
-      // {
-        ${name} = (acc.${name} or { }) // {
-          ${disk} = value;
-        };
-      }
-    ) { } host.disk-layouts;
-  };
 }

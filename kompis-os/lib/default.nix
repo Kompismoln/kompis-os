@@ -3,10 +3,6 @@ lib: inputs: org: rec {
   # pick a list of attributes from an attrSet
   pick = names: attrSet: lib.filterAttrs (name: _value: lib.elem name names) attrSet;
 
-  hex = id: lib.toLower (lib.fixedWidthString 4 "0" (lib.toHexString id));
-  pad32 =
-    s: builtins.substring 0 (32 - builtins.stringLength s) "00000000000000000000000000000000" + s;
-
   # create an env-file that can be sourced to set environment variables
   envToList = env: lib.mapAttrsToList (name: value: "${name}=${toString value}") env;
 
@@ -45,20 +41,6 @@ lib: inputs: org: rec {
       location = builtins.replaceStrings [ "$class" "$entity" ] [ class entity ] template;
     in
     "${inputs.self}/${location}";
-
-  home-args =
-    user: host:
-    let
-      hostCfg = org.host.${host} or (throw "Host '${host}' not found in org.host");
-      homeCfg = hostCfg.home.${user} or (throw "User '${user}' not found in org.host.${host}.home");
-    in
-    {
-      inherit (hostCfg) system stateVersion;
-      roles = homeCfg.roles or [ ];
-      hostname = host;
-      username = user;
-      configPath = homeCfg.configurationFile;
-    };
 
   package-sets = import ../packages/sets.nix;
 
@@ -137,16 +119,6 @@ lib: inputs: org: rec {
     lib.recursiveUpdate { inherit options; } (
       if lib.isFunction submodule then submodule args else submodule
     );
-  diskoFlakeModule =
-    {
-      lib,
-      ...
-    }:
-    {
-      options.flake.diskoModules = lib.mkOption {
-        type = lib.types.lazyAttrsOf lib.types.raw;
-      };
-    };
   wrapBins =
     pkgs: pkg: env:
     let

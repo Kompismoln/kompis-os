@@ -25,22 +25,16 @@
       extraSpecialArgs = {
         inherit inputs lib' org;
       };
-      users = lib.mapAttrs (
-        username: homeCfg:
-        let
-          homeArg = lib'.home-args username host.name;
-        in
-        {
-          _module.args.home = homeArg;
+      users = lib.mapAttrs (_: home: {
+        _module.args.home = home;
 
-          home.packages = [ pkgs.home-manager ];
+        home.packages = [ pkgs.home-manager ];
 
-          imports = [
-            homeArg.configPath
-          ]
-          ++ map (role: inputs.self.homeModules.${role}) homeCfg.roles;
-        }
-      ) org.host.${host.name}.home;
+        imports = [
+          home.configurationFile
+        ]
+        ++ map (role: inputs.self.homeModules.${role}) home.roles;
+      }) org.host.${host.name}.home;
     };
   };
 }

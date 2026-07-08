@@ -6,84 +6,93 @@
   ...
 }:
 let
-  lib' = (import ./lib) lib inputs self.org;
+  inherit (self) org;
+  lib' = (import ./lib) lib inputs org;
   importDir = dir: (lib.mapAttrsToList (name: _: ./${dir}/${name}) (builtins.readDir ./${dir}));
 in
 {
   imports = [
     ./org.nix
     inputs.home-manager.flakeModules.home-manager
-    lib'.diskoFlakeModule
   ]
-  ++ (importDir "roles")
-  ++ (importDir "disk-layouts");
+  ++ (importDir "roles");
 
   _module.args.lib' = lib';
 
   flake = {
-    inherit (inputs) org;
 
-    diskoConfigurations = lib.foldlAttrs (
-      acc: host: hostCfg:
-      acc
-      // (lib.mapAttrs' (
-        disk: diskCfg:
-        lib.nameValuePair "${host}-${disk}" (self.diskoModules.${diskCfg.module} disk diskCfg)
-      ) hostCfg.disk-layouts)
-    ) { } self.org.host;
+    diskoConfigurations = lib.listToAttrs (
+      lib.concatMap (
+        host:
+        (map (
+          disk:
+          lib.nameValuePair "${host.name}-${disk.name}" (
+            (import ./disk-layouts/${disk.layout}.nix) {
+              inherit
+                host
+                disk
+                lib
+                org
+                ;
+              pkgs = inputs.nixpkgs.legacyPackages.${host.system};
+            }
+          )
+        ) (lib.attrValues host.disk-layouts))
+      ) (lib.attrValues self.org.host)
+    );
 
-    homeConfigurations =
-      lib.mapAttrs
-        (
-          _: homeCfg:
-          inputs.home-manager.lib.homeManagerConfiguration {
-            pkgs = import inputs.nixpkgs {
-              inherit (homeCfg) system;
-              overlays = [
-                ((import ./overlays/tools.nix) { inherit inputs; })
-              ];
+    homeConfigurations = lib.listToAttrs (
+      lib.concatMap (
+        host:
+        (map (
+          home:
+          lib.nameValuePair home.name (
+            inputs.home-manager.lib.homeManagerConfiguration {
+              pkgs = import inputs.nixpkgs {
+                inherit (host) system;
+                overlays = [
+                  ((import ./overlays/tools.nix) { inherit (inputs.self) outPath; })
+                ];
+              };
+              extraSpecialArgs = {
+                inherit
+                  home
+                  inputs
+                  lib'
+                  org
+                  ;
+              };
+              modules = [
+                home.configurationFile
+              ]
+              ++ map (role: self.homeModules.${role}) home.roles;
+            }
+          )
+        ) (lib.attrValues host.home))
+      ) (lib.attrValues org.host)
+    );
+
+    nixosConfigurations = lib.listToAttrs (
+      map (
+        host:
+        lib.nameValuePair host.name (
+          inputs.nixpkgs.lib.nixosSystem {
+            specialArgs = {
+              inherit
+                host
+                inputs
+                lib'
+                org
+                ;
             };
-            extraSpecialArgs = {
-              home = homeCfg;
-              inherit (self) org;
-              inherit inputs lib';
-            };
-            modules = [
-              homeCfg.configPath
-            ]
-            ++ map (role: self.homeModules.${role}) homeCfg.roles;
+            modules =
+              (lib.optionals (host.disk-layouts != { }) [ nixos/disko.nix ])
+              ++ map (role: self.nixosModules.${role}) (
+                lib.unique (host.roles ++ (lib.concatMap (home: home.roles) (lib.attrValues host.home)))
+              );
           }
         )
-        (
-          lib.concatMapAttrs (
-            host: hostCfg:
-            lib.mapAttrs' (username: _: {
-              name = "${username}@${host}";
-              value = lib'.home-args username host;
-            }) (hostCfg.home or { })
-          ) inputs.org.host
-        );
-
-    nixosConfigurations = lib.mapAttrs (
-      host: hostCfg:
-      inputs.nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          host = hostCfg // {
-            name = host;
-          };
-          inherit (self) org;
-          inherit inputs lib';
-        };
-        modules =
-          (lib.optionals (hostCfg.disk-layouts != { }) [ nixos/disko.nix ])
-          ++ map (role: self.nixosModules.${role}) (
-            lib.unique (
-              hostCfg.roles
-              ++ (lib.mapAttrsToList (_: diskCfg: "disk-layout-${diskCfg.module}") hostCfg.disk-layouts)
-              ++ (lib.concatLists (lib.mapAttrsToList (_: userCfg: userCfg.roles) hostCfg.home))
-            )
-          );
-      }
-    ) (lib.filterAttrs (_: cfg: lib.elem "nixos" cfg.roles) self.org.host);
+      ) (lib.filter (host: lib.elem "nixos" host.roles) (lib.attrValues org.host))
+    );
   };
 }

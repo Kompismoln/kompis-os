@@ -102,6 +102,7 @@ pkgs: with pkgs; rec {
   nix-tools = [
     nixos-facter
     nixos-anywhere
+    disko
     nix-serve-ng
     statix
     deadnix

@@ -4,6 +4,7 @@
   flake.nixosModules.peer = {
     imports = [
       ../nixos/locksmith.nix
+      ../nixos/networking.nix
       ../nixos/nix.nix
       ../nixos/preserve.nix
       ../nixos/sops.nix

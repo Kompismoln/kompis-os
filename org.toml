@@ -8,7 +8,7 @@ prefix = "fd17:9247:d916"
 prefix4 = "10.0"
 build-hosts = ["pelle", "stationary"]
 root-identities = ["root-1"]
-namespaces = ["km1", "km", "kompismoln.se"]
+namespaces = ["km", "km1", "kompismoln.se"]
 
 [vpn.wg0]
 id = 0
@@ -154,18 +154,20 @@ stateVersion = "25.05"
 network.eth.interface = "enp3s0"
 
 [host.stationary.disk-layouts.main]
-module = "main-server-zfs-test"
-device = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
+layout = "main-server-zfs-test"
+devices = "/dev/disk/by-id/ata-CT500MX500SSD1_1845E1D53DBC"
 
 [host.stationary.disk-layouts.single-xfs]
-module = "single-xfs"
-device = "/dev/disk/by-id/ata-TOSHIBA_MK2555GSX_59EIS0BNS"
+layout = "single-xfs"
+devices = "/dev/disk/by-id/ata-TOSHIBA_MK2555GSX_59EIS0BNS"
 mountpoint = "/srv/xfs-1"
 
 [host.stationary.disk-layouts.tungsten]
-module = "raid1-xfs"
-disks.one.device = "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44065762"
-disks.two.device = "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44323396"
+layout = "raid1-xfs"
+devices = [
+  "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44065762",
+  "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B0_WD-WCAU44323396"
+]
 mountpoint = "/srv/tungsten"
 
 [host.lenovo]
@@ -178,7 +180,7 @@ vpns = [
 ]
 system = "x86_64-linux"
 stateVersion = "24.11"
-# disk-layouts.main-workstation.device = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
+# disk-layouts.main-workstation.devices = "/dev/disk/by-id/nvme-SAMSUNG_MZVLW256HEHP-000L7_S35ENX0J617479"
 home.alex.roles = ["hypr-devstation", "rice"]
 
 network.eth.interface = "enp0s31f6"
@@ -227,8 +229,8 @@ network.wifi.interface = "wlp1s0"
 kb-layout = "us,se"
 
 [host.laptop.disk-layouts.main]
-module = "main-media"
-device = "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B77858A5120"
+layout = "main-media"
+devices = "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B77858A5120"
 
 [host.phone]
 id = 4
@@ -271,8 +273,8 @@ dns = [
 ]
 
 [host.helsinki.disk-layouts.main]
-module = "main-server-btrfs"
-device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
+layout = "main-server-btrfs"
+devices = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 
 [host.friday]
 id = 6
@@ -298,8 +300,8 @@ network.wifi.interface = "wlp1s0"
 network.eth.interface = "enp0s31f6"
 
 [host.adele.disk-layouts.main]
-module = "main-workstation"
-device = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
+layout = "main-workstation"
+devices = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 
 [host.pelle]
 endpoint = "pelle.kompismoln.se"
@@ -323,8 +325,8 @@ network.eth.interface = "enp5s0"
 alex.roles = ["cli-devstation"]
 
 [host.pelle.disk-layouts.main]
-module = "main-server-ai"
-device = "/dev/disk/by-id/nvme-WDC_WD_BLACK_SDBPNTY-1T00-1106_21351R802985"
+layout = "main-server-ai"
+devices = "/dev/disk/by-id/nvme-WDC_WD_BLACK_SDBPNTY-1T00-1106_21351R802985"
 
 [host.bootstrap]
 id = 254

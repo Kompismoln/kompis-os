@@ -61,7 +61,7 @@ in
 
     fileSystems."/keys".neededForBoot = true;
 
-    environment.etc."machine-id".text = lib'.pad32 (toString host.id) + "\n";
+    environment.etc."machine-id".text = host.machine-id + "\n";
 
     boot.initrd.systemd.enable = true;
 

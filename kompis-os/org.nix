@@ -1,8 +1,8 @@
 # kompis-os/org.nix
 {
   lib,
-  lib',
   config,
+  inputs,
   ...
 }:
 let
@@ -252,6 +252,15 @@ let
           description = "unique integer identifier for the vpn";
           type = lib.types.int;
         };
+        hexId = lib.mkOption {
+          type = lib.types.str;
+          default = lib.toLower (lib.toHexString vpn.id);
+        };
+        hextet = lib.mkOption {
+          description = "unique subnet hextet";
+          type = lib.types.str;
+          default = lib.strings.fixedWidthString 4 "0" vpn.hexId;
+        };
         name = lib.mkOption {
           description = "name of the vpn";
           type = lib.types.str;
@@ -290,7 +299,7 @@ let
         prefix = lib.mkOption {
           description = "ipv6 prefix for peers in vpn";
           type = lib.types.str;
-          default = "${cfg.prefix}:${lib'.hex vpn.id}";
+          default = "${cfg.prefix}:${vpn.hextet}";
         };
         prefix-length = lib.mkOption {
           description = "ipv6 prefix length for peers in vpn";
@@ -392,6 +401,29 @@ let
           type = lib.types.str;
           default = name;
         };
+        id = lib.mkOption {
+          description = "numeric internal host id used to seed other id's";
+          type = lib.types.number;
+        };
+        hexId = lib.mkOption {
+          type = lib.types.str;
+          default = lib.toLower (lib.toHexString host.id);
+        };
+        machine-id = lib.mkOption {
+          description = "systemd machine id";
+          type = lib.types.str;
+          default = lib.strings.fixedWidthString 32 "0" host.hexId;
+        };
+        hostId = lib.mkOption {
+          description = "unique hostId for ZFS";
+          type = lib.types.str;
+          default = lib.strings.fixedWidthString 8 "0" host.hexId;
+        };
+        hextet = lib.mkOption {
+          description = "unique host hextet";
+          type = lib.types.str;
+          default = lib.strings.fixedWidthString 4 "0" host.hexId;
+        };
         hardwareReport = lib.mkOption {
           description = "hardware report method";
           type = lib.types.enum [
@@ -405,9 +437,9 @@ let
           default = ../hosts/${host.name}/facter.json;
           type = lib.types.path;
         };
-        id = lib.mkOption {
-          description = "internal host id";
-          type = lib.types.number;
+        luksKeyFile = lib.mkOption {
+          type = lib.types.str;
+          default = "/luks-key";
         };
         users = lib.mkOption {
           description = "users";
@@ -434,7 +466,9 @@ let
         home = lib.mkOption {
           description = "list of home configurations for a user";
           default = { };
-          type = lib.types.attrsOf (lib.types.submodule ({ name, ... }: homeModule { inherit name host; }));
+          type = lib.types.attrsOf (
+            lib.types.submodule ({ name, ... }@args: homeModule (args // { inherit host; }))
+          );
         };
         network = lib.mkOption {
           description = "networks to configure on host";
@@ -444,7 +478,7 @@ let
         disk-layouts = lib.mkOption {
           description = "record of disk layouts that applies to host";
           default = { };
-          type = lib.types.attrsOf lib.types.anything;
+          type = lib.types.attrsOf (lib.types.submodule diskModule);
         };
         desktop = lib.mkOption {
           description = "attrset of desktop settings";
@@ -471,21 +505,43 @@ let
             cfg.host.${dnsHost}.network.${vpnName}.address
             cfg.host.${dnsHost}.network.${vpnName}.address4
           ]) vpn.dns;
-          address = "${vpn.prefix}::${lib'.hex host.id}";
+          address = "${vpn.prefix}::${host.hextet}";
           address4 = "${vpn.prefix4}.${toString host.id}";
         }
       ) cfg.vpn;
     };
 
   homeModule =
-    { name, host, ... }:
+    {
+      name,
+      host,
+      config,
+      ...
+    }:
     {
       options = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          default = "${config.username}@${host.name}";
+        };
+        username = lib.mkOption {
+          type = lib.types.str;
+          default = name;
+        };
         configurationFile = options.configurationFile // {
-          default = ../homes + "/${name}@${host.name}.nix";
+          default = ../homes + "/${config.name}.nix";
         };
         roles = lib.mkOption {
           type = with lib.types; listOf str;
+        };
+        hostname = lib.mkOption {
+          type = lib.types.str;
+          default = host.name;
+        };
+        stateVersion = lib.mkOption {
+          description = "nixos state version";
+          type = with lib.types; nullOr str;
+          default = host.stateVersion;
         };
       };
     };
@@ -540,12 +596,33 @@ let
         };
       };
     };
+  diskModule =
+    { name, ... }:
+    {
+      options = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          default = name;
+        };
+        layout = lib.mkOption {
+          type = lib.types.str;
+        };
+        devices = lib.mkOption {
+          description = "unix path to device(s)";
+          type = with lib.types; either str (listOf str);
+        };
+        mountpoint = lib.mkOption {
+          type = lib.types.nullOr lib.types.str;
+          default = null;
+        };
+      };
+    };
 
 in
 {
   options.flake.org = lib.mkOption {
     description = "org.toml";
     type = lib.types.submodule orgModule;
-    default = throw "org.toml not loaded";
+    default = inputs.org;
   };
 }

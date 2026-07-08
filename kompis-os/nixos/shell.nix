@@ -21,7 +21,7 @@
     };
 
     nixpkgs.overlays = [
-      (import ../overlays/tools.nix { inherit inputs; })
+      (import ../overlays/tools.nix { inherit (inputs.self) outPath; })
     ];
 
     programs.bash = {

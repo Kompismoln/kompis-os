@@ -1,6 +1,6 @@
 {
   age,
-  inputs,
+  outPath,
   jq,
   lib,
   makeWrapper,
@@ -40,7 +40,7 @@ stdenv.mkDerivation {
 
     for script in $out/bin/*; do
       wrapProgram "$script" \
-        --set REPO_ROOT ${inputs.self} \
+        --set REPO_ROOT ${outPath} \
         --prefix PATH : ${
           lib.makeBinPath [
             age

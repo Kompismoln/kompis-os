@@ -1,249 +1,211 @@
 # kompis-os/disk-layouts/main-server-btrfs.nix
 {
-  self,
+  pkgs,
   ...
 }:
-let
-  name = "main-server-btrfs";
-in
 {
-  flake.nixosModules."disk-layout-${name}" =
-    {
-      lib,
-      config,
-      pkgs,
-      ...
-    }:
-    let
-      cfg = config.kompis-os.disk-layouts.${name}.main;
-    in
-    {
-      options.kompis-os.disk-layouts.${name}.main = {
-        device = lib.mkOption {
-          type = lib.types.str;
-        };
-        luksKeyFile = lib.mkOption {
-          type = lib.types.str;
-          default = "/luks-key";
-        };
-        luksPartitionLabel = lib.mkOption {
-          type = lib.types.str;
-          default = "disk-main-luks";
-        };
+  kompis-os = {
+    preserve.enable = true;
+  };
+
+  boot.initrd.systemd = {
+    enable = true;
+    services."format-root" = {
+      enable = true;
+      description = "Format the root LV partition at boot";
+      unitConfig = {
+        DefaultDependencies = "no";
+        Requires = "dev-pool-root.device";
+        After = "dev-pool-root.device";
+        Before = "sysroot.mount";
       };
 
-      config = {
-        sops.secrets.luks-key = { };
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.e2fsprogs}/bin/mkfs.ext4 -F /dev/pool/root";
+      };
+      wantedBy = [ "initrd.target" ];
+    };
+  };
 
-        kompis-os = {
-          locksmith.luksDevice = "/dev/disk/by-partlabel/${cfg.luksPartitionLabel}";
-          preserve.enable = true;
-        };
-
-        boot.initrd.secrets."${cfg.luksKeyFile}" = config.sops.secrets.luks-key.path;
-        boot.initrd.systemd = {
-          enable = true;
-          services."format-root" = {
-            enable = true;
-            description = "Format the root LV partition at boot";
-            unitConfig = {
-              DefaultDependencies = "no";
-              Requires = "dev-pool-root.device";
-              After = "dev-pool-root.device";
-              Before = "sysroot.mount";
-            };
-
-            serviceConfig = {
-              Type = "oneshot";
-              RemainAfterExit = true;
-              ExecStart = "${pkgs.e2fsprogs}/bin/mkfs.ext4 -F /dev/pool/root";
-            };
-            wantedBy = [ "initrd.target" ];
-          };
-
-        };
-        disko.devices = (self.diskoModules.${name} name cfg).disko.devices;
+  disko.devices = {
+    nodev = {
+      "/tmp" = {
+        fsType = "tmpfs";
+        mountOptions = [
+          "size=1G"
+          "defaults"
+          "noatime"
+          "nosuid"
+          "nodev"
+          "noexec"
+          "mode=1777"
+        ];
       };
     };
-
-  flake.diskoModules.${name} = disk: diskCfg: {
-    disko.devices = {
-      nodev = {
-        "/tmp" = {
-          fsType = "tmpfs";
-          mountOptions = [
-            "size=1G"
-            "defaults"
-            "noatime"
-            "nosuid"
-            "nodev"
-            "noexec"
-            "mode=1777"
-          ];
-        };
-      };
-      disk = {
-        main = {
-          type = "disk";
-          device = "/dev/sda";
-          content = {
-            type = "gpt";
-            partitions = {
-              boot = {
-                size = "1M";
-                type = "EF02";
-                priority = 1;
+    disk = {
+      main = {
+        type = "disk";
+        device = "/dev/sda";
+        content = {
+          type = "gpt";
+          partitions = {
+            boot = {
+              size = "1M";
+              type = "EF02";
+              priority = 1;
+            };
+            ESP = {
+              size = "1G";
+              type = "EF00";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+                mountOptions = [ "umask=0077" ];
               };
-              ESP = {
-                size = "1G";
-                type = "EF00";
-                content = {
-                  type = "filesystem";
-                  format = "vfat";
-                  mountpoint = "/boot";
-                  mountOptions = [ "umask=0077" ];
+            };
+            luks = {
+              size = "100%";
+              label = "disk-main-luks";
+              content = {
+                type = "luks";
+                name = "crypted";
+                settings = {
+                  keyFile = "/luks-key";
+                  allowDiscards = true;
                 };
-              };
-              luks = {
-                size = "100%";
                 content = {
-                  type = "luks";
-                  name = "crypted";
-                  settings = {
-                    keyFile = "/luks-key";
-                    allowDiscards = true;
-                  };
-                  content = {
-                    type = "lvm_pv";
-                    vg = "pool";
-                  };
+                  type = "lvm_pv";
+                  vg = "pool";
                 };
               };
             };
           };
         };
       };
-      lvm_vg = {
-        pool = {
-          type = "lvm_vg";
-          lvs = {
-            root = {
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                ];
-              };
+    };
+    lvm_vg = {
+      pool = {
+        type = "lvm_vg";
+        lvs = {
+          root = {
+            size = "1G";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/";
+              mountOptions = [
+                "defaults"
+                "noatime"
+                "nodiratime"
+              ];
             };
-            var = {
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/var";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                ];
-              };
+          };
+          var = {
+            size = "1G";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/var";
+              mountOptions = [
+                "defaults"
+                "noatime"
+                "nodiratime"
+              ];
             };
-            keys = {
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "ext4";
-                mountpoint = "/keys";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                  "noexec"
-                  "nosuid"
-                  "nodev"
-                ];
-              };
+          };
+          keys = {
+            size = "1G";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/keys";
+              mountOptions = [
+                "defaults"
+                "noatime"
+                "nodiratime"
+                "noexec"
+                "nosuid"
+                "nodev"
+              ];
             };
-            swap = {
-              size = "8G";
-              content = {
-                type = "swap";
-              };
+          };
+          swap = {
+            size = "8G";
+            content = {
+              type = "swap";
             };
-            state = {
-              size = "60%VG";
-              content = {
-                type = "btrfs";
-                extraArgs = [ "-f" ];
-                mountpoint = "/mnt/state";
-                mountOptions = [
-                  "subvolid=5"
-                  "noatime"
-                  "space_cache=v2"
-                ];
-                subvolumes = {
-                  "@nix" = {
-                    mountpoint = "/nix";
-                    mountOptions = [
-                      "compress=zstd"
-                      "noatime"
-                      "space_cache=v2"
-                    ];
-                  };
-                  "@storage" = {
-                    mountpoint = "/srv/storage";
-                    mountOptions = [
-                      "compress=zstd"
-                      "noatime"
-                      "space_cache=v2"
-                    ];
-                  };
-                  "@database" = {
-                    mountpoint = "/srv/database";
-                    mountOptions = [
-                      "compress=no"
-                      "noatime"
-                      "space_cache=v2"
-                      "nodatacow"
-                    ];
-                  };
-                  "@backup" = {
-                    mountpoint = "/srv/backup";
-                    mountOptions = [
-                      "compress=no"
-                      "noatime"
-                      "space_cache=v2"
-                      "ro"
-                    ];
-                  };
-                  "@snapshots" = {
-                    mountpoint = "/mnt/snapshots";
-                    mountOptions = [
-                      "compress=no"
-                      "noatime"
-                      "space_cache=v2"
-                    ];
-                  };
+          };
+          state = {
+            size = "60%VG";
+            content = {
+              type = "btrfs";
+              extraArgs = [ "-f" ];
+              mountpoint = "/mnt/state";
+              mountOptions = [
+                "subvolid=5"
+                "noatime"
+                "space_cache=v2"
+              ];
+              subvolumes = {
+                "@nix" = {
+                  mountpoint = "/nix";
+                  mountOptions = [
+                    "compress=zstd"
+                    "noatime"
+                    "space_cache=v2"
+                  ];
+                };
+                "@storage" = {
+                  mountpoint = "/srv/storage";
+                  mountOptions = [
+                    "compress=zstd"
+                    "noatime"
+                    "space_cache=v2"
+                  ];
+                };
+                "@database" = {
+                  mountpoint = "/srv/database";
+                  mountOptions = [
+                    "compress=no"
+                    "noatime"
+                    "space_cache=v2"
+                    "nodatacow"
+                  ];
+                };
+                "@backup" = {
+                  mountpoint = "/srv/backup";
+                  mountOptions = [
+                    "compress=no"
+                    "noatime"
+                    "space_cache=v2"
+                    "ro"
+                  ];
+                };
+                "@snapshots" = {
+                  mountpoint = "/mnt/snapshots";
+                  mountOptions = [
+                    "compress=no"
+                    "noatime"
+                    "space_cache=v2"
+                  ];
                 };
               };
             };
-            share = {
-              size = "100%FREE";
-              content = {
-                type = "filesystem";
-                format = "xfs";
-                mountpoint = "/srv/share";
-                mountOptions = [
-                  "defaults"
-                  "noatime"
-                  "nodiratime"
-                ];
-              };
+          };
+          share = {
+            size = "100%FREE";
+            content = {
+              type = "filesystem";
+              format = "xfs";
+              mountpoint = "/srv/share";
+              mountOptions = [
+                "defaults"
+                "noatime"
+                "nodiratime"
+              ];
             };
           };
         };
