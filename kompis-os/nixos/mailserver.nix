@@ -87,7 +87,7 @@ in
       sops.secrets =
         lib'.mergeAttrs (user: _: {
           "${user}/mail-sha512" = {
-            sopsFile = lib'.secrets "user" user;
+            inherit (org.user.${user}.secrets) sopsFile;
             restartUnits = [
               "dovecot.service"
               "postfix.service"
@@ -96,7 +96,7 @@ in
         }) cfg.users
         // {
           "dmarc-reports/mail-sha512" = {
-            sopsFile = lib'.secrets "service" "dmarc-reports";
+            inherit (org.service.dmarc-reports.secrets) sopsFile;
             restartUnits = [
               "dovecot.service"
               "postfix.service"

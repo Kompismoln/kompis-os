@@ -5,6 +5,7 @@
   lib,
   lib',
   pkgs,
+  org,
   ...
 }:
 
@@ -96,8 +97,6 @@ in
   };
 
   config = lib.mkIf (eachApp != { }) {
-    kompis-os.org.apps = config.kompis-os.django.apps;
-
     environment.systemPackages = lib.mapAttrsToList (_: script: script) scripts;
 
     kompis-os.paths = lib.mapAttrs' (
@@ -107,7 +106,7 @@ in
     sops.secrets = lib.mapAttrs' (
       _: appCfg:
       lib.nameValuePair "${appCfg.entity}/secret-key" {
-        sopsFile = lib'.secrets "app" appCfg.entity;
+        inherit (org.app.${appCfg.entity}.secrets) sopsFile;
         owner = appCfg.user;
         group = appCfg.user;
       }
@@ -122,7 +121,7 @@ in
           lib.optionalAttrs (appCfg.locationProxy != "") {
             ${appCfg.locationProxy} = {
               recommendedProxySettings = true;
-              proxyPass = "http://localhost:${toString (lib'.ports app)}";
+              proxyPass = "http://localhost:${toString org.app.${appCfg.entity}.port}";
               extraConfig = ''
                 proxy_read_timeout ${toString appCfg.timeout}s;
                 proxy_connect_timeout ${toString appCfg.timeout}s;
@@ -145,7 +144,7 @@ in
           ExecStart = lib.escapeShellArgs [
             "${appCfg.packages.django-app}/bin/gunicorn"
             "${appCfg.djangoApp}.asgi:application"
-            "--bind=localhost:${toString (lib'.ports app)}"
+            "--bind=localhost:${toString org.app.${appCfg.entity}.port}"
             "--timeout=${toString appCfg.timeout}"
             "--workers=${toString appCfg.workers}"
             "--worker-class=uvicorn.workers.UvicornWorker"

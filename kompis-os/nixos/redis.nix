@@ -56,6 +56,13 @@ in
                   default = "/var/lib/${config.entity}/redis";
                   type = lib.types.str;
                 };
+                port = lib.mkOption {
+                  type = lib.types.port;
+                  description = ''
+                    The TCP port to accept connections.
+                    If port 0 is specified Redis will not listen on a TCP socket.
+                  '';
+                };
                 extraParams = lib.mkOption {
                   description = "Extra parameters to append to redis-server invocation";
                   type = with lib.types; listOf str;
@@ -77,7 +84,7 @@ in
                   default = 660;
                 };
                 logLevel = lib.mkOption {
-                  description = ''Specify the server verbosity level, options: debug, verbose, notice, warning.'';
+                  description = "Specify the server verbosity level, options: debug, verbose, notice, warning.";
                   type = lib.types.str;
                   default = "notice";
                 };
@@ -154,7 +161,7 @@ in
                   default = false;
                 };
                 appendFsync = lib.mkOption {
-                  description = ''How often to fsync the append-only log, options: no, always, everysec.'';
+                  description = "How often to fsync the append-only log, options: no, always, everysec.";
                   type = lib.types.str;
                   default = "everysec";
                 };
@@ -169,7 +176,7 @@ in
                   default = 128;
                 };
                 settings = lib.mkOption {
-                  description = ''Redis configuration.'';
+                  description = "Redis configuration.";
                   default = { };
                   type =
                     with lib.types;
@@ -184,12 +191,12 @@ in
               config.settings = lib.mkMerge [
                 {
                   inherit (config)
+                    port
                     databases
                     maxclients
                     appendOnly
                     ;
                   logfile = "/dev/null";
-                  port = lib'.ports name;
                   daemonize = false;
                   supervised = "systemd";
                   loglevel = config.logLevel;

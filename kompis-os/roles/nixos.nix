@@ -10,7 +10,6 @@
         host.configurationFile
         ../nixos/system.nix
         ../nixos/paths.nix
-        ../nixos/org.nix
       ];
     };
 }

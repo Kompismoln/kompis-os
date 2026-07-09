@@ -4,6 +4,7 @@
   lib,
   lib',
   pkgs,
+  org,
   ...
 }:
 
@@ -40,7 +41,7 @@ in
 
     sops.secrets = lib'.mergeAttrs (_app: appCfg: {
       "${appCfg.entity}/secret-key" = {
-        sopsFile = lib'.secrets "app" appCfg.entity;
+        inherit (org.app.${appCfg.entity}.secrets) sopsFile;
         owner = appCfg.user;
         group = appCfg.user;
       };
@@ -99,7 +100,7 @@ in
     }) eachApp;
 
     services.nginx.virtualHosts = lib.mapAttrs' (
-      app: appCfg:
+      _app: appCfg:
       lib.nameValuePair appCfg.endpoint {
         forceSSL = appCfg.ssl;
         enableACME = appCfg.ssl;
@@ -109,7 +110,7 @@ in
 
         locations = {
           "/" = {
-            proxyPass = "http://127.0.0.1:${toString (lib'.ports app)}";
+            proxyPass = "http://127.0.0.1:${toString org.app.${appCfg.entity}.port}";
           };
           "/.well-known/carddav" = {
             return = "301 $scheme://$host/remote.php/dav";
@@ -144,8 +145,8 @@ in
       config = {
         system.stateVersion = config.system.stateVersion;
 
-        users.users.nextcloud.uid = lib'.ids.${app};
-        users.groups.nextcloud.gid = lib'.ids.${app};
+        users.users.nextcloud.uid = org.app.${appCfg.entity}.id;
+        users.groups.nextcloud.gid = org.app.${appCfg.entity}.id;
 
         environment.systemPackages = [ pkgs.postgresql ];
 
@@ -159,7 +160,7 @@ in
             listen = [
               {
                 addr = "127.0.0.1";
-                port = lib'.ports app;
+                port = org.app.${appCfg.entity}.port;
                 ssl = false;
               }
             ];

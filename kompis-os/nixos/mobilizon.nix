@@ -4,6 +4,7 @@
   lib,
   lib',
   pkgs,
+  org,
   ...
 }:
 
@@ -31,22 +32,10 @@ in
   };
 
   config = lib.mkIf (eachApp != { }) {
-    kompis-os.org = {
-      apps = config.kompis-os.mobilizon.apps;
-
-      paths = lib.mapAttrs' (_: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }) eachApp;
-
-      preserve.directories = lib.mapAttrsToList (_app: appCfg: {
-        inherit (appCfg) user;
-        directory = appCfg.home;
-        group = appCfg.user;
-      }) eachApp;
-    };
-
     services.nginx.virtualHosts = lib.mapAttrs' (
-      app: appCfg:
+      _app: appCfg:
       let
-        proxyPass = "http://127.0.0.1:${toString (lib'.ports app)}";
+        proxyPass = "http://127.0.0.1:${toString org.app.${appCfg.entity}.port}";
       in
       lib.nameValuePair appCfg.endpoint {
         forceSSL = appCfg.ssl;
@@ -67,6 +56,14 @@ in
           extraConfig = ''
             access_log off;
             add_header Cache-Control "public, max-age=31536000, s-maxage=31536000, immutable";
+          '';
+        };
+        locations."/graphql_socket/websocket" = {
+          inherit proxyPass;
+          recommendedProxySettings = lib.mkDefault true;
+          extraConfig = ''
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
           '';
         };
         locations."~ ^/(media|proxy)" = {
@@ -112,10 +109,10 @@ in
           system.stateVersion = hostConfig.system.stateVersion;
           users = {
             users.mobilizon = {
-              uid = lib'.ids.${app};
+              uid = org.app.${appCfg.entity}.id;
               group = "mobilizon";
             };
-            groups.mobilizon.gid = lib'.ids.${app};
+            groups.mobilizon.gid = org.app.${appCfg.entity}.id;
           };
           services.postgresql.enable = lib.mkForce false;
           systemd.services.mobilizon-postgresql.enable = lib.mkForce false;
@@ -143,7 +140,7 @@ in
             nginx.enable = false;
             settings.":mobilizon" = {
               "Mobilizon.Web.Endpoint".http = {
-                port = lib'.ports app;
+                port = org.app.${appCfg.entity}.port;
                 ip = (settingsFormat appCfg).lib.mkTuple [
                   0
                   0

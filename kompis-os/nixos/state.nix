@@ -2,8 +2,8 @@
 {
   config,
   lib,
-  lib',
   pkgs,
+  org,
   ...
 }:
 {
@@ -47,7 +47,7 @@
       sops.secrets = lib.mapAttrs' (
         user: userCfg:
         lib.nameValuePair "${user}/restic-key" {
-          sopsFile = lib'.secrets userCfg.class user;
+          inherit (org.${userCfg.class}.${user}.secrets) sopsFile;
           owner = user;
           group = user;
         }

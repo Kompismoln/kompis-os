@@ -22,6 +22,7 @@ in
     redis.servers."${name}-redis" = {
       enable = true;
       entity = name;
+      port = org.app.${name}.port;
     };
 
     wordpress.apps.${name} = {

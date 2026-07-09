@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  lib',
   org,
   pkgs,
   ...
@@ -19,9 +18,9 @@ in
   config = lib.mkIf cfg.enable {
 
     sops.secrets = lib.mapAttrs' (
-      user: userCfg:
+      user: _userCfg:
       (lib.nameValuePair "${user}/mail" {
-        sopsFile = lib'.secrets "user" user;
+        inherit (org.user.${user}.secrets) sopsFile;
         owner = user;
         group = user;
       })
@@ -37,7 +36,7 @@ in
           host = org.mailserver.int;
         };
       }
-      // lib.mapAttrs (user: userCfg: {
+      // lib.mapAttrs (user: _userCfg: {
         port = 587;
         tls = true;
         logfile = "~/.msmtp.log";

@@ -2,7 +2,6 @@
 {
   config,
   lib,
-  lib',
   pkgs,
   ...
 }:
@@ -32,6 +31,10 @@ let
           type = lib.types.str;
           default = "127.0.0.1";
           description = "The host address to bind the server to.";
+        };
+        port = lib.mkOption {
+          type = lib.types.port;
+          description = "The port to bind the server to.";
         };
         model = lib.mkOption {
           type = lib.types.str;
@@ -109,8 +112,12 @@ in
           Group = cfg.user;
           ExecStart =
             let
-              inherit (serverCfg) host model extraArgs;
-              port = lib'.ports "vllm-${server}";
+              inherit (serverCfg)
+                host
+                model
+                extraArgs
+                port
+                ;
               args = lib.escapeShellArgs extraArgs;
               cmd = lib.getExe' serverCfg.package "vllm";
             in

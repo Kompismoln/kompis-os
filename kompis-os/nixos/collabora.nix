@@ -3,6 +3,7 @@
   host,
   lib,
   lib',
+  org,
   ...
 }:
 let
@@ -30,7 +31,7 @@ in
   config = lib.mkIf cfg.enable {
     services.nginx.virtualHosts.${cfg.endpoint} =
       let
-        proxyPass = "http://127.0.0.1:${toString (lib'.ports cfg.app)}";
+        proxyPass = "http://127.0.0.1:${toString org.app.${cfg.app}.port}";
       in
       {
         forceSSL = cfg.ssl;
@@ -85,12 +86,12 @@ in
         };
       };
 
-    users.users.cool.uid = lib'.ids.${cfg.user};
-    users.groups.cool.gid = lib'.ids.${cfg.user};
+    users.users.cool.uid = org.app.${cfg.entity}.id;
+    users.groups.cool.gid = org.app.${cfg.entity}.id;
 
     services.collabora-online = {
       enable = true;
-      port = lib'.ports cfg.app;
+      port = org.app.${cfg.entity}.port;
       aliasGroups = cfg.allowedHosts;
 
       settings = {

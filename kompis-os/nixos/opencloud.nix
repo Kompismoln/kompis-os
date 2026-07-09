@@ -3,13 +3,13 @@
   host,
   lib,
   lib',
-  pkgs,
+  org,
   ...
 }:
 
 let
   cfg = config.kompis-os.opencloud;
-  eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
+  eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
   appOpts = lib'.mkAppOpts host "opencloud" { };
 in
 {
@@ -30,7 +30,7 @@ in
       "/etc/${app}" = { inherit (appCfg) user; };
     }) eachApp;
 
-    systemd.services = lib'.mergeAttrs (app: appCfg: {
+    systemd.services = lib'.mergeAttrs (app: _appCfg: {
       "container@${app}" = {
         serviceConfig = {
           TimeoutStopSec = 10;
@@ -40,7 +40,7 @@ in
     }) eachApp;
 
     services.nginx.virtualHosts = lib.mapAttrs' (
-      app: appCfg:
+      _app: appCfg:
       lib.nameValuePair appCfg.endpoint {
         forceSSL = appCfg.ssl;
         enableACME = appCfg.ssl;
@@ -50,7 +50,7 @@ in
 
         locations = {
           "/" = {
-            proxyPass = "http://127.0.0.1:${toString (lib'.ports app)}";
+            proxyPass = "http://127.0.0.1:${toString org.app.${appCfg.entity}.port}";
           };
         };
       }
@@ -74,12 +74,12 @@ in
       config = {
         system.stateVersion = config.system.stateVersion;
 
-        users.users.opencloud.uid = lib'.ids.${app};
-        users.groups.opencloud.gid = lib'.ids.${app};
+        users.users.opencloud.uid = org.app.${appCfg.entity}.id;
+        users.groups.opencloud.gid = org.app.${appCfg.entity}.id;
 
         services.opencloud = {
           enable = true;
-          port = lib'.ports app;
+          port = org.app.${appCfg.entity}.port;
           inherit (appCfg) url;
           environment = {
             OC_INSECURE = "true";

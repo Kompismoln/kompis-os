@@ -3,7 +3,6 @@
   config,
   inputs,
   lib,
-  lib',
   host,
   ...
 }:
@@ -26,9 +25,9 @@ in
   config = lib.mkIf cfg.enable {
 
     sops = {
-      defaultSopsFile = lib'.secrets "host" host.name;
+      defaultSopsFile = host.secrets.sopsFile;
       age = {
-        keyFile = "/keys/host-${host.name}";
+        keyFile = host.secrets.decryptionKey;
         sshKeyPaths = [ ];
       };
     };

@@ -17,7 +17,9 @@ in
   ]
   ++ (importDir "roles");
 
-  _module.args.lib' = lib';
+  _module.args = {
+    inherit lib' org;
+  };
 
   flake = {
 
@@ -51,7 +53,7 @@ in
               pkgs = import inputs.nixpkgs {
                 inherit (host) system;
                 overlays = [
-                  ((import ./overlays/tools.nix) { inherit (inputs.self) outPath; })
+                  (import ./overlays/tools.nix)
                 ];
               };
               extraSpecialArgs = {

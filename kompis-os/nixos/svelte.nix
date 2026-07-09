@@ -5,6 +5,7 @@
   lib,
   lib',
   pkgs,
+  org,
   ...
 }:
 
@@ -35,11 +36,11 @@ let
       env = envs.${app};
     };
 
-  envs = lib.mapAttrs (app: appCfg: {
+  envs = lib.mapAttrs (_app: appCfg: {
     ORIGIN = "${if appCfg.ssl then "https" else "http"}://${appCfg.endpoint}";
     PUBLIC_API = appCfg.api;
     PUBLIC_API_SSR = appCfg.ssr;
-    PORT = toString (lib'.ports app);
+    PORT = toString org.app.${appCfg.entity}.port;
   }) eachApp;
 in
 {
@@ -56,13 +57,13 @@ in
 
   config = lib.mkIf (eachApp != { }) {
     services.nginx.virtualHosts = lib.mapAttrs' (
-      app: appCfg:
+      _app: appCfg:
       lib.nameValuePair appCfg.endpoint {
         forceSSL = appCfg.ssl;
         enableACME = appCfg.ssl;
         locations."${appCfg.location}" = {
           recommendedProxySettings = true;
-          proxyPass = "http://127.0.0.1:${toString (lib'.ports app)}";
+          proxyPass = "http://127.0.0.1:${toString org.app.${appCfg.entity}.port}";
         };
       }
     ) eachApp;

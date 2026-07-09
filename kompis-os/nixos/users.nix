@@ -2,7 +2,6 @@
 {
   config,
   lib,
-  lib',
   org,
   pkgs,
   ...
@@ -94,7 +93,7 @@ in
       user: userCfg:
       lib.nameValuePair "${user}/passwd-sha512" {
         neededForUsers = true;
-        sopsFile = lib'.secrets userCfg.class user;
+        inherit (org.${userCfg.class}.${user}.secrets) sopsFile;
       }
     ) (lib.filterAttrs (_user: userCfg: userCfg.passwd) eachUser);
 
@@ -104,7 +103,7 @@ in
         user: userCfg:
         let
           isNormalUser = userCfg.class == "user";
-          publicKey = lib'.public-artifacts userCfg.class user "ssh-key";
+          publicKey = org.${userCfg.class}.${user}.public-artifacts.ssh-key;
           passwordFile = config.sops.secrets."${user}/passwd-sha512".path;
           home =
             if !userCfg.home then
@@ -118,7 +117,7 @@ in
           inherit (userCfg) homeMode description;
           inherit isNormalUser home;
           isSystemUser = !isNormalUser;
-          uid = lib'.ids.${user};
+          uid = org.${userCfg.class}.${user}.id;
           group = user;
           extraGroups = userCfg.groups;
           openssh.authorizedKeys.keyFiles = lib.mkIf userCfg.publicKey [ publicKey ];
@@ -129,18 +128,10 @@ in
       ) eachUser;
 
       groups = lib.mapAttrs (user: userCfg: {
-        gid = lib'.ids.${user};
+        gid = org.${userCfg.class}.${user}.id;
         members = [ user ] ++ userCfg.members;
       }) eachUser;
     };
-
-    # hack to prevent activation errors with service-users (with uid=2000+)
-    systemd.services = lib.mapAttrs' (
-      user: _userCfg:
-      lib.nameValuePair "user@${toString lib'.ids.${user}}" {
-        restartIfChanged = false;
-      }
-    ) (lib.filterAttrs (user: _userCfg: lib'.ids.${user} > 1999) eachUser);
 
     assertions = lib.mapAttrsToList (
       user: userCfg:

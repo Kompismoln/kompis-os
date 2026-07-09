@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  lib',
   pkgs,
   org,
   ...
@@ -27,7 +26,7 @@ in
   config = lib.mkIf cfg.enable {
 
     sops.secrets."glesys-api/secret-key" = {
-      sopsFile = lib'.secrets "service" "glesys-api";
+      inherit (org.service.glesys-api.secrets) sopsFile;
       owner = "root";
       group = "root";
     };

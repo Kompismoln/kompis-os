@@ -72,11 +72,6 @@ in
       wl-clipboard
     ];
 
-    home.file.wallpaper = {
-      source = "${inputs.self}/${org.theme.wallpaper}";
-      target = ".config/hypr/wallpaper.jpg";
-    };
-
     programs.hyprlock = {
       enable = true;
       settings = {
@@ -100,7 +95,7 @@ in
         monitorv2 = host.monitors;
 
         exec-once = [
-          "${lib.getExe pkgs.swaybg} -i ${config.home.file.wallpaper.target}"
+          "${lib.getExe pkgs.swaybg} -i ${../../${org.theme.wallpaper}}"
           "${lib.getExe pkgs.waybar}"
         ];
 

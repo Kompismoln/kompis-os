@@ -134,7 +134,7 @@ in
               peer:
               let
                 base = {
-                  PublicKey = builtins.readFile (lib'.public-artifacts "host" peer.name "${vpn.interface}-key");
+                  PublicKey = builtins.readFile peer.public-artifacts.${"${vpn.interface}-key"};
                   AllowedIPs =
                     if peer.name == vpn.gateway then
                       [

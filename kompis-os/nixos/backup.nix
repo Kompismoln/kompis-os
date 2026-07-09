@@ -2,6 +2,7 @@
   config,
   lib,
   lib',
+  org,
   ...
 }:
 
@@ -12,7 +13,7 @@ let
     { config, ... }:
     {
       options = {
-        enable = lib.mkEnableOption ''this backup target'';
+        enable = lib.mkEnableOption "this backup target";
         repo = lib.mkOption {
           type = lib.types.str;
           default = config._module.args.name;
@@ -34,14 +35,14 @@ in
     km = lib.mkOption {
       type = lib.types.submodule repoOptions;
       default = { };
-      description = ''Definition of `km` backup target.'';
+      description = "Definition of `km` backup target.";
     };
   };
 
   config = lib.mkIf (eachTarget != { }) {
 
     sops.secrets."backup/secret-key" = {
-      sopsFile = lib'.secrets "service" "backup";
+      inherit (org.service.backup.secrets) sopsFile;
     };
 
     services.restic.backups.km = {

@@ -14,33 +14,7 @@ lib: inputs: org: rec {
       acc: name: value:
       (lib.recursiveUpdate acc (f name value))
     ) { } attrs;
-  inherit (inputs.org) ids;
   semantic-colors = import ./semantic-colors.nix;
-
-  public-artifacts =
-    class: entity: key:
-    let
-      template =
-        if lib.hasAttr key inputs.org.public-artifacts then
-          inputs.org.public-artifacts.${key}
-        else
-          inputs.org.public-artifacts.default;
-      location = builtins.replaceStrings [ "$class" "$entity" "$key" ] [ class entity key ] template;
-    in
-    "${inputs.self}/${location}";
-
-  ports = entity: ids.${entity} + 10000;
-  secrets =
-    class: entity:
-    let
-      template =
-        if lib.hasAttr class inputs.org.secrets then
-          inputs.org.secrets.${class}
-        else
-          inputs.org.secrets.default;
-      location = builtins.replaceStrings [ "$class" "$entity" ] [ class entity ] template;
-    in
-    "${inputs.self}/${location}";
 
   package-sets = import ../packages/sets.nix;
 

@@ -3,7 +3,6 @@
   config,
   inputs,
   lib,
-  lib',
   pkgs,
   host,
   org,
@@ -56,7 +55,7 @@ in
   config = {
 
     sops.secrets."nix-serve/nix-sign" = {
-      sopsFile = lib'.secrets "service" "nix-serve";
+      inherit (org.service.nix-serve.secrets) sopsFile;
       restartUnits = [
         "nix-serve.service"
       ];
@@ -69,7 +68,7 @@ in
 
     programs.ssh.knownHosts.github = {
       hostNames = [ "github.com" ];
-      publicKeyFile = lib'.public-artifacts "unmanaged" "github" "ssh-key";
+      publicKeyFile = ../../public-keys/unmanaged-github-ssh-key.pub;
     };
 
     nix = {
@@ -106,7 +105,7 @@ in
         trusted-public-keys = [
           "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
           "cache.lix.systems:aBnZUw8zA7H35Cz2RyKFVs3H4PlGTLawyY5KRbvJR8o="
-          (builtins.readFile (lib'.public-artifacts "service" "nix-serve" "nix-sign"))
+          (builtins.readFile org.service.nix-serve.public-artifacts.nix-sign)
         ];
         use-xdg-base-directories = true;
       };

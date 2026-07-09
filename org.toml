@@ -82,15 +82,6 @@ keys = [
   "luks-key",
 ]
 
-[class.user]
-keys = [
-  "age-key",
-  "ssh-key",
-  "mail",
-  "passwd",
-  "restic-key",
-]
-
 [class.service]
 keys = [
   "age-key",
@@ -100,6 +91,15 @@ keys = [
   "secret-key",
   "tls-cert",
   "nix-sign",
+]
+
+[class.user]
+keys = [
+  "age-key",
+  "ssh-key",
+  "mail",
+  "passwd",
+  "restic-key",
 ]
 
 [class.app]
@@ -311,6 +311,7 @@ roles = [
   "peer",
   "server",
   "inference-server",
+  # "archive",
 ]
 vpns = [
   "wg0",
@@ -350,6 +351,7 @@ users = ["alex"]
 roles = ["home-manager", "workstation"]
 
 [user.admin]
+id = 1000
 description = "Administrator"
 mail = true
 email = "admin@kompismoln.se"
@@ -361,10 +363,12 @@ inboxes = [
 ]
 
 [user.ami]
+id = 1104
 description = "AMI"
 grants = ["host-adele"]
 
 [user.alex]
+id = 1001
 mail = true
 description = "Alexander Holmbäck"
 email = "alex@kompismoln.se"
@@ -377,6 +381,7 @@ grants = [
 ]
 
 [user.johanna]
+id = 1102
 description = "Johanna"
 grants = ["host-friday"]
 
@@ -393,21 +398,31 @@ grants = ["host-*"]
 grants = ["host-*"]
 
 [service.locksmith]
+id = 2000
 grants = ["host-*"]
 
 [service.egress-proxy]
+id = 2007
 grants = ["host:server"]
 
 [service.reverse-tunnel]
+id = 2001
 grants = ["host:server"]
 
+[service.vllm]
+id = 2009
+grants = ["host:inference-server"]
+
 [service.nix-build]
+id = 2002
 grants = ["host-*"]
 
 [service.nix-push]
+id = 2004
 grants = ["host-*"]
 
 [service.nix-switch]
+id = 2003
 grants = ["host-*"]
 
 [service.nix-serve]
@@ -425,12 +440,14 @@ endpoint = "https://api.glesys.com"
 grants = ["host-stationary", "host-pelle"]
 
 [app.esse]
+id = 3000
 endpoint = "www.esse.nu"
 altpoints = ["esse.nu"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.esse-dev]
+id = 3002
 endpoint = "esse-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
@@ -447,12 +464,14 @@ run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 
 [app.klimatkalendern]
+id = 3004
 endpoint = "klimatkalendern.nu"
 altpoints = ["www.klimatkalendern.nu"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.klimatkalendern-dev]
+id = 3005
 endpoint = "klimatkalendern-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
@@ -466,41 +485,51 @@ grants = ["host:app-scheduler"]
 # keep."host:archive" = { weekly = 7, monthly = 4 }
 
 [app.opencloud-kompismoln]
+id = 3020
 endpoint = "opencloud.kompismoln.se"
 run-on-hosts = []
 grants = ["host:app-scheduler"]
 
 [app.nextcloud-kompismoln]
+id = 3006
 endpoint = "nextcloud.kompismoln.se"
 altpoints = ["nc.kompismoln.se"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.nextcloud-kompismoln-dev]
+id = 3007
 endpoint = "nextcloud-kompismoln-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 
 [app.collabora]
+id = 3015
 endpoint = "collabora.kompismoln.se"
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.collabora-dev]
+id = 3014
 endpoint = "collabora-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 
 [app.chatddx]
+id = 3019
 endpoint = "chatddx.com"
 altpoints = ["www.chatddx.com"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.chatddx-dev]
+id = 3017
 endpoint = "chatddx-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
+
+[store.huggingface]
+id = 4000
 
 [theme]
 wallpaper = "assets/wallpaper.jpg"
@@ -510,40 +539,3 @@ emoji = { package = "noto-fonts-color-emoji", name = "Noto Color Emoji" }
 monospace = { package = "source-code-pro", name = "Source Code Pro" }
 serif = { package = "merriweather", name = "Merriweather" }
 sansSerif = { package = "roboto", name = "Roboto" }
-
-[ids]
-admin = 1000
-locksmith = 2000
-reverse-tunnel = 2001
-nix-build = 2002
-nix-switch = 2003
-nix-push = 2004
-tls-cert = 2005
-egress-proxy = 2007
-vllm = 2008
-vllm-qwen3-8b = 2009
-alex = 1001
-johanna = 1102
-ami = 1104
-esse = 3000
-esse-redis = 3001
-esse-dev = 3002
-esse-dev-redis = 3003
-klimatkalendern = 3004
-klimatkalendern-dev = 3005
-nextcloud-kompismoln = 3006
-nextcloud-kompismoln-dev = 3007
-chatddx = 3019
-chatddx-redis = 3008
-chatddx-svelte = 3009
-chatddx-django = 3010
-chatddx-django-flower = 3018
-chatddx-dev = 3017
-chatddx-dev-redis = 3011
-chatddx-dev-svelte = 3012
-chatddx-dev-django = 3013
-chatddx-dev-django-flower = 3016
-collabora = 3015
-collabora-dev = 3014
-opencloud-kompismoln = 3020
-huggingface = 4000
