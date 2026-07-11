@@ -121,7 +121,7 @@ in
           lib.optionalAttrs (appCfg.locationProxy != "") {
             ${appCfg.locationProxy} = {
               recommendedProxySettings = true;
-              proxyPass = "http://localhost:${toString org.app.${appCfg.entity}.port}";
+              proxyPass = "http://[${org.app.${appCfg.entity}.address}]:8000";
               extraConfig = ''
                 proxy_read_timeout ${toString appCfg.timeout}s;
                 proxy_connect_timeout ${toString appCfg.timeout}s;
@@ -144,7 +144,7 @@ in
           ExecStart = lib.escapeShellArgs [
             "${appCfg.packages.django-app}/bin/gunicorn"
             "${appCfg.djangoApp}.asgi:application"
-            "--bind=localhost:${toString org.app.${appCfg.entity}.port}"
+            "--bind=[${org.app.${appCfg.entity}.address}]:8000"
             "--timeout=${toString appCfg.timeout}"
             "--workers=${toString appCfg.workers}"
             "--worker-class=uvicorn.workers.UvicornWorker"

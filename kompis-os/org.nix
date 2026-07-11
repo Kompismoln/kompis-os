@@ -55,14 +55,41 @@ let
       in
       ../public-keys/${class}-${entity}-${key}.${ext};
   };
+  regexes = rec {
+    octet = "[0-9]{1,3}";
+    hextet = "[0-9a-f]{1,4}";
+    hextetP4 = "[0-9a-f]{4}";
+    hextetP8 = "[0-9a-f]{8}";
+    hextetP32 = "[0-9a-f]{32}";
+
+    globalPrefix6 = "${hextet}:${hextet}:${hextet}";
+    globalPrefix4 = "${octet}.${octet}";
+
+    prefixLength6 = "(64|128)";
+    prefixLength4 = "(24|32)";
+
+    subnetPrefix6 = "${globalPrefix6}:${hextet}";
+    subnetPrefix4 = "${globalPrefix4}.${octet}";
+
+    subnetCidr6 = "${subnetPrefix6}::/${prefixLength6}";
+    subnetCidr4 = "${subnetPrefix4}.0/${prefixLength4}";
+
+    host6 = "${subnetPrefix6}:(:${hextet}){1,3}";
+    host4 = "${subnetPrefix4}.${octet}";
+
+    hostCidr6 = "${host6}/${prefixLength6}";
+    hostCidr4 = "${host4}/${prefixLength4}";
+
+    subnetCidrBracketed6 = "[[]${subnetPrefix6}::[]]/${prefixLength6}";
+    hostCidrBracketed6 = "[[]${host6}[]]/${prefixLength6}";
+  };
 
   types = {
     host = with lib.types; enum (lib.attrNames cfg.host);
     user = with lib.types; enum (lib.attrNames cfg.user);
     flake = lib.types.attrsOf lib.types.str;
-    globalPrefix = lib.types.strMatching "^[0-9a-f]{1,4}:[0-9a-f]{1,4}:[0-9a-f]{1,4}$";
-    globalPrefix4 = lib.types.strMatching "^[0-9]{1,3}.[0-9a-f]{1,3}$";
-  };
+  }
+  // (lib.mapAttrs (_: regex: lib.types.strMatching "^${regex}$") regexes);
 
   options = {
     id = lib.mkOption {
@@ -144,13 +171,33 @@ let
       };
       prefix = lib.mkOption {
         description = "ipv6 private prefix";
-        type = types.globalPrefix;
+        type = types.globalPrefix6;
         example = "fda1:b2c3:d4e5";
+      };
+      prefixLength = lib.mkOption {
+        description = "ipv6 private prefix length";
+        type = lib.types.int;
+        default = 64;
       };
       prefix4 = lib.mkOption {
         description = "ipv4 private prefix";
         type = types.globalPrefix4;
         example = "10.0";
+      };
+      prefixLength4 = lib.mkOption {
+        description = "ipv4 private prefix length";
+        type = lib.types.int;
+        default = 24;
+      };
+      loPrefix = lib.mkOption {
+        description = "ULA reserved for host-local service addresses on lo";
+        type = types.subnetPrefix6;
+        default = "${cfg.prefix}:ffff";
+      };
+      loCidr = lib.mkOption {
+        description = "CIDR route of loPrefix";
+        type = types.subnetCidr6;
+        default = "${cfg.loPrefix}::/${toString cfg.prefixLength}";
       };
       build-hosts = lib.mkOption {
         description = "list of designated build hosts";
@@ -275,6 +322,16 @@ let
     {
       options = {
         inherit (options) id endpoint;
+        uid = lib.mkOption {
+          description = "user id reserved for app user";
+          default = 3000 + config.id;
+          type = lib.types.int;
+        };
+        gid = lib.mkOption {
+          description = "user id reserved for app user";
+          default = config.uid;
+          type = lib.types.int;
+        };
         port = lib.mkOption {
           description = "port reserved for the app";
           default = config.id + 10000;
@@ -284,6 +341,20 @@ let
           description = "app name";
           default = name;
           type = lib.types.str;
+        };
+        address = lib.mkOption {
+          description = "ipv6 address to the entity";
+          default = "${cfg.loPrefix}::${toString config.uid}:${config.hextet}";
+          type = types.host6;
+        };
+        hexId = lib.mkOption {
+          description = "unique subnet hextet";
+          type = types.hextet;
+          default = lib.toLower (lib.toHexString config.id);
+        };
+        hextet = lib.mkOption {
+          type = types.hextetP4;
+          default = lib.strings.fixedWidthString 4 "0" config.hexId;
         };
         configurationFile = options.configurationFile // {
           default = ../apps/${config.name}.nix;
@@ -391,12 +462,12 @@ let
           type = lib.types.int;
         };
         hexId = lib.mkOption {
-          type = lib.types.str;
+          description = "unique subnet hextet";
+          type = types.hextet;
           default = lib.toLower (lib.toHexString vpn.id);
         };
         hextet = lib.mkOption {
-          description = "unique subnet hextet";
-          type = lib.types.str;
+          type = types.hextetP4;
           default = lib.strings.fixedWidthString 4 "0" vpn.hexId;
         };
         name = lib.mkOption {
@@ -410,39 +481,39 @@ let
         };
         address4 = lib.mkOption {
           description = "ipv4 vpn address";
-          type = lib.types.str;
+          type = types.subnetCidr4;
           default = "${vpn.prefix4}.0/${toString vpn.prefix4-length}";
         };
         prefix4 = lib.mkOption {
           description = "ipv4 prefix for peers in vpn";
-          type = lib.types.str;
+          type = types.subnetPrefix4;
           default = "${cfg.prefix4}.${toString vpn.id}";
         };
         prefix4-length = lib.mkOption {
           description = "ipv4 prefix length for peers in vpn";
           type = lib.types.int;
-          default = 24;
+          default = cfg.prefixLength4;
         };
         address = lib.mkOption {
           description = "ipv6 vpn address";
-          type = lib.types.str;
+          type = types.subnetCidr6;
           default = "${vpn.prefix}::/${toString vpn.prefix-length}";
         };
         addressWithBrackets = lib.mkOption {
           description = "ipv6 vpn address enclosed in square brackets";
-          type = lib.types.str;
+          type = types.subnetCidrBracketed6;
           readOnly = true;
           default = "[${vpn.prefix}::]/${toString vpn.prefix-length}";
         };
         prefix = lib.mkOption {
           description = "ipv6 prefix for peers in vpn";
-          type = lib.types.str;
+          type = types.subnetPrefix6;
           default = "${cfg.prefix}:${vpn.hextet}";
         };
         prefix-length = lib.mkOption {
           description = "ipv6 prefix length for peers in vpn";
           type = lib.types.int;
-          default = 64;
+          default = cfg.prefixLength;
         };
         interface = lib.mkOption {
           description = "interface for the vpn";
@@ -470,7 +541,7 @@ let
         proxy = lib.mkEnableOption "ipv6 proxy through gateway";
         dns = lib.mkOption {
           description = "list of name servers";
-          type = with lib.types; listOf str;
+          type = with lib.types; listOf types.host;
         };
         resetOnRebuild = lib.mkOption {
           description = "destroy and recreate network device post rebuild";
@@ -480,12 +551,12 @@ let
         allowedTCPPorts = lib.mkOption {
           description = "force all peers to allow these tcp ports in the vpn";
           default = [ ];
-          type = with lib.types; listOf anything;
+          type = with lib.types; listOf int;
         };
         allowedUDPPorts = lib.mkOption {
           description = "force all peers to allow these udp ports in the vpn";
           default = [ ];
-          type = with lib.types; listOf anything;
+          type = with lib.types; listOf int;
         };
       };
     };
@@ -541,23 +612,23 @@ let
           default = name;
         };
         hexId = lib.mkOption {
-          type = lib.types.str;
+          type = types.hextet;
           default = lib.toLower (lib.toHexString host.id);
-        };
-        machine-id = lib.mkOption {
-          description = "systemd machine id";
-          type = lib.types.str;
-          default = lib.strings.fixedWidthString 32 "0" host.hexId;
-        };
-        hostId = lib.mkOption {
-          description = "unique hostId for ZFS";
-          type = lib.types.str;
-          default = lib.strings.fixedWidthString 8 "0" host.hexId;
         };
         hextet = lib.mkOption {
           description = "unique host hextet";
-          type = lib.types.str;
+          type = types.hextetP4;
           default = lib.strings.fixedWidthString 4 "0" host.hexId;
+        };
+        hostId = lib.mkOption {
+          description = "unique hostId for ZFS";
+          type = types.hextetP8;
+          default = lib.strings.fixedWidthString 8 "0" host.hexId;
+        };
+        machine-id = lib.mkOption {
+          description = "systemd machine id";
+          type = types.hextetP32;
+          default = lib.strings.fixedWidthString 32 "0" host.hexId;
         };
         hardwareReport = lib.mkOption {
           description = "hardware report method";
