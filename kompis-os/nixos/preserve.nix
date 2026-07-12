@@ -4,7 +4,6 @@
   host,
   inputs,
   lib,
-  lib',
   options,
   ...
 }:

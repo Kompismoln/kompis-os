@@ -3,12 +3,12 @@
 {
   flake.nixosModules.peer = {
     imports = [
-      ../nixos/locksmith.nix
-      ../nixos/networking.nix
-      ../nixos/nix.nix
+      ../nixos/org/locksmith.nix
+      ../nixos/org/ssh.nix
+      ../nixos/org/networking.nix
+      ../nixos/org/nix.nix
       ../nixos/preserve.nix
       ../nixos/sops.nix
-      ../nixos/ssh.nix
       ../nixos/state.nix
       ../nixos/tls-certs.nix
       ../nixos/users.nix
@@ -22,10 +22,8 @@
         stateful = false;
       };
       tls-certs = inputs.org.namespaces;
-      locksmith.enable = true;
       wireguard.enable = true;
       sops.enable = true;
-      ssh.enable = true;
       #state.enable = true;
     };
   };

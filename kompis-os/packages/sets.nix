@@ -100,6 +100,7 @@ pkgs: with pkgs; rec {
   ];
 
   nix-tools = [
+    nvd
     nixos-facter
     nixos-anywhere
     disko

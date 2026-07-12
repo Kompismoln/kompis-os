@@ -58,7 +58,6 @@
   #};
 
   kompis-os = {
-    sysadm.rescueMode = true;
     nginx.monitor = true;
   };
 }

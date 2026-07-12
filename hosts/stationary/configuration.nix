@@ -4,8 +4,6 @@
     ../../kompis-os/nixos/glesys-updaterecord.nix
   ];
   kompis-os = {
-    sysadm.rescueMode = true;
-
     glesys.updaterecord = {
       enable = false;
       recordid = "4069984";

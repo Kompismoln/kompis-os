@@ -236,15 +236,16 @@ in
 
     environment.systemPackages = [ cfg.package ];
 
-    kompis-os.paths = lib.mapAttrs' (
-      server: serverCfg: lib.nameValuePair serverCfg.home { inherit (serverCfg) user; }
-    ) eachServer;
+    systemd.tmpfiles.rules = lib.concatMap (server: [
+      "d '${server.home}' 0750 ${server.user} ${server.user} - -"
+      "Z '${server.home}' 0750 ${server.user} ${server.user} - -"
+    ]) (lib.attrValues eachServer);
 
-    kompis-os.preserve.databases = lib.mapAttrsToList (server: serverCfg: {
+    kompis-os.preserve.databases = map (serverCfg: {
       directory = serverCfg.home;
-      user = serverCfg.user;
+      inherit (serverCfg) user;
       group = serverCfg.user;
-    }) eachServer;
+    }) (lib.attrValues eachServer);
 
     systemd.services = lib.mapAttrs (server: serverCfg: {
       description = "Redis Server - ${server}";

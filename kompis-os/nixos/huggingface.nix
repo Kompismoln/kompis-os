@@ -49,7 +49,10 @@ in
         huggingface-cli
       ];
 
-    kompis-os.paths.${cfg.repo}.user = "huggingface";
+    systemd.tmpfiles.rules = [
+      "d '${cfg.repo}' 0750 huggingface huggingface - -"
+      "Z '${cfg.repo}' 0750 huggingface huggingface - -"
+    ];
     kompis-os.users.huggingface.class = "store";
   };
 }

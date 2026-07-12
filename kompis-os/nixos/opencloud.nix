@@ -25,10 +25,14 @@ in
 
   config = lib.mkIf (eachApp != { }) {
 
-    kompis-os.paths = lib.concatMapAttrs (app: appCfg: {
-      ${appCfg.home} = { inherit (appCfg) user; };
-      "/etc/${app}" = { inherit (appCfg) user; };
-    }) eachApp;
+    systemd.tmpfiles.rules = lib.concatMap (
+      map (appCfg: [
+        "d '${appCfg.home}' 0750 ${appCfg.user} ${appCfg.group} - -"
+        "Z '${appCfg.home}' 0750 ${appCfg.user} ${appCfg.group} - -"
+        "d '/etc/${appCfg.name}' 0750 ${appCfg.user} ${appCfg.group} - -"
+        "Z '/etc/${appCfg.name}' 0750 ${appCfg.user} ${appCfg.group} - -"
+      ]) (lib.attrValues eachApp)
+    );
 
     systemd.services = lib'.mergeAttrs (app: _appCfg: {
       "container@${app}" = {

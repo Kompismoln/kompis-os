@@ -99,9 +99,10 @@ in
   config = lib.mkIf (eachApp != { }) {
     environment.systemPackages = lib.mapAttrsToList (_: script: script) scripts;
 
-    kompis-os.paths = lib.mapAttrs' (
-      _: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }
-    ) eachApp;
+    systemd.tmpfiles.rules = lib.concatMap (app: [
+      "d '${app.home}' 0750 ${app.user} ${app.user} - -"
+      "Z '${app.home}' 0750 ${app.user} ${app.user} - -"
+    ]) (lib.attrValues eachApp);
 
     sops.secrets = lib.mapAttrs' (
       _: appCfg:

@@ -27,7 +27,6 @@
     };
   };
   kompis-os = {
-    sysadm.rescueMode = true;
     users = {
       alex = {
         description = org.user.alex.description;

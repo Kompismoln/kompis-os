@@ -35,9 +35,10 @@ in
 
   config = lib.mkIf (eachApp != { }) {
 
-    kompis-os.paths = lib.mapAttrs' (
-      _: appCfg: lib.nameValuePair appCfg.home { inherit (appCfg) user; }
-    ) eachApp;
+    systemd.tmpfiles.rules = lib.concatMap (app: [
+      "d '${app.home}' 0750 ${app.user} ${app.user} - -"
+      "Z '${app.home}' 0750 ${app.user} ${app.user} - -"
+    ]) (lib.attrValues eachApp);
 
     sops.secrets = lib'.mergeAttrs (_app: appCfg: {
       "${appCfg.entity}/secret-key" = {
@@ -123,7 +124,7 @@ in
       }
     ) eachApp;
 
-    containers = lib.mapAttrs (app: appCfg: {
+    containers = lib.mapAttrs (_app: appCfg: {
       autoStart = true;
       ephemeral = true;
 

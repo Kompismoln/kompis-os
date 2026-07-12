@@ -701,6 +701,7 @@ let
           default = [ ];
           type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
         };
+        rescueMode = lib.mkEnableOption "insecure rescue mode.";
         public-artifacts = options.mkPublicArtifacts "host" host.name;
         secrets = options.mkSecrets "host" host.name;
       };
