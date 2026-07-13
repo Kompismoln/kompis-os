@@ -82,7 +82,7 @@ in
       };
     }) eachSite;
 
-    kompis-os.users = lib.mapAttrs' (
+    kompis-os.principals = lib.mapAttrs' (
       name: cfg:
       lib.nameValuePair "${cfg.appname}-fastapi" {
         class = "service";

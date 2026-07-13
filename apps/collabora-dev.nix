@@ -13,7 +13,7 @@ in
     collabora = {
       app = name;
       enable = true;
-      endpoint = cfg.endpoint;
+      inherit (cfg) endpoint;
       allowedHosts = [ ];
     };
   };

@@ -49,12 +49,5 @@
 
   kompis-os = {
     sendmail.enable = true;
-
-    users = {
-      alex = {
-        description = org.user.alex.description;
-        groups = [ "wheel" ];
-      };
-    };
   };
 }

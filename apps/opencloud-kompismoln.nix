@@ -14,7 +14,7 @@ in
 
   kompis-os = {
     nginx.enable = true;
-    users.${name} = {
+    principals.${name} = {
       class = "app";
       members = [
         "nginx"

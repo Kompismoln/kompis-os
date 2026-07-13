@@ -14,7 +14,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    kompis-os.users.reverse-tunnel = {
+    kompis-os.principals.reverse-tunnel = {
       class = "service";
       passwd = true;
     };

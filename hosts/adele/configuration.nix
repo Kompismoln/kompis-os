@@ -1,8 +1,4 @@
 {
-  kompis-os = {
-    users.ami.enable = true;
-  };
-
   boot = {
     loader = {
       systemd-boot.enable = true;

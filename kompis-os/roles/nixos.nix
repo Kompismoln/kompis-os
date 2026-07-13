@@ -9,6 +9,7 @@
       imports = [
         host.configurationFile
         ../nixos/org/system.nix
+        ../nixos/org/users.nix
       ];
     };
 }

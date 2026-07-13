@@ -1,4 +1,4 @@
-# kompis-os/nixos/users.nix
+# nixos/principals.nix
 {
   config,
   lib,
@@ -8,18 +8,18 @@
 }:
 
 let
-  cfg = config.kompis-os.users;
+  cfg = config.kompis-os.principals;
   eachUser = lib.filterAttrs (_user: cfg: cfg.enable) cfg;
 
-  userOpts =
+  principalOpts =
     { name, config, ... }:
     {
       options = {
-        enable = lib.mkEnableOption "this user" // {
+        enable = lib.mkEnableOption "this principal" // {
           default = true;
         };
         class = lib.mkOption {
-          description = "user's entity class";
+          description = "principal's entity class";
           default = "user";
           type = lib.types.enum [
             "user"
@@ -33,10 +33,10 @@ let
           default = name;
           type = lib.types.str;
         };
-        passwd = lib.mkEnableOption "endow user with a password" // {
+        passwd = lib.mkEnableOption "endow principal with a password" // {
           default = config.class == "user";
         };
-        publicKey = lib.mkEnableOption "endow user with a cryptographic identity" // {
+        publicKey = lib.mkEnableOption "endow principal with a cryptographic identity" // {
           default = builtins.elem config.class [
             "user"
             "service"
@@ -58,17 +58,17 @@ let
         stateful = lib.mkEnableOption "preserve home" // {
           default = config.home;
         };
-        shell = lib.mkEnableOption "force bash shell for non-normal users" // {
+        shell = lib.mkEnableOption "force bash shell for non-normal principals" // {
           default = false;
           type = lib.types.bool;
         };
         groups = lib.mkOption {
-          description = "user's extra groups";
+          description = "principal's extra groups";
           type = with lib.types; listOf str;
           default = [ ];
         };
         members = lib.mkOption {
-          description = "members of the user's groups";
+          description = "members of the principal's groups";
           type = with lib.types; listOf str;
           default = [ ];
         };
@@ -76,9 +76,9 @@ let
     };
 in
 {
-  options.kompis-os.users = lib.mkOption {
-    description = "Set of users to be configured.";
-    type = with lib.types; attrsOf (submodule userOpts);
+  options.kompis-os.principals = lib.mkOption {
+    description = "Set of principal to be configured.";
+    type = with lib.types; attrsOf (submodule principalOpts);
     default = { };
   };
 

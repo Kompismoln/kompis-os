@@ -7,7 +7,7 @@
   ...
 }:
 let
-  eachUser = lib.filterAttrs (user: userCfg: userCfg.stateful) config.kompis-os.users;
+  eachUser = lib.filterAttrs (user: userCfg: userCfg.stateful) config.kompis-os.principals;
   statePkg =
     user: userCfg:
     pkgs.runCommand "state"

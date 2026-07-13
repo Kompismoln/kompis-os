@@ -432,6 +432,10 @@ let
           description = "full name";
           type = lib.types.str;
         };
+        groups = lib.mkOption {
+          description = "groups user is a part of";
+          type = with lib.types; listOf str;
+        };
         email = lib.mkOption {
           description = "user's email address";
           default = null;

@@ -22,7 +22,7 @@ in
       dumpPath = "${config.users.users.${name}.home}/dbdump.sql";
     };
 
-    users.${name}.class = "app";
+    principals.${name}.class = "app";
 
     mobilizon.apps.${name} = {
       enable = true;

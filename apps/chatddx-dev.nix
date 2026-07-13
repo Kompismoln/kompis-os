@@ -28,7 +28,7 @@ in
   };
 
   kompis-os = {
-    users.${name}.class = "app";
+    principals.${name}.class = "app";
 
     nginx.enable = true;
 

@@ -13,7 +13,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    kompis-os.users.egress-proxy = {
+    kompis-os.principals.egress-proxy = {
       class = "service";
     };
 

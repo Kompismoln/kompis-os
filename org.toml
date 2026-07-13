@@ -143,6 +143,7 @@ keys = [
 [host.stationary]
 rescueMode = true
 id = 1
+users = ["admin"]
 roles = [
   "nixos",
   "peer",
@@ -179,6 +180,7 @@ mountpoint = "/srv/tungsten"
 
 [host.lenovo]
 id = 7
+users = ["admin", "alex"]
 roles = ["nixos", "peer", "rice"]
 vpns = [
   "wg0",
@@ -220,17 +222,14 @@ output = "HDMI-A-1"
 [host.laptop]
 rescueMode = true
 id = 2
+users = ["admin", "alex"]
 roles = ["nixos", "peer", "hypr-mediastation"]
-vpns = [
-  "wg0",
-  "wg1",
-  "wg2",
-]
+vpns = ["wg0", "wg1", "wg2"]
 system = "x86_64-linux"
 stateVersion = "26.05"
 home.alex.roles = ["hypr-mediastation"]
 
-network.eth.interface = "eth0"
+network.eth = { interface = "eth0", mac = "6c:6e:07:24:a4:dd" }
 network.wifi.interface = "wlp1s0"
 
 [host.laptop.desktop]
@@ -249,6 +248,7 @@ stateVersion = ""
 
 [host.helsinki]
 rescueMode = true
+users = ["admin"]
 id = 5
 system = "x86_64-linux"
 stateVersion = "25.05"
@@ -288,6 +288,7 @@ devices = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_101498674"
 [host.friday]
 rescueMode = true
 id = 6
+users = ["admin", "johanna"]
 hardwareReport = "standard"
 roles = ["nixos", "peer"]
 vpns = ["wg0", "wg1"]
@@ -297,6 +298,7 @@ stateVersion = "20.03"
 [host.adele]
 rescueMode = true
 id = 8
+users = ["admin", "ami"]
 system = "x86_64-linux"
 stateVersion = "25.11"
 vpns = [
@@ -318,6 +320,7 @@ devices = "/dev/disk/by-id/ata-SanDisk_X400_M.2_2280_128GB_164787421747"
 rescueMode = true
 endpoint = "pelle.kompismoln.se"
 id = 9
+users = ["admin", "alex"]
 roles = [
   "nixos",
   "peer",
@@ -367,6 +370,7 @@ roles = ["home-manager", "workstation"]
 id = 1000
 description = "Administrator"
 mail = true
+groups = ["wheel"]
 email = "admin@kompismoln.se"
 grants = ["host-*"]
 inboxes = [
@@ -383,6 +387,7 @@ grants = ["host-adele"]
 [user.alex]
 id = 1001
 mail = true
+groups = ["wheel"]
 description = "Alexander Holmbäck"
 email = "alex@kompismoln.se"
 inboxes = ["alex@ahbk.se", "alex@klimatkalendern.nu"]

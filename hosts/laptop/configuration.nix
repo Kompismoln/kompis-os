@@ -1,4 +1,4 @@
-{ org, config, ... }:
+{ config, ... }:
 {
 
   systemd.network = {
@@ -24,14 +24,6 @@
     kernelModules = [ "ax_usb_nic" ];
     loader = {
       grub.enable = true;
-    };
-  };
-  kompis-os = {
-    users = {
-      alex = {
-        description = org.user.alex.description;
-        groups = [ "wheel" ];
-      };
     };
   };
 }

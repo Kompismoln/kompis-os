@@ -1,7 +1,6 @@
 {
   host,
   #lib,
-  org,
   ...
 }:
 {
@@ -27,13 +26,6 @@
       enable = false;
       recordid = "4069983";
       device = host.network.eth.interface;
-    };
-
-    users = {
-      alex = {
-        description = org.user.alex.description;
-        groups = [ "wheel" ];
-      };
     };
   };
 

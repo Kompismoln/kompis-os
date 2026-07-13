@@ -81,7 +81,7 @@ in
       }
     ];
 
-    kompis-os.users.${cfg.user} = {
+    kompis-os.principals.${cfg.user} = {
       class = "service";
       home = true;
       groups = [
@@ -90,7 +90,7 @@ in
       ];
     };
 
-    kompis-os.users.huggingface.members = [ cfg.user ];
+    kompis-os.principals.huggingface.members = [ cfg.user ];
 
     systemd.services = lib.mapAttrs' (
       server: serverCfg:

@@ -29,7 +29,7 @@ in
 {
   environment.systemPackages = [ locksmithPkg ];
 
-  kompis-os.users.locksmith = {
+  kompis-os.principals.locksmith = {
     class = "service";
     shell = true;
   };

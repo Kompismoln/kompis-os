@@ -9,18 +9,12 @@
       ../nixos/org/sops.nix
       ../nixos/org/tls-certs.nix
       ../nixos/org/wireguard.nix
+      ../nixos/org/users.nix
     ]
     ++ [
-      ../nixos/users.nix
+      ../nixos/principals.nix
       ../nixos/preserve.nix
     ];
 
-    kompis-os = {
-      users.admin = {
-        class = "user";
-        groups = [ "wheel" ];
-        stateful = false;
-      };
-    };
   };
 }

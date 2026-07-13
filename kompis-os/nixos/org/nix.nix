@@ -82,7 +82,7 @@ in
     "nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
   };
 
-  kompis-os.users = {
+  kompis-os.principals = {
     nix-build = {
       class = "service";
       shell = true;
