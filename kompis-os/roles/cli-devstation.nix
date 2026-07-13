@@ -2,35 +2,19 @@
 {
   flake.homeModules.cli-devstation = {
     imports = [
-      ../home/home.nix
-      ../home/ide.nix
-      ../home/nix-conf.nix
-      ../home/shell.nix
-      ../home/xdg.nix
+      ../home/org/home.nix
+      ../home/org/ide.nix
+      ../home/org/nix-conf.nix
+      ../home/org/shell.nix
+      ../home/org/xdg.nix
     ];
-    config = {
-      kompis-os-hm = {
-        home.enable = true;
-        ide.enable = true;
-        nix-conf.enable = true;
-        shell.enable = true;
-        xdg.enable = true;
-      };
-    };
   };
 
   flake.nixosModules.cli-devstation = {
     imports = [
-      ../nixos/home-manager.nix
-      ../nixos/shell.nix
+      ../nixos/org/home-manager.nix
+      ../nixos/org/shell.nix
       ../nixos/org/tls-certs.nix
     ];
-
-    config = {
-      kompis-os = {
-        home-manager.enable = true;
-        shell.enable = true;
-      };
-    };
   };
 }

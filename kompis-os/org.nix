@@ -57,10 +57,15 @@ let
   };
   regexes = rec {
     octet = "[0-9]{1,3}";
+
     hextet = "[0-9a-f]{1,4}";
     hextetP4 = "[0-9a-f]{4}";
     hextetP8 = "[0-9a-f]{8}";
     hextetP32 = "[0-9a-f]{32}";
+
+    hexpair = "[0-9a-f]{2}";
+
+    mac = "${hexpair}(:${hexpair}){5}";
 
     globalPrefix6 = "${hextet}:${hextet}:${hextet}";
     globalPrefix4 = "${octet}.${octet}";
@@ -286,34 +291,6 @@ let
       theme = lib.mkOption {
         description = "colors, wallpaper and fonts";
         type = lib.types.submodule themeModule;
-      };
-    };
-  };
-  themeModule = {
-    options = {
-      wallpaper = lib.mkOption {
-        description = "path to wallpaper";
-        type = lib.types.str;
-      };
-      colors = lib.mkOption {
-        description = "color mappings";
-        type = with lib.types; attrsOf str;
-      };
-      fonts = lib.mkOption {
-        type = lib.types.attrsOf (
-          lib.types.submodule {
-            options = {
-              package = lib.mkOption {
-                description = "font package";
-                type = lib.types.str;
-              };
-              name = lib.mkOption {
-                description = "font name";
-                type = lib.types.str;
-              };
-            };
-          }
-        );
       };
     };
   };
@@ -779,6 +756,11 @@ let
           ];
           default = "dhcp";
         };
+        mac = lib.mkOption {
+          description = "mac address";
+          type = with lib.types; nullOr str;
+          default = null;
+        };
         dns = lib.mkOption {
           type = with lib.types; listOf str;
         };
@@ -831,6 +813,34 @@ let
       };
     };
 
+  themeModule = {
+    options = {
+      wallpaper = lib.mkOption {
+        description = "path to wallpaper";
+        type = lib.types.str;
+      };
+      colors = lib.mkOption {
+        description = "color mappings";
+        type = with lib.types; attrsOf str;
+      };
+      fonts = lib.mkOption {
+        type = lib.types.attrsOf (
+          lib.types.submodule {
+            options = {
+              package = lib.mkOption {
+                description = "font package";
+                type = lib.types.str;
+              };
+              name = lib.mkOption {
+                description = "font name";
+                type = lib.types.str;
+              };
+            };
+          }
+        );
+      };
+    };
+  };
 in
 {
   options.flake.org = lib.mkOption {

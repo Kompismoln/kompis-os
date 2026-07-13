@@ -16,7 +16,6 @@ let
   cfg = config.kompis-os.nginx;
   vpn = org.vpn.wg0;
   hostname = "${host.name}.${vpn.namespace}";
-  endpoint = "${config.kompis-os.monitor.endpoint}.${vpn.namespace}";
 in
 {
   options.kompis-os.nginx = {
@@ -172,7 +171,7 @@ in
 
       loki.write "default" {
           endpoint {
-              url = "http://${endpoint}:3100/loki/api/v1/push"
+              url = "http://${""}:3100/loki/api/v1/push"
           }
       }
     '';

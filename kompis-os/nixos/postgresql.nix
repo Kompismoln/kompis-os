@@ -1,6 +1,7 @@
 # kompis-os/nixos/postgresql.nix
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -48,6 +49,9 @@ in
         user = "postgres";
         group = "postgres";
       }
+    ];
+    nixpkgs.overlays = [
+      (import ../overlays/pgsql-tools.nix { inherit inputs; })
     ];
 
     services.postgresql = {

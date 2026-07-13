@@ -225,7 +225,7 @@ output = "HDMI-A-1"
 rescueMode = true
 id = 2
 users = ["admin", "alex"]
-roles = ["nixos", "peer", "hypr-mediastation"]
+roles = ["nixos", "peer"]
 vpns = ["wg0", "wg1", "wg2"]
 system = "x86_64-linux"
 stateVersion = "26.05"
@@ -236,6 +236,8 @@ network.wifi.interface = "wlp1s0"
 
 [host.laptop.desktop]
 kb-layout = "us,se"
+screenshotPath = "~/Pictures/Screenshots"
+autolock = false
 
 [host.laptop.disk-layouts.main]
 layout = "main-media"

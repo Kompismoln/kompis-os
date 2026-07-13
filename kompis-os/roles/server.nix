@@ -1,35 +1,13 @@
-# kompis-os/roles/server.nix
-{ inputs, self, ... }:
+# roles/server.nix
 {
-  flake.nixosModules.server =
-    {
-      host,
-      ...
-    }:
-    {
-      imports = [
-        ../nixos/egress-proxy.nix
-        ../nixos/fail2ban.nix
-        ../nixos/monitor.nix
-        ../nixos/reverse-tunnel.nix
-        ../nixos/sendmail.nix
-        ../nixos/shell.nix
-        ../nixos/org/tls-certs.nix
-      ];
-
-      nixpkgs.overlays = [
-        (import ../overlays/pgsql-tools.nix { inherit inputs; })
-      ];
-
-      kompis-os = {
-        # msmtp conflicts with postfix
-        sendmail.enable = host.name != self.org.mailserver.host;
-
-        shell.enable = true;
-        egress-proxy.enable = true;
-        fail2ban.enable = true;
-        reverse-tunnel.enable = true;
-      };
-
-    };
+  flake.nixosModules.server = {
+    imports = [
+      ../nixos/org/egress-proxy.nix
+      ../nixos/org/fail2ban.nix
+      ../nixos/org/reverse-tunnel.nix
+      ../nixos/org/sendmail.nix
+      ../nixos/org/shell.nix
+      ../nixos/org/tls-certs.nix
+    ];
+  };
 }
