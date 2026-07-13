@@ -76,6 +76,10 @@ let
     };
 in
 {
+  imports = [
+    ../nixos/preserve.nix
+  ];
+
   options.kompis-os.principals = lib.mkOption {
     description = "Set of principal to be configured.";
     type = with lib.types; attrsOf (submodule principalOpts);

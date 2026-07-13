@@ -41,6 +41,7 @@ let
   );
 in
 {
+  imports = [ ../principals.nix ];
   sops.secrets = lib.mapAttrs' (
     user: userCfg:
     lib.nameValuePair "${user}/restic-key" {

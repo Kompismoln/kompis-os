@@ -1,4 +1,4 @@
-# kompis-os/nixos/wireguard.nix
+# nixos/wireguard.nix
 {
   config,
   host,

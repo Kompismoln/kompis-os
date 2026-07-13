@@ -2,36 +2,18 @@
 {
   flake.homeModules.hypr-devstation = {
     imports = [
-      ../home/browsers.nix
-      ../home/fonts.nix
-      ../home/graphic.nix
-      ../home/home.nix
-      ../home/hyprland.nix
-      ../home/ide.nix
-      ../home/nix-conf.nix
-      ../home/qutebrowser.nix
-      ../home/shell.nix
-      ../home/social.nix
-      ../home/xdg.nix
+      ../home/org/browsers.nix
+      ../home/org/fonts.nix
+      ../home/org/design.nix
+      ../home/org/home.nix
+      ../home/org/hyprland.nix
+      ../home/org/ide.nix
+      ../home/org/nix-conf.nix
+      ../home/org/qutebrowser.nix
+      ../home/org/shell.nix
+      ../home/org/social.nix
+      ../home/org/xdg.nix
     ];
-    config = {
-      kompis-os-hm = {
-        browsers.enable = true;
-        fonts.enable = true;
-        graphic.enable = true;
-        home.enable = true;
-        hyprland = {
-          enable = true;
-          hyprlock = true;
-        };
-        ide.enable = true;
-        nix-conf.enable = true;
-        qutebrowser.enable = true;
-        shell.enable = true;
-        social.enable = true;
-        xdg.enable = true;
-      };
-    };
   };
 
   flake.nixosModules.hypr-devstation =
@@ -39,11 +21,11 @@
     {
       imports = [
         ../nixos/org/tls-certs.nix
-        ../nixos/home-manager.nix
-        ../nixos/hyprland.nix
-        ../nixos/networkmanager.nix
-        ../nixos/shell.nix
-        ../nixos/sound.nix
+        ../nixos/org/home-manager.nix
+        ../nixos/org/hyprland.nix
+        ../nixos/org/networkmanager.nix
+        ../nixos/org/shell.nix
+        ../nixos/org/sound.nix
       ];
 
       config = {
@@ -68,13 +50,6 @@
           };
         };
 
-        kompis-os = {
-          home-manager.enable = true;
-          hyprland.enable = true;
-          networkmanager.enable = true;
-          shell.enable = true;
-          sound.enable = true;
-        };
       };
     };
 }

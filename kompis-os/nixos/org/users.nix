@@ -6,6 +6,9 @@
   ...
 }:
 {
+  imports = [
+    ../principals.nix
+  ];
   kompis-os = {
     principals = lib.listToAttrs (
       map (

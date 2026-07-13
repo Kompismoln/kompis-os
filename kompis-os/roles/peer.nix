@@ -1,4 +1,4 @@
-# kompis-os/roles/peer.nix
+# roles/peer.nix
 {
   flake.nixosModules.peer = {
     imports = [
@@ -10,11 +10,6 @@
       ../nixos/org/tls-certs.nix
       ../nixos/org/wireguard.nix
       ../nixos/org/users.nix
-    ]
-    ++ [
-      ../nixos/principals.nix
-      ../nixos/preserve.nix
     ];
-
   };
 }

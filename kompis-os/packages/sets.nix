@@ -79,6 +79,7 @@ pkgs: with pkgs; rec {
     libxml2
     rdfind
     w3m
+    xh
   ];
 
   media-processing = [

@@ -27,6 +27,7 @@ let
       '';
 in
 {
+  imports = [ ../principals.nix ];
   environment.systemPackages = [ locksmithPkg ];
 
   kompis-os.principals.locksmith = {

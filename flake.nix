@@ -24,9 +24,6 @@
 
     preservation.url = "github:nix-community/preservation";
 
-    nixos-cli.url = "github:nix-community/nixos-cli";
-    nixos-cli.inputs.nixpkgs.follows = "nixpkgs";
-
     sverigesval.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
     sverigesval.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -75,6 +72,7 @@
             devShells.default = pkgs.mkShell {
               buildInputs = with pkgs; [
                 toml2json
+                bats
               ];
               shellHook = ''
                 export SOPS_AGE_KEY_FILE=/keys/root-1

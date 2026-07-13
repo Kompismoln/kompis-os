@@ -181,7 +181,7 @@ mountpoint = "/srv/tungsten"
 [host.lenovo]
 id = 7
 users = ["admin", "alex"]
-roles = ["nixos", "peer", "rice"]
+roles = ["nixos", "peer"]
 vpns = [
   "wg0",
   "wg1",
@@ -198,6 +198,8 @@ network.wifi.interface = "wlp3s0"
 [host.lenovo.desktop]
 audio-bus-id = "pci-0000_00_1f.3"
 kb-layout = "us,se"
+screenshotPath = "~/Pictures/Screenshots"
+autolock = true
 
 [[host.lenovo.monitors]]
 output = "eDP-1"

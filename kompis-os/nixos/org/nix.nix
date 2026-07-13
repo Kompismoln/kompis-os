@@ -31,6 +31,7 @@ let
       '';
 in
 {
+  imports = [ ../principals.nix ];
 
   programs.ssh.knownHosts.github = {
     hostNames = [ "github.com" ];
