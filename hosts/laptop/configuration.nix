@@ -1,16 +1,10 @@
 { config, ... }:
 {
+  systemd.network.links."10-wake-on-lan" = {
+    matchConfig.Type = "ether";
+    linkConfig.WakeOnLan = "magic";
+  };
 
-  systemd.network = {
-    enable = true;
-    links."10-wake-on-lan" = {
-      matchConfig.Type = "ether";
-      linkConfig.WakeOnLan = "magic";
-    };
-  };
-  networking = {
-    useNetworkd = true;
-  };
   boot = {
     blacklistedKernelModules = [
       "ax88179_178a"
@@ -22,8 +16,5 @@
     ];
 
     kernelModules = [ "ax_usb_nic" ];
-    loader = {
-      grub.enable = true;
-    };
   };
 }

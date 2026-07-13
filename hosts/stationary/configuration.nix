@@ -10,14 +10,4 @@
       device = host.network.eth.interface;
     };
   };
-
-  boot.loader.grub.enable = true;
-
-  networking = {
-    useNetworkd = true;
-    firewall = {
-      logRefusedConnections = false;
-    };
-  };
-
 }

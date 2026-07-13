@@ -125,6 +125,11 @@ let
               hex = lib.toLower (lib.toHexString id);
             in
             {
+              str = lib.mkOption {
+                description = "id as string";
+                type = lib.types.str;
+                default = toString id;
+              };
               hex = lib.mkOption {
                 description = "id as hex";
                 type = types.hextet;
@@ -481,14 +486,14 @@ let
         address4 = lib.mkOption {
           description = "ipv4 vpn address";
           type = types.subnetCidr4;
-          default = "${vpn.prefix4}.0/${toString vpn.prefix4-length}";
+          default = "${vpn.prefix4}.0/${toString vpn.prefixLength4}";
         };
         prefix4 = lib.mkOption {
           description = "ipv4 prefix for peers in vpn";
           type = types.subnetPrefix4;
           default = "${cfg.prefix4}.${toString vpn.id}";
         };
-        prefix4-length = lib.mkOption {
+        prefixLength4 = lib.mkOption {
           description = "ipv4 prefix length for peers in vpn";
           type = lib.types.int;
           default = cfg.prefixLength4;
@@ -496,20 +501,20 @@ let
         address = lib.mkOption {
           description = "ipv6 vpn address";
           type = types.subnetCidr6;
-          default = "${vpn.prefix}::/${toString vpn.prefix-length}";
+          default = "${vpn.prefix}::/${toString vpn.prefixLength}";
         };
         addressWithBrackets = lib.mkOption {
           description = "ipv6 vpn address enclosed in square brackets";
           type = types.subnetCidrBracketed6;
           readOnly = true;
-          default = "[${vpn.prefix}::]/${toString vpn.prefix-length}";
+          default = "[${vpn.prefix}::]/${toString vpn.prefixLength}";
         };
         prefix = lib.mkOption {
           description = "ipv6 prefix for peers in vpn";
           type = types.subnetPrefix6;
           default = "${cfg.prefix}:${vpn.ids.hex4}";
         };
-        prefix-length = lib.mkOption {
+        prefixLength = lib.mkOption {
           description = "ipv6 prefix length for peers in vpn";
           type = lib.types.int;
           default = cfg.prefixLength;
@@ -611,6 +616,14 @@ let
           type = lib.types.str;
           default = name;
         };
+        boot = lib.mkOption {
+          description = "boot method";
+          type = lib.types.enum [
+            "grub"
+            "systemd"
+          ];
+          default = "systemd";
+        };
         hardwareReport = lib.mkOption {
           description = "hardware report method";
           type = lib.types.enum [
@@ -692,13 +705,16 @@ let
         vpnName: vpn:
         lib.mkDefault {
           inherit (vpn) interface;
-          mode = "static";
+          mode = "noop";
           dns = lib.concatMap (dnsHost: [
             cfg.host.${dnsHost}.network.${vpnName}.address
             cfg.host.${dnsHost}.network.${vpnName}.address4
           ]) vpn.dns;
           address = "${vpn.prefix}::${host.ids.hex4}";
-          address4 = "${vpn.prefix4}.${toString host.id}";
+          destination = vpn.address;
+          address4 = "${vpn.prefix4}.${host.ids.str}";
+          destination4 = vpn.address4;
+          inherit (vpn) prefixLength prefixLength4;
         }
       ) cfg.vpn;
     };
@@ -739,7 +755,7 @@ let
     };
 
   networkModule =
-    { name, ... }:
+    { name, config, ... }:
     {
       options = {
         type = lib.mkOption {
@@ -753,44 +769,63 @@ let
         };
         mode = lib.mkOption {
           type = lib.types.enum [
+            "noop"
             "dhcp"
             "static"
           ];
-          default = "dhcp";
+          default = "noop";
         };
         mac = lib.mkOption {
           description = "mac address";
-          type = with lib.types; nullOr str;
-          default = null;
+          type = types.mac;
         };
-        dns = lib.mkOption {
-          type = with lib.types; listOf str;
+        address = lib.mkOption {
+          description = "ipv6 host address (not CIDR)";
+          type = lib.types.str;
+        };
+        destination = lib.mkOption {
+          description = "ipv6 destination";
+          type = lib.types.str;
+        };
+        prefixLength = lib.mkOption {
+          description = "ipv6 prefix length";
+          type = lib.types.int;
         };
         gateway = lib.mkOption {
           description = "ipv6 gateway address";
-          type = with lib.types; nullOr str;
-          default = null;
-        };
-        address = lib.mkOption {
-          description = "ipv6 host address";
-          type = with lib.types; nullOr str;
-          default = null;
+          type = lib.types.str;
         };
         address4 = lib.mkOption {
           description = "ipv4 host address";
-          type = with lib.types; nullOr str;
-          default = null;
+          type = lib.types.str;
+        };
+        destination4 = lib.mkOption {
+          description = "ipv4 destination";
+          type = lib.types.str;
         };
         gateway4 = lib.mkOption {
           description = "ipv4 gateway address";
-          type = with lib.types; nullOr str;
-          default = null;
+          type = lib.types.str;
+        };
+        prefixLength4 = lib.mkOption {
+          description = "ipv6 prefix length";
+          type = lib.types.int;
         };
         metric = lib.mkOption {
           description = "metric for routing: lower takes priority";
           default = 1024;
           type = lib.types.int;
         };
+        metric4 = lib.mkOption {
+          description = "metric for routing: lower takes priority";
+          default = config.metric;
+          type = lib.types.int;
+        };
+        dns = lib.mkOption {
+          type = with lib.types; listOf str;
+        };
+        gatewayOnLink = lib.mkEnableOption "onlink for gateway";
+        privacy = lib.mkEnableOption "ipv6 address rotation";
       };
     };
   diskModule =

@@ -28,18 +28,4 @@
       device = host.network.eth.interface;
     };
   };
-
-  boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-  };
-
-  networking = {
-    useNetworkd = true;
-    firewall = {
-      logRefusedConnections = false;
-    };
-  };
 }

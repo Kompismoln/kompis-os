@@ -20,15 +20,7 @@
     }
   ];
 
-  boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-  };
-
   networking = {
-    dhcpcd.enable = false;
     firewall.allowedTCPPorts = [
       3000
       5173

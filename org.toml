@@ -143,6 +143,7 @@ keys = [
 [host.stationary]
 rescueMode = true
 id = 1
+boot = "grub"
 users = ["admin"]
 roles = [
   "nixos",
@@ -159,7 +160,7 @@ vpns = [
 ]
 system = "x86_64-linux"
 stateVersion = "25.05"
-network.eth.interface = "enp3s0"
+network.eth = { interface = "enp3s0", mode = "dhcp" }
 
 [host.stationary.disk-layouts.main]
 layout = "main-server-zfs-test"
@@ -224,6 +225,7 @@ output = "HDMI-A-1"
 [host.laptop]
 rescueMode = true
 id = 2
+boot = "grub"
 users = ["admin", "alex"]
 roles = ["nixos", "peer"]
 vpns = ["wg0", "wg1", "wg2"]
@@ -231,7 +233,7 @@ system = "x86_64-linux"
 stateVersion = "26.05"
 home.alex.roles = ["hypr-mediastation"]
 
-network.eth = { interface = "eth0", mac = "6c:6e:07:24:a4:dd" }
+network.eth = { interface = "eth0", mac = "6c:6e:07:24:a4:dd", mode = "dhcp" }
 network.wifi.interface = "wlp1s0"
 
 [host.laptop.desktop]
@@ -252,11 +254,12 @@ stateVersion = ""
 
 [host.helsinki]
 rescueMode = true
-users = ["admin"]
 id = 5
+boot = "grub"
 system = "x86_64-linux"
 stateVersion = "25.05"
 endpoint = "helsinki.kompismoln.se"
+users = ["admin"]
 vpns = [
   "wg0",
   "wg1",
@@ -274,10 +277,15 @@ roles = [
 interface = "enp1s0"
 mode = "static"
 metric = 512
-address4 = "65.108.214.112/32"
+address4 = "65.108.214.112"
+prefixLength4 = 32
 gateway4 = "172.31.1.1"
-address = "2a01:4f9:c012:e514::1/64"
+destination4 = "0.0.0.0/0"
+address = "2a01:4f9:c012:e514::1"
+prefixLength = 64
 gateway = "fe80::1"
+gatewayOnLink = true
+destination = "::/0"
 dns = [
   "185.12.64.1",
   "185.12.64.2",
@@ -339,7 +347,7 @@ vpns = [
 ]
 system = "x86_64-linux"
 stateVersion = "25.11"
-network.eth.interface = "enp5s0"
+network.eth = { interface = "enp5s0", mode = "dhcp" }
 
 [host.pelle.home]
 alex.roles = ["cli-devstation"]

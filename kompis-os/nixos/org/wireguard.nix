@@ -155,23 +155,24 @@ in
     networks = lib.listToAttrs (
       map (
         vpn:
+        let
+          network = host.network.${vpn.name};
+        in
+
         lib.nameValuePair "30-${vpn.interface}" {
           matchConfig.Name = vpn.interface;
           address = [
-            "${host.network.${vpn.name}.address}/${toString vpn.prefix-length}"
-            "${host.network.${vpn.name}.address4}/${toString vpn.prefix4-length}"
+            "${network.address}/${toString network.prefixLength}"
+            "${network.address4}/${toString network.prefixLength4}"
           ];
-          dns = builtins.concatMap (dns: [
-            org.host.${dns}.network.${vpn.name}.address
-            org.host.${dns}.network.${vpn.name}.address4
-          ]) vpn.dns;
+          inherit (network) dns;
           routes =
             (lib.optionals (host.name == vpn.gateway) [
               {
-                Destination = vpn.address;
+                Destination = network.destination;
               }
               {
-                Destination = vpn.address4;
+                Destination = network.destination4;
                 Scope = "link";
               }
             ])
