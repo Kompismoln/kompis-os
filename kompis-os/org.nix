@@ -114,6 +114,41 @@ let
       description = "path to specific configuration";
       type = lib.types.path;
     };
+
+    mkIds =
+      id:
+      (lib.mkOption {
+        description = "entity id in various formats";
+        type = lib.types.submodule {
+          options =
+            let
+              hex = lib.toLower (lib.toHexString id);
+            in
+            {
+              hex = lib.mkOption {
+                description = "id as hex";
+                type = types.hextet;
+                default = hex;
+              };
+              hex4 = lib.mkOption {
+                description = "id as hex with fixed length 4";
+                type = types.hextetP4;
+                default = lib.strings.fixedWidthString 4 "0" hex;
+              };
+              hex8 = lib.mkOption {
+                description = "id as hex with fixed length 8";
+                type = types.hextetP8;
+                default = lib.strings.fixedWidthString 8 "0" hex;
+              };
+              hex32 = lib.mkOption {
+                description = "id as hex with fixed length 32";
+                type = types.hextetP32;
+                default = lib.strings.fixedWidthString 32 "0" hex;
+              };
+            };
+        };
+      });
+
     mkSecrets =
       class: entity:
       (lib.mkOption {
@@ -321,17 +356,8 @@ let
         };
         address = lib.mkOption {
           description = "ipv6 address to the entity";
-          default = "${cfg.loPrefix}::${toString config.uid}:${config.hextet}";
+          default = "${cfg.loPrefix}::${toString config.uid}:${config.ids.hex4}";
           type = types.host6;
-        };
-        hexId = lib.mkOption {
-          description = "unique subnet hextet";
-          type = types.hextet;
-          default = lib.toLower (lib.toHexString config.id);
-        };
-        hextet = lib.mkOption {
-          type = types.hextetP4;
-          default = lib.strings.fixedWidthString 4 "0" config.hexId;
         };
         configurationFile = options.configurationFile // {
           default = ../apps/${config.name}.nix;
@@ -348,6 +374,7 @@ let
         grants = lib.mkOption {
           type = with lib.types; listOf str;
         };
+        ids = options.mkIds config.id;
         public-artifacts = options.mkPublicArtifacts "app" config.name;
         secrets = options.mkSecrets "app" config.name;
       };
@@ -442,15 +469,6 @@ let
           description = "unique integer identifier for the vpn";
           type = lib.types.int;
         };
-        hexId = lib.mkOption {
-          description = "unique subnet hextet";
-          type = types.hextet;
-          default = lib.toLower (lib.toHexString vpn.id);
-        };
-        hextet = lib.mkOption {
-          type = types.hextetP4;
-          default = lib.strings.fixedWidthString 4 "0" vpn.hexId;
-        };
         name = lib.mkOption {
           description = "name of the vpn";
           type = lib.types.str;
@@ -489,7 +507,7 @@ let
         prefix = lib.mkOption {
           description = "ipv6 prefix for peers in vpn";
           type = types.subnetPrefix6;
-          default = "${cfg.prefix}:${vpn.hextet}";
+          default = "${cfg.prefix}:${vpn.ids.hex4}";
         };
         prefix-length = lib.mkOption {
           description = "ipv6 prefix length for peers in vpn";
@@ -539,6 +557,7 @@ let
           default = [ ];
           type = with lib.types; listOf int;
         };
+        ids = options.mkIds vpn.id;
       };
     };
 
@@ -591,25 +610,6 @@ let
           description = "hostname";
           type = lib.types.str;
           default = name;
-        };
-        hexId = lib.mkOption {
-          type = types.hextet;
-          default = lib.toLower (lib.toHexString host.id);
-        };
-        hextet = lib.mkOption {
-          description = "unique host hextet";
-          type = types.hextetP4;
-          default = lib.strings.fixedWidthString 4 "0" host.hexId;
-        };
-        hostId = lib.mkOption {
-          description = "unique hostId for ZFS";
-          type = types.hextetP8;
-          default = lib.strings.fixedWidthString 8 "0" host.hexId;
-        };
-        machine-id = lib.mkOption {
-          description = "systemd machine id";
-          type = types.hextetP32;
-          default = lib.strings.fixedWidthString 32 "0" host.hexId;
         };
         hardwareReport = lib.mkOption {
           description = "hardware report method";
@@ -683,6 +683,8 @@ let
           type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
         };
         rescueMode = lib.mkEnableOption "insecure rescue mode.";
+
+        ids = options.mkIds host.id;
         public-artifacts = options.mkPublicArtifacts "host" host.name;
         secrets = options.mkSecrets "host" host.name;
       };
@@ -695,7 +697,7 @@ let
             cfg.host.${dnsHost}.network.${vpnName}.address
             cfg.host.${dnsHost}.network.${vpnName}.address4
           ]) vpn.dns;
-          address = "${vpn.prefix}::${host.hextet}";
+          address = "${vpn.prefix}::${host.ids.hex4}";
           address4 = "${vpn.prefix4}.${toString host.id}";
         }
       ) cfg.vpn;

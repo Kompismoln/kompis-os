@@ -60,7 +60,7 @@ in
 
     fileSystems."/keys".neededForBoot = true;
 
-    environment.etc."machine-id".text = host.machine-id + "\n";
+    environment.etc."machine-id".text = host.ids.hex32 + "\n";
 
     boot.initrd.systemd.enable = true;
 
