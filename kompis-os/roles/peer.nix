@@ -1,5 +1,4 @@
 # kompis-os/roles/peer.nix
-{ inputs, ... }:
 {
   flake.nixosModules.peer = {
     imports = [
@@ -7,12 +6,13 @@
       ../nixos/org/ssh.nix
       ../nixos/org/networking.nix
       ../nixos/org/nix.nix
-      ../nixos/preserve.nix
-      ../nixos/sops.nix
-      ../nixos/state.nix
-      ../nixos/tls-certs.nix
+      ../nixos/org/sops.nix
+      ../nixos/org/tls-certs.nix
+      ../nixos/org/wireguard.nix
+    ]
+    ++ [
       ../nixos/users.nix
-      ../nixos/wireguard.nix
+      ../nixos/preserve.nix
     ];
 
     kompis-os = {
@@ -21,10 +21,6 @@
         groups = [ "wheel" ];
         stateful = false;
       };
-      tls-certs = inputs.org.namespaces;
-      wireguard.enable = true;
-      sops.enable = true;
-      #state.enable = true;
     };
   };
 }

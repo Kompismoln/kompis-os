@@ -62,11 +62,6 @@ let
           default = false;
           type = lib.types.bool;
         };
-        email = lib.mkOption {
-          description = "user's primary email";
-          default = "${name}@${org.endpoint}";
-          type = with lib.types; nullOr str;
-        };
         groups = lib.mkOption {
           description = "user's extra groups";
           type = with lib.types; listOf str;

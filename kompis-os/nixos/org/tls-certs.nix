@@ -1,25 +1,15 @@
-# kompis-os/nixos/tls-certs.nix
+# nixos/org/tls-certs.nix
 {
-  config,
   lib,
   org,
   ...
 }:
 
-let
-  tls-certs = config.kompis-os.tls-certs;
-in
 {
-  options.kompis-os.tls-certs = lib.mkOption {
-    type = with lib.types; listOf str;
-    default = [ ];
-    description = "List of self signed certificates to accept and expose";
-  };
-
-  config = lib.mkIf (tls-certs != [ ]) {
+  config = lib.mkIf (org.namespaces != [ ]) {
     security.pki.certificates = map (
       name: builtins.readFile org.service.${"domain-${name}"}.public-artifacts.tls-cert
-    ) tls-certs;
+    ) org.namespaces;
 
     users.groups.tls-cert = {
       members = [
@@ -37,7 +27,7 @@ in
           group = "tls-cert";
           mode = "0440";
         };
-      }) tls-certs
+      }) org.namespaces
     );
   };
 }

@@ -1,5 +1,4 @@
 # kompis-os/roles/hypr-devstation.nix
-{ inputs, ... }:
 {
   flake.homeModules.hypr-devstation = {
     imports = [
@@ -39,6 +38,7 @@
     { pkgs, ... }:
     {
       imports = [
+        ../nixos/org/tls-certs.nix
         ../nixos/home-manager.nix
         ../nixos/hyprland.nix
         ../nixos/networkmanager.nix
@@ -74,7 +74,6 @@
           networkmanager.enable = true;
           shell.enable = true;
           sound.enable = true;
-          tls-certs = inputs.org.namespaces;
         };
       };
     };

@@ -4,7 +4,6 @@
   flake.nixosModules.server =
     {
       host,
-      org,
       ...
     }:
     {
@@ -15,7 +14,7 @@
         ../nixos/reverse-tunnel.nix
         ../nixos/sendmail.nix
         ../nixos/shell.nix
-        ../nixos/tls-certs.nix
+        ../nixos/org/tls-certs.nix
       ];
 
       nixpkgs.overlays = [
@@ -30,7 +29,6 @@
         egress-proxy.enable = true;
         fail2ban.enable = true;
         reverse-tunnel.enable = true;
-        tls-certs = org.namespaces;
       };
 
     };

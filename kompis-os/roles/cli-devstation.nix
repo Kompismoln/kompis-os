@@ -1,5 +1,4 @@
 # kompis-os/roles/cli-devstation.nix
-{ inputs, ... }:
 {
   flake.homeModules.cli-devstation = {
     imports = [
@@ -24,13 +23,13 @@
     imports = [
       ../nixos/home-manager.nix
       ../nixos/shell.nix
+      ../nixos/org/tls-certs.nix
     ];
 
     config = {
       kompis-os = {
         home-manager.enable = true;
         shell.enable = true;
-        tls-certs = inputs.org.namespaces;
       };
     };
   };
