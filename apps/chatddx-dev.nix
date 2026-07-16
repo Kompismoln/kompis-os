@@ -1,14 +1,11 @@
 # kompis-os/apps/chatddx-dev.nix
 {
-  config,
-  org,
+  app,
   inputs,
+  config,
+  host,
   ...
 }:
-let
-  name = "chatddx-dev";
-  cfg = org.app.${name};
-in
 {
   imports = [
     ../kompis-os/nixos/django.nix
@@ -16,7 +13,7 @@ in
     ../kompis-os/nixos/postgresql.nix
   ];
 
-  services.nginx.virtualHosts.${cfg.endpoint} = {
+  services.nginx.virtualHosts.${app.endpoint} = {
     root = inputs.swift-dev.packages."x86_64-linux".default;
 
     locations."/" = {
@@ -27,23 +24,33 @@ in
     enableACME = true;
   };
 
-  kompis-os = {
-    principals.${name}.class = "app";
+  sops.secrets."${app.name}/secret-key" = {
+    inherit (app.secrets) sopsFile;
+    owner = app.name;
+    group = app.name;
+  };
 
+  kompis-os = {
     nginx.enable = true;
 
-    postgresql.databases.${name} = {
+    postgresql.databases.${app.name} = {
       enable = true;
-      dumpPath = "${config.kompis-os.django.apps."${name}-django".home}/dbdump.sql";
+      dumpPath = "${app.principal.home}/dbdump.sql";
     };
 
-    django.apps."${name}-django" = {
+    django.apps.${app.name} = {
+      inherit (app) name endpoint;
+      inherit (app.principal) bindAddress;
       enable = true;
-      entity = name;
-      inherit (cfg) endpoint;
-      djangoApp = "chatddx.django";
+      home = "${app.principal.home}/django";
+      package = inputs.${app.name}.packages.${host.system}.django-app;
+      secretKeyPath = config.sops.secrets."${app.name}/secret-key".path;
+      scripts = inputs.${app.name}.packages.${host.system}.scripts;
+      module = "chatddx.django";
+      database = app.name;
+      user = app.name;
       locationProxy = "~ ^/(admin|api)";
-      trustedOrigins = [ "https://${cfg.endpoint}" ];
+      trustedOrigins = [ "https://${app.endpoint}" ];
       timeout = 180;
     };
   };

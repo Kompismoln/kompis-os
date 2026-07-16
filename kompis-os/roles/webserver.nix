@@ -17,7 +17,6 @@
       ../nixos/redis.nix
       ../nixos/reverse-tunnel.nix
       ../nixos/svelte.nix
-      ../nixos/org/tls-certs.nix
       ../nixos/wordpress.nix
     ];
     nixpkgs.overlays = [

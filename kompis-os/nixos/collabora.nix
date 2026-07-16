@@ -1,22 +1,34 @@
 {
   config,
-  host,
   lib,
-  lib',
-  org,
   ...
 }:
 let
-  cfg = config.kompis-os.collabora;
-  appOpts = lib'.mkAppOpts host "collabora" {
+  app = config.kompis-os.collabora;
+  appOpts = {
     options = {
-      app = lib.mkOption {
-        description = "name";
+      enable = lib.mkEnableOption "nextcloud";
+      endpoint = lib.mkOption {
+        description = "app's endpoint";
+        type = lib.types.str;
+      };
+      bindAddress = lib.mkOption {
+        description = "address this app should bind to";
         type = lib.types.str;
       };
       allowedHosts = lib.mkOption {
         description = "Accept WOPI from these hosts";
         type = with lib.types; listOf str;
+      };
+      port = lib.mkOption {
+        description = "port";
+        type = lib.types.port;
+        default = 9980;
+      };
+      ssl = lib.mkOption {
+        description = "force encrypted connections";
+        type = lib.types.bool;
+        default = true;
       };
     };
   };
@@ -28,14 +40,14 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.nginx.virtualHosts.${cfg.endpoint} =
+  config = lib.mkIf app.enable {
+    services.nginx.virtualHosts.${app.endpoint} =
       let
-        proxyPass = "http://127.0.0.1:${toString org.app.${cfg.app}.port}";
+        proxyPass = "http://[${app.bindAddress}]:${toString app.port}";
       in
       {
-        forceSSL = cfg.ssl;
-        enableACME = cfg.ssl;
+        forceSSL = app.ssl;
+        enableACME = app.ssl;
 
         locations = {
           "^~ /browser" = {
@@ -86,13 +98,10 @@ in
         };
       };
 
-    users.users.cool.uid = org.app.${cfg.entity}.id;
-    users.groups.cool.gid = org.app.${cfg.entity}.id;
-
     services.collabora-online = {
       enable = true;
-      port = org.app.${cfg.entity}.port;
-      aliasGroups = cfg.allowedHosts;
+      inherit (app) port;
+      aliasGroups = app.allowedHosts;
 
       settings = {
         ssl = {
@@ -100,8 +109,8 @@ in
           termination = true;
         };
         net = {
-          proto = "IPv4";
-          listen = "loopback";
+          proto = "IPv6";
+          listen = app.bindAddress;
         };
       };
     };

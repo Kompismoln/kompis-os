@@ -7,7 +7,6 @@
       ../nixos/org/reverse-tunnel.nix
       ../nixos/org/sendmail.nix
       ../nixos/org/shell.nix
-      ../nixos/org/tls-certs.nix
     ];
   };
 }

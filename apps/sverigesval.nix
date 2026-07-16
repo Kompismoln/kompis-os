@@ -12,13 +12,11 @@ in
   ];
   kompis-os = {
     nginx.enable = true;
-    principals.${nextcloud}.members = [ "nginx" ];
     nextcloud-rolf.apps.${name} = {
       enable = true;
       inherit (cfg) endpoint;
       user = nextcloud;
-      siteRoot = "/var/lib/${nextcloud}/nextcloud/data/rolf/files/+pub/_site";
-      sourceRoot = "/var/lib/${nextcloud}/nextcloud/data/rolf/files/+pub";
+      home = "/var/lib/${nextcloud}/nextcloud/data/rolf/files/+pub";
     };
   };
 }

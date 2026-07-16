@@ -10,7 +10,7 @@
         host.configurationFile
         ../nixos/org/boot.nix
         ../nixos/org/system.nix
-        ../nixos/org/users.nix
+        ../nixos/org/principals.nix
       ];
     };
 }

@@ -22,8 +22,6 @@ in
       dumpPath = "${config.users.users.${name}.home}/dbdump.sql";
     };
 
-    principals.${name}.class = "app";
-
     mobilizon.apps.${name} = {
       enable = true;
       inherit (app) endpoint;

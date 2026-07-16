@@ -1,23 +1,9 @@
 # nixos/org/reverse-tunnel.nix
 {
   lib,
-  org,
   ...
 }:
 {
-  imports = [
-    ../principals.nix
-  ];
-
-  kompis-os.principals.reverse-tunnel = {
-    class = "service";
-    passwd = true;
-  };
-
-  networking.firewall.allowedTCPPorts = [
-    org.service.reverse-tunnel.port
-  ];
-
   services.openssh = {
     enable = true;
     settings = {

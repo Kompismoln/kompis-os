@@ -93,26 +93,4 @@ lib: inputs: org: rec {
     lib.recursiveUpdate { inherit options; } (
       if lib.isFunction submodule then submodule args else submodule
     );
-  wrapBins =
-    pkgs: pkg: env:
-    let
-      wrapperArgs = lib.concatLists (
-        lib.mapAttrsToList (name: value: [
-          "--set"
-          name
-          value
-        ]) env
-      );
-    in
-    pkgs.symlinkJoin {
-      name = "${pkg.name}-wrapped";
-      paths = [ pkg ];
-      nativeBuildInputs = [ pkgs.makeWrapper ];
-
-      postBuild = ''
-        for binary in $out/bin/*; do
-          wrapProgram "$binary" ${lib.escapeShellArgs wrapperArgs}
-        done
-      '';
-    };
 }

@@ -1,8 +1,6 @@
 {
   config,
-  host,
   lib,
-  lib',
   pkgs,
   ...
 }:
@@ -12,7 +10,44 @@ let
   webserver = config.services.nginx;
   eachApp = lib.filterAttrs (_: appCfg: appCfg.enable) cfg.apps;
 
-  appOpts = lib'.mkAppOpts host "wordpress" { };
+  wordpressOpts =
+    { config, ... }:
+    {
+      options = {
+        enable = lib.mkEnableOption "this wordpress site";
+        name = lib.mkOption {
+          description = "instance name";
+          type = lib.types.str;
+        };
+        endpoint = lib.mkOption {
+          description = "instance's endpoint";
+          type = lib.types.str;
+        };
+        home = lib.mkOption {
+          description = "instance's home";
+          type = lib.types.str;
+        };
+        bindAddress = lib.mkOption {
+          description = "unique local address";
+          type = lib.types.str;
+        };
+        database = lib.mkOption {
+          description = "database name";
+          type = lib.types.str;
+          default = config.name;
+        };
+        user = lib.mkOption {
+          description = "user name";
+          type = lib.types.str;
+          default = config.name;
+        };
+        ssl = lib.mkOption {
+          description = "force encrypted connections";
+          type = lib.types.bool;
+          default = true;
+        };
+      };
+    };
 
   wpPhp = pkgs.php.buildEnv {
     extensions =
@@ -29,12 +64,22 @@ let
       cgi.fix_pathinfo = 0
     '';
   };
+
+  wpConfig =
+    app:
+    pkgs.writeText "wp-config-override.php" ''
+      define( 'WP_DEBUG', false );
+      define( 'DB_NAME', '${app.database}' );
+      define( 'DB_USER', '${app.name}' );
+      define( 'WP_CACHE', true );
+      define( 'WP_REDIS_HOST', '${app.bindAddress}' );
+    '';
 in
 {
   options = {
     kompis-os.wordpress = {
       apps = lib.mkOption {
-        type = with lib.types; attrsOf (submodule appOpts);
+        type = with lib.types; attrsOf (submodule wordpressOpts);
         default = { };
         description = "Specification of one or more wordpress apps to serve";
       };
@@ -47,19 +92,18 @@ in
       pkgs.wp-cli
     ];
 
-    kompis-os.preserve.directories = lib.mapAttrsToList (_: appCfg: {
-      directory = appCfg.home;
-      inherit (appCfg) user;
-      group = appCfg.user;
-    }) eachApp;
+    systemd.tmpfiles.rules = lib.concatMap (app: [
+      "d '${app.home}' 0750 ${app.user} ${app.user} - -"
+      "L+ ${app.home}/wp-config-override.php - - - - ${wpConfig app}"
+    ]) (lib.attrValues eachApp);
 
     services.nginx.virtualHosts = lib.mapAttrs' (
-      app: appCfg:
-      lib.nameValuePair appCfg.endpoint {
-        forceSSL = appCfg.ssl;
-        enableACME = appCfg.ssl;
+      _: app:
+      lib.nameValuePair app.endpoint {
+        forceSSL = app.ssl;
+        enableACME = app.ssl;
 
-        root = appCfg.home;
+        root = app.home;
 
         extraConfig = ''
           index index.php;
@@ -95,7 +139,7 @@ in
             extraConfig = ''
               try_files $uri =404;
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
-              fastcgi_pass unix:${config.services.phpfpm.pools.${app}.socket};
+              fastcgi_pass unix:${config.services.phpfpm.pools.${app.name}.socket};
               fastcgi_index index.php;
               include ${config.services.nginx.package}/conf/fastcgi.conf;
               fastcgi_intercept_errors on;
@@ -131,9 +175,9 @@ in
       }
     ) eachApp;
 
-    services.phpfpm.pools = lib.mapAttrs (_: appCfg: {
-      inherit (appCfg) user;
-      group = appCfg.user;
+    services.phpfpm.pools = lib.mapAttrs (_: app: {
+      inherit (app) user;
+      group = app.user;
       phpPackage = wpPhp;
       phpOptions = ''
         upload_max_filesize = 16M;
@@ -141,7 +185,7 @@ in
         error_reporting = E_ALL;
         display_errors = Off;
         log_errors = On;
-        error_log = ${appCfg.home}/error.log;
+        error_log = ${app.home}/error.log;
         extension=${pkgs.phpExtensions.redis}/lib/php/extensions/redis.so
       '';
       settings = {
@@ -156,36 +200,5 @@ in
       };
     }) eachApp;
 
-    systemd.services = lib'.mergeAttrs (app: appCfg: {
-      "${app}-mysql-dump" = {
-        description = "dump a snapshot of the mysql database";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.mariadb}/bin/mysqldump -u ${appCfg.user} ${appCfg.user} > ${appCfg.home}/dbdump.sql'";
-          User = appCfg.user;
-          Group = appCfg.user;
-        };
-      };
-      "${app}-mysql-restore" = {
-        description = "restore mysql database from snapshot";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.mariadb}/bin/mysql -u ${appCfg.user} ${appCfg.user} < ${appCfg.home}/dbdump.sql'";
-          User = appCfg.user;
-          Group = appCfg.user;
-        };
-      };
-    }) eachApp;
-
-    systemd.timers = lib'.mergeAttrs (app: _: {
-      "${app}-mysql-dump" = {
-        description = "scheduled database dump";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "daily";
-          Unit = "${app}-mysql-dump.service";
-        };
-      };
-    }) eachApp;
   };
 }

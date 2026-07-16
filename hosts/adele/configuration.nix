@@ -6,11 +6,6 @@
     };
   };
 
-  sops.secrets.wifi-keys = {
-    mode = "644";
-    owner = "ami";
-  };
-
   services.pipewire.extraConfig.pipewire."99-echo-cancel" = {
     "context.modules" = [
       {

@@ -1,14 +1,9 @@
 # kompis-os/apps/chatddx.nix
 {
-  config,
-  org,
+  app,
   inputs,
   ...
 }:
-let
-  name = "chatddx";
-  cfg = org.app.${name};
-in
 {
   imports = [
     ../kompis-os/nixos/django.nix
@@ -16,7 +11,7 @@ in
     ../kompis-os/nixos/postgresql.nix
   ];
 
-  services.nginx.virtualHosts.${cfg.endpoint} = {
+  services.nginx.virtualHosts.${app.endpoint} = {
     root = inputs.swift.packages."x86_64-linux".default;
 
     locations."/" = {
@@ -28,22 +23,19 @@ in
   };
 
   kompis-os = {
-    principals.${name}.class = "app";
-
     nginx.enable = true;
 
-    postgresql.databases.${name} = {
+    postgresql.databases.${app.name} = {
       enable = true;
-      dumpPath = "${config.kompis-os.django.apps."${name}-django".home}/dbdump.sql";
+      dumpPath = "${app.principal.home}/dbdump.sql";
     };
 
-    django.apps."${name}-django" = {
+    django.apps."${app.name}-django" = {
       enable = true;
-      entity = name;
-      inherit (cfg) endpoint;
-      djangoApp = "chatddx.django";
+      entity = app;
+      module = "chatddx.django";
       locationProxy = "~ ^/(admin|api)";
-      trustedOrigins = [ "https://${cfg.endpoint}" ];
+      trustedOrigins = [ "https://${app.endpoint}" ];
       timeout = 180;
     };
   };

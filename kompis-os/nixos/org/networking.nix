@@ -17,9 +17,12 @@ let
     matchConfig.Name = network.interface;
     networkConfig = {
       DHCP = "yes";
+    }
+    // lib.optionalAttrs (network.privacy != null) {
       IPv6PrivacyExtensions = if network.privacy then "kernel" else "no";
     };
   };
+
   mkStatic = network: {
     matchConfig.Name = network.interface;
     networkConfig = {
@@ -69,7 +72,7 @@ in
     enable = true;
     networks = lib.listToAttrs (
       map (network: lib.nameValuePair "10-${network.interface}" (mkNetwork network)) (
-        builtins.filter (network: network.mode != "noop") (lib.attrValues host.network)
+        builtins.filter (network: network.mode != null) (lib.attrValues host.network)
       )
     );
   };

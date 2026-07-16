@@ -20,7 +20,6 @@
     { pkgs, ... }:
     {
       imports = [
-        ../nixos/org/tls-certs.nix
         ../nixos/org/home-manager.nix
         ../nixos/org/hyprland.nix
         ../nixos/org/networkmanager.nix

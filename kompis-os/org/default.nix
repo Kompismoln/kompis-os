@@ -7,194 +7,21 @@
 }:
 let
   cfg = config.flake.org;
-
-  keys = {
-    root = [ "age-key" ];
-    user = [
-      "age-key"
-      "ssh-key"
-      "mail"
-      "passwd"
-      "restic-key"
-    ];
-    app = [
-      "age-key"
-      "ssh-key"
-      "secret-key"
-      "restic-key"
-    ];
-    host = [
-      "age-key"
-      "ssh-key"
-      "wg0-key"
-      "wg1-key"
-      "wg2-key"
-      "luks-key"
-    ];
-    service = [
-      "age-key"
-      "ssh-key"
-      "mail"
-      "passwd"
-      "secret-key"
-      "tls-cert"
-      "nix-sign"
-    ];
-    store = [ ];
+  types = import ./types.nix {
+    inherit lib;
+    org = cfg;
   };
-
-  templates = {
-    public-artifacts =
-      class: entity: key:
-      let
-        exts = {
-          tls-cert = "pem";
-          default = "pub";
-        };
-        ext = exts.${key} or exts.default;
-      in
-      ../public-keys/${class}-${entity}-${key}.${ext};
-  };
-  regexes = rec {
-    octet = "[0-9]{1,3}";
-
-    hextet = "[0-9a-f]{1,4}";
-    hextetP4 = "[0-9a-f]{4}";
-    hextetP8 = "[0-9a-f]{8}";
-    hextetP32 = "[0-9a-f]{32}";
-
-    hexpair = "[0-9a-f]{2}";
-
-    mac = "${hexpair}(:${hexpair}){5}";
-
-    globalPrefix6 = "${hextet}:${hextet}:${hextet}";
-    globalPrefix4 = "${octet}.${octet}";
-
-    prefixLength6 = "(64|128)";
-    prefixLength4 = "(24|32)";
-
-    subnetPrefix6 = "${globalPrefix6}:${hextet}";
-    subnetPrefix4 = "${globalPrefix4}.${octet}";
-
-    subnetCidr6 = "${subnetPrefix6}::/${prefixLength6}";
-    subnetCidr4 = "${subnetPrefix4}.0/${prefixLength4}";
-
-    host6 = "${subnetPrefix6}:(:${hextet}){1,3}";
-    host4 = "${subnetPrefix4}.${octet}";
-
-    hostCidr6 = "${host6}/${prefixLength6}";
-    hostCidr4 = "${host4}/${prefixLength4}";
-
-    subnetCidrBracketed6 = "[[]${subnetPrefix6}::[]]/${prefixLength6}";
-    hostCidrBracketed6 = "[[]${host6}[]]/${prefixLength6}";
-  };
-
-  types = {
-    host = with lib.types; enum (lib.attrNames cfg.host);
-    user = with lib.types; enum (lib.attrNames cfg.user);
-    flake = lib.types.attrsOf lib.types.str;
-  }
-  // (lib.mapAttrs (_: regex: lib.types.strMatching "^${regex}$") regexes);
-
-  options = {
-    id = lib.mkOption {
-      description = "numeric internal id used to seed other id's";
-      type = lib.types.int;
-    };
-    endpoint = lib.mkOption {
-      description = "canonical name on internet";
-      type = lib.types.str;
-    };
-    optionalEndpoint = lib.mkOption {
-      description = "maybe canonical name on internet";
-      default = null;
-      type = with lib.types; nullOr str;
-    };
-    configurationFile = lib.mkOption {
-      description = "path to specific configuration";
-      type = lib.types.path;
-    };
-
-    mkIds =
-      id:
-      (lib.mkOption {
-        description = "entity id in various formats";
-        type = lib.types.submodule {
-          options =
-            let
-              hex = lib.toLower (lib.toHexString id);
-            in
-            {
-              str = lib.mkOption {
-                description = "id as string";
-                type = lib.types.str;
-                default = toString id;
-              };
-              hex = lib.mkOption {
-                description = "id as hex";
-                type = types.hextet;
-                default = hex;
-              };
-              hex4 = lib.mkOption {
-                description = "id as hex with fixed length 4";
-                type = types.hextetP4;
-                default = lib.strings.fixedWidthString 4 "0" hex;
-              };
-              hex8 = lib.mkOption {
-                description = "id as hex with fixed length 8";
-                type = types.hextetP8;
-                default = lib.strings.fixedWidthString 8 "0" hex;
-              };
-              hex32 = lib.mkOption {
-                description = "id as hex with fixed length 32";
-                type = types.hextetP32;
-                default = lib.strings.fixedWidthString 32 "0" hex;
-              };
-            };
-        };
-      });
-
-    mkSecrets =
-      class: entity:
-      (lib.mkOption {
-        description = "paths for secrets";
-        type = lib.types.submodule {
-          options = {
-            sopsFile = lib.mkOption {
-              default = ../enc/${class}-${entity}.yaml;
-              type = lib.types.path;
-            };
-            decryptionKey = lib.mkOption {
-              default = "/keys/${class}-${entity}";
-              type = lib.types.str;
-            };
-          };
-        };
-      });
-    mkPublicArtifacts =
-      class: entity:
-      (lib.mkOption {
-        description = "registry for key files";
-        type = lib.types.submodule {
-          options = lib.listToAttrs (
-            map (
-              key:
-              lib.nameValuePair key (
-                lib.mkOption {
-                  description = "${key} path for ${class} ${entity}";
-                  type = lib.types.path;
-                  default = templates.public-artifacts class entity key;
-                }
-              )
-            ) keys.${class}
-          );
-        };
-      });
+  factories = import ./factories.nix {
+    inherit lib;
+    org = cfg;
   };
 
   orgModule = {
     options = {
-      inherit (options) endpoint;
+      endpoint = lib.mkOption {
+        description = "canonical name on internet";
+        type = lib.types.str;
+      };
       name = lib.mkOption {
         description = "name for organisation";
         type = lib.types.str;
@@ -269,6 +96,11 @@ let
         default = { };
         type = with lib.types; attrsOf str;
       };
+      role = lib.mkOption {
+        description = "role declaration";
+        default = { };
+        type = lib.types.attrsOf (lib.types.submodule roleModule);
+      };
       domain = lib.mkOption {
         description = "domains managed by organisation";
         default = { };
@@ -335,37 +167,27 @@ let
     };
   };
   appModule =
-    { name, config, ... }:
+    { name, config, ... }@args:
     {
-      options = {
-        inherit (options) id endpoint;
-        uid = lib.mkOption {
-          description = "user id reserved for app user";
-          default = 3000 + config.id;
-          type = lib.types.int;
-        };
-        gid = lib.mkOption {
-          description = "user id reserved for app user";
-          default = config.uid;
-          type = lib.types.int;
-        };
-        port = lib.mkOption {
-          description = "port reserved for the app";
-          default = config.id + 10000;
-          type = lib.types.int;
-        };
-        name = lib.mkOption {
-          description = "app name";
-          default = name;
+      options = (factories.mkEntity (args // { class = "app"; })) // {
+        endpoint = lib.mkOption {
+          description = "canonical name on internet";
           type = lib.types.str;
         };
-        address = lib.mkOption {
-          description = "ipv6 address to the entity";
-          default = "${cfg.loPrefix}::${toString config.uid}:${config.ids.hex4}";
-          type = types.host6;
+        url = lib.mkOption {
+          description = "public url including scheme";
+          default = "${config.scheme}://${config.endpoint}";
+          type = lib.types.str;
         };
-        configurationFile = options.configurationFile // {
-          default = ../apps/${config.name}.nix;
+        location = lib.mkOption {
+          description = "canonical path";
+          default = "/";
+          type = lib.types.str;
+        };
+        configurationFile = lib.mkOption {
+          description = "path to specific configuration";
+          type = lib.types.path;
+          default = ../../apps/${config.name}.nix;
         };
         altpoints = lib.mkOption {
           description = "alternative access points that should be redirected to endpoint";
@@ -376,88 +198,57 @@ let
           description = "hosts that this app should run on";
           type = with lib.types; listOf str;
         };
-        grants = lib.mkOption {
-          type = with lib.types; listOf str;
+        database = lib.mkOption {
+          description = "app's database";
+          default = config.name;
+          type = lib.types.str;
         };
-        ids = options.mkIds config.id;
-        public-artifacts = options.mkPublicArtifacts "app" config.name;
-        secrets = options.mkSecrets "app" config.name;
+        ssl = lib.mkOption {
+          description = "let's encrypt and force https";
+          default = true;
+          type = lib.types.bool;
+        };
+        scheme = lib.mkOption {
+          description = "http or https";
+          default = if config.ssl then "https" else "http";
+          type = lib.types.str;
+        };
       };
     };
   storeModule =
-    { name, config, ... }:
+    { name, config, ... }@args:
     {
-      options = {
-        inherit (options) id endpoint;
-        name = lib.mkOption {
-          description = "store name";
-          default = name;
-          type = lib.types.str;
-        };
-        grants = lib.mkOption {
-          type = with lib.types; listOf str;
-        };
-        public-artifacts = options.mkPublicArtifacts "store" config.name;
-        secrets = options.mkSecrets "store" config.name;
-      };
+      options = factories.mkEntity (args // { class = "store"; });
     };
+
   serviceModule =
-    { name, config, ... }:
+    { name, config, ... }@args:
     {
-      options = {
-        inherit (options) id;
-        endpoint = options.optionalEndpoint;
-        port = lib.mkOption {
-          description = "port reserved for the service";
-          default = config.id + 10000;
-          type = lib.types.int;
-        };
-        name = lib.mkOption {
-          type = lib.types.str;
-          default = name;
+      options = (factories.mkEntity (args // { class = "service"; })) // {
+        endpoint = lib.mkOption {
+          description = "maybe canonical name on internet";
+          default = null;
+          type = with lib.types; nullOr str;
         };
         data = lib.mkOption {
           description = "arbitrary data to service";
           type = with lib.types; attrsOf anything;
         };
-        grants = lib.mkOption {
-          type = with lib.types; listOf str;
-        };
-        public-artifacts = options.mkPublicArtifacts "service" config.name;
-        secrets = options.mkSecrets "service" config.name;
       };
     };
   userModule =
-    { name, config, ... }:
+    { name, config, ... }@args:
     {
-      options = {
-        inherit (options) id;
-        name = lib.mkOption {
-          type = lib.types.str;
-          default = name;
-        };
+      options = (factories.mkEntity (args // { class = "user"; })) // {
         mail = lib.mkEnableOption "internal mail";
-        description = lib.mkOption {
-          description = "full name";
-          type = lib.types.str;
-        };
-        groups = lib.mkOption {
-          description = "groups user is a part of";
-          type = with lib.types; listOf str;
-        };
         email = lib.mkOption {
           description = "user's email address";
           default = null;
           type = with lib.types; nullOr str;
         };
-        grants = lib.mkOption {
-          type = with lib.types; listOf str;
-        };
         inboxes = lib.mkOption {
           type = with lib.types; listOf str;
         };
-        public-artifacts = options.mkPublicArtifacts "user" config.name;
-        secrets = options.mkSecrets "user" config.name;
       };
     };
   vpnModule =
@@ -473,6 +264,10 @@ let
         id = lib.mkOption {
           description = "unique integer identifier for the vpn";
           type = lib.types.int;
+        };
+        ids = lib.mkOption {
+          description = "entity id in various formats";
+          type = lib.types.submodule (factories.idsModule config.id);
         };
         name = lib.mkOption {
           description = "name of the vpn";
@@ -540,7 +335,7 @@ let
         };
         gateway = lib.mkOption {
           description = "designated gateway host";
-          type = lib.types.str;
+          type = types.host;
         };
         proxy = lib.mkEnableOption "ipv6 proxy through gateway";
         dns = lib.mkOption {
@@ -562,7 +357,6 @@ let
           default = [ ];
           type = with lib.types; listOf int;
         };
-        ids = options.mkIds vpn.id;
       };
     };
 
@@ -600,21 +394,43 @@ let
       };
     };
 
+  roleModule =
+    { name, ... }:
+    {
+      options = {
+        name = lib.mkOption {
+          description = "domain name";
+          type = lib.types.str;
+          default = name;
+        };
+        services = lib.mkOption {
+          description = "services bundled in this role";
+          type = lib.types.listOf types.service;
+          default = [ ];
+        };
+        stores = lib.mkOption {
+          description = "stores bundled in this role";
+          type = lib.types.listOf types.store;
+          default = [ ];
+        };
+      };
+    };
+
   hostModule =
-    { name, config, ... }:
+    {
+      name,
+      config,
+      ...
+    }@args:
     let
       host = config;
     in
     {
-      options = {
-        inherit (options) id;
-        configurationFile = options.configurationFile // {
-          default = ../hosts/${host.name}/configuration.nix;
-        };
-        name = lib.mkOption {
-          description = "hostname";
-          type = lib.types.str;
-          default = name;
+      options = (factories.mkEntity (args // { class = "host"; })) // {
+        configurationFile = lib.mkOption {
+          description = "path to specific configuration";
+          type = lib.types.path;
+          default = ../../hosts/${host.name}/configuration.nix;
         };
         boot = lib.mkOption {
           description = "boot method";
@@ -634,7 +450,7 @@ let
         };
         facterFile = lib.mkOption {
           description = "facter report path";
-          default = ../hosts/${host.name}/facter.json;
+          default = ../../hosts/${host.name}/facter.json;
           type = lib.types.path;
         };
         luksKeyFile = lib.mkOption {
@@ -649,7 +465,11 @@ let
           description = "roles that this host has";
           type = with lib.types; listOf str;
         };
-        endpoint = options.optionalEndpoint;
+        endpoint = lib.mkOption {
+          description = "maybe canonical name on internet";
+          default = null;
+          type = with lib.types; nullOr str;
+        };
         vpns = lib.mkOption {
           description = "list of interface names for vpns";
           type = with lib.types; listOf str;
@@ -685,6 +505,59 @@ let
           default = { };
           type = lib.types.attrsOf lib.types.anything;
         };
+        user = lib.mkOption {
+          description = "ledger of users on host";
+          readOnly = true;
+          default = lib.listToAttrs (
+            map (user: lib.nameValuePair cfg.user.${user}.name cfg.user.${user}) host.users
+          );
+          type = lib.types.attrsOf (lib.types.submodule userModule);
+        };
+        app = lib.mkOption {
+          description = "apps configured on the host";
+          readOnly = true;
+          type = lib.types.attrsOf (lib.types.submodule appModule);
+          default = lib.mapAttrs' (_: app: lib.nameValuePair app.name app) (
+            lib.filterAttrs (_: app: (lib.elem host.name app.run-on-hosts)) cfg.app
+          );
+        };
+        service = lib.mkOption {
+          description = "services configured on the host";
+          readOnly = true;
+          type = lib.types.attrsOf (lib.types.submodule serviceModule);
+          default = lib.listToAttrs (
+            map (service: lib.nameValuePair cfg.service.${service}.name cfg.service.${service}) (
+              builtins.concatMap (role: cfg.role.${role}.services) host.roles
+            )
+          );
+        };
+        store = lib.mkOption {
+          description = "stores configured on the host";
+          readOnly = true;
+          type = lib.types.attrsOf (lib.types.submodule storeModule);
+          default = lib.listToAttrs (
+            map (store: lib.nameValuePair cfg.store.${store}.name cfg.store.${store}) (
+              builtins.concatMap (role: cfg.role.${role}.stores) host.roles
+            )
+          );
+        };
+        entities = lib.mkOption {
+          description = "ledger of all entities configured on the host";
+          readOnly = true;
+          default = lib.listToAttrs (
+            builtins.concatMap
+              (
+                class:
+                (map (entity: lib.nameValuePair "${class}-${entity.name}" entity) (lib.attrValues host.${class}))
+              )
+              [
+                "user"
+                "app"
+                "service"
+                "store"
+              ]
+          );
+        };
         monitors = lib.mkOption {
           description = "list of monitors possibly connected to the host";
           default = [ ];
@@ -696,27 +569,25 @@ let
           type = lib.types.listOf (lib.types.attrsOf lib.types.anything);
         };
         rescueMode = lib.mkEnableOption "insecure rescue mode.";
-
-        ids = options.mkIds host.id;
-        public-artifacts = options.mkPublicArtifacts "host" host.name;
-        secrets = options.mkSecrets "host" host.name;
       };
-      config.network = lib.mapAttrs (
-        vpnName: vpn:
-        lib.mkDefault {
-          inherit (vpn) interface;
-          mode = "noop";
-          dns = lib.concatMap (dnsHost: [
-            cfg.host.${dnsHost}.network.${vpnName}.address
-            cfg.host.${dnsHost}.network.${vpnName}.address4
-          ]) vpn.dns;
-          address = "${vpn.prefix}::${host.ids.hex4}";
-          destination = vpn.address;
-          address4 = "${vpn.prefix4}.${host.ids.str}";
-          destination4 = vpn.address4;
-          inherit (vpn) prefixLength prefixLength4;
-        }
-      ) cfg.vpn;
+      config = {
+        network = lib.mapAttrs (
+          vpnName: vpn:
+          lib.mkDefault {
+            inherit (vpn) interface;
+            mode = null;
+            dns = lib.concatMap (dnsHost: [
+              cfg.host.${dnsHost}.network.${vpnName}.address
+              cfg.host.${dnsHost}.network.${vpnName}.address4
+            ]) vpn.dns;
+            address = "${vpn.prefix}::${host.ids.hex4}";
+            destination = vpn.address;
+            address4 = "${vpn.prefix4}.${host.ids.str}";
+            destination4 = vpn.address4;
+            inherit (vpn) prefixLength prefixLength4;
+          }
+        ) cfg.vpn;
+      };
     };
 
   homeModule =
@@ -736,8 +607,10 @@ let
           type = lib.types.str;
           default = name;
         };
-        configurationFile = options.configurationFile // {
-          default = ../homes + "/${config.name}.nix";
+        configurationFile = lib.mkOption {
+          description = "path to specific configuration";
+          type = lib.types.path;
+          default = ../../homes + "/${config.name}.nix";
         };
         roles = lib.mkOption {
           type = with lib.types; listOf str;
@@ -768,64 +641,81 @@ let
           type = lib.types.str;
         };
         mode = lib.mkOption {
-          type = lib.types.enum [
-            "noop"
-            "dhcp"
-            "static"
-          ];
-          default = "noop";
+          type =
+            with lib.types;
+            nullOr (enum [
+              "dhcp"
+              "static"
+            ]);
+          default = null;
         };
         mac = lib.mkOption {
           description = "mac address";
-          type = types.mac;
+          type = lib.types.nullOr types.mac;
+          default = null;
         };
         address = lib.mkOption {
           description = "ipv6 host address (not CIDR)";
-          type = lib.types.str;
+          type = with lib.types; nullOr str;
+          default = null;
         };
         destination = lib.mkOption {
           description = "ipv6 destination";
-          type = lib.types.str;
+          type = with lib.types; nullOr str;
+          default = null;
         };
         prefixLength = lib.mkOption {
           description = "ipv6 prefix length";
-          type = lib.types.int;
+          type = with lib.types; nullOr int;
+          default = null;
         };
         gateway = lib.mkOption {
           description = "ipv6 gateway address";
-          type = lib.types.str;
+          type = with lib.types; nullOr str;
+          default = null;
+        };
+        metric = lib.mkOption {
+          description = "ipv6 metric for routing: lower takes priority";
+          type = with lib.types; nullOr int;
+          default = null;
         };
         address4 = lib.mkOption {
           description = "ipv4 host address";
-          type = lib.types.str;
+          type = with lib.types; nullOr str;
+          default = null;
         };
         destination4 = lib.mkOption {
           description = "ipv4 destination";
-          type = lib.types.str;
+          type = with lib.types; nullOr str;
+          default = null;
         };
         gateway4 = lib.mkOption {
           description = "ipv4 gateway address";
-          type = lib.types.str;
+          type = with lib.types; nullOr str;
+          default = null;
         };
         prefixLength4 = lib.mkOption {
-          description = "ipv6 prefix length";
-          type = lib.types.int;
-        };
-        metric = lib.mkOption {
-          description = "metric for routing: lower takes priority";
-          default = 1024;
-          type = lib.types.int;
+          description = "ipv4 prefix length";
+          type = with lib.types; nullOr int;
+          default = null;
         };
         metric4 = lib.mkOption {
-          description = "metric for routing: lower takes priority";
+          description = "ipv4 metric for routing: lower takes priority";
+          type = with lib.types; nullOr int;
           default = config.metric;
-          type = lib.types.int;
         };
         dns = lib.mkOption {
-          type = with lib.types; listOf str;
+          type = with lib.types; nullOr (listOf str);
+          default = null;
         };
-        gatewayOnLink = lib.mkEnableOption "onlink for gateway";
-        privacy = lib.mkEnableOption "ipv6 address rotation";
+        gatewayOnLink = lib.mkEnableOption "onlink for gateway" // {
+          type = with lib.types; nullOr bool;
+          default = null;
+        };
+        privacy = lib.mkEnableOption "ipv6 kernel address rotation" // {
+          type = with lib.types; nullOr bool;
+          default = null;
+        };
       };
     };
   diskModule =
@@ -880,9 +770,16 @@ let
   };
 in
 {
-  options.flake.org = lib.mkOption {
-    description = "org.toml";
-    type = lib.types.submodule orgModule;
-    default = inputs.org;
+  options.flake = {
+    org-pinned = lib.mkOption {
+      description = "org.toml";
+      type = lib.types.submodule orgModule;
+      default = fromTOML (builtins.readFile inputs.org-toml);
+    };
+    org = lib.mkOption {
+      description = "org.toml ";
+      type = lib.types.submodule orgModule;
+      default = fromTOML (builtins.readFile ../../org.toml);
+    };
   };
 }

@@ -81,17 +81,6 @@ in
       }
     ];
 
-    kompis-os.principals.${cfg.user} = {
-      class = "service";
-      home = true;
-      groups = [
-        "video"
-        "render"
-      ];
-    };
-
-    kompis-os.principals.huggingface.members = [ cfg.user ];
-
     systemd.services = lib.mapAttrs' (
       server: serverCfg:
       lib.nameValuePair "vllm-${server}" {

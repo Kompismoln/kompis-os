@@ -1,30 +1,78 @@
 {
   config,
-  host,
   lib,
-  lib',
   pkgs,
-  org,
   ...
 }:
 
 let
   cfg = config.kompis-os.mobilizon;
-  settingsFormat = appCfg: pkgs.formats.elixirConf { elixir = appCfg.package.elixirPackage; };
+
+  mobilizonOpts =
+    { config, ... }:
+    {
+      options = {
+        enable = lib.mkEnableOption "mobilizon";
+        name = lib.mkOption {
+          description = "app name";
+          type = lib.types.str;
+        };
+        endpoint = lib.mkOption {
+          description = "app's endpoint";
+          type = lib.types.str;
+        };
+        home = lib.mkOption {
+          description = "app's home";
+          type = lib.types.str;
+        };
+        package = lib.mkOption {
+          description = "app package";
+          type = lib.types.package;
+        };
+        bindAddress = lib.mkOption {
+          description = "address this app should bind to";
+          type = lib.types.str;
+        };
+        uid = lib.mkOption {
+          description = "host user id for container mirroring";
+          type = lib.types.int;
+        };
+        gid = lib.mkOption {
+          description = "group id for container mirroring";
+          type = lib.types.int;
+        };
+        port = lib.mkOption {
+          description = "port";
+          type = lib.types.port;
+          default = 4000;
+        };
+        ssl = lib.mkOption {
+          description = "force encrypted connections";
+          type = lib.types.bool;
+          default = true;
+        };
+        database = lib.mkOption {
+          description = "database name";
+          type = lib.types.str;
+          default = config.name;
+        };
+        user = lib.mkOption {
+          description = "user name";
+          type = lib.types.str;
+          default = config.name;
+        };
+      };
+    };
 
   eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
+
   hostConfig = config;
 in
 {
   options = {
     kompis-os.mobilizon = {
       apps = lib.mkOption {
-        type = lib.types.attrsOf (
-          lib.types.submodule (
-            lib'.mkAppOpts host "mobilizon" {
-            }
-          )
-        );
+        type = lib.types.attrsOf (lib.types.submodule mobilizonOpts);
         default = { };
         description = "mobilizon apps to serve";
       };
@@ -33,13 +81,13 @@ in
 
   config = lib.mkIf (eachApp != { }) {
     services.nginx.virtualHosts = lib.mapAttrs' (
-      _app: appCfg:
+      _: app:
       let
-        proxyPass = "http://127.0.0.1:${toString org.app.${appCfg.entity}.port}";
+        proxyPass = "http://[${app.bindAddress}]:${toString app.port}";
       in
-      lib.nameValuePair appCfg.endpoint {
-        forceSSL = appCfg.ssl;
-        enableACME = appCfg.ssl;
+      lib.nameValuePair app.endpoint {
+        forceSSL = app.ssl;
+        enableACME = app.ssl;
 
         locations = {
           "/" = {
@@ -52,7 +100,7 @@ in
           };
         };
         locations."~ ^/(assets|img)" = {
-          root = "${appCfg.package}/lib/mobilizon-${appCfg.package.version}/priv/static";
+          root = "${app.package}/lib/mobilizon-${app.package.version}/priv/static";
           extraConfig = ''
             access_log off;
             add_header Cache-Control "public, max-age=31536000, s-maxage=31536000, immutable";
@@ -80,8 +128,8 @@ in
     ) eachApp;
 
     systemd.services = lib.mapAttrs' (
-      app: _appCfg:
-      lib.nameValuePair "container@${app}" {
+      _: app:
+      lib.nameValuePair "container@${app.name}" {
         serviceConfig = {
           TimeoutStopSec = 10;
           KillMode = "mixed";
@@ -90,15 +138,15 @@ in
     ) eachApp;
 
     containers = lib.mapAttrs' (
-      app: appCfg:
-      (lib.nameValuePair app {
+      _: app:
+      (lib.nameValuePair app.name {
         autoStart = true;
         ephemeral = true;
 
         bindMounts = {
           "/var/lib/mobilizon" = {
             isReadOnly = false;
-            hostPath = appCfg.home;
+            hostPath = app.home;
           };
           "/run/postgresql" = {
             isReadOnly = false;
@@ -106,14 +154,17 @@ in
         };
 
         config = {
-          system.stateVersion = hostConfig.system.stateVersion;
+          system = {
+            inherit (hostConfig.system) stateVersion;
+          };
           users = {
             users.mobilizon = {
-              uid = org.app.${appCfg.entity}.id;
+              inherit (app) uid;
               group = "mobilizon";
             };
-            groups.mobilizon.gid = org.app.${appCfg.entity}.id;
+            groups.mobilizon.gid = app.gid;
           };
+
           services.postgresql.enable = lib.mkForce false;
           systemd.services.mobilizon-postgresql.enable = lib.mkForce false;
 
@@ -122,44 +173,33 @@ in
           systemd.services.mobilizon = {
             path = [ pkgs.postgresql ];
 
-            preStart =
-              let
-                query = "SELECT * FROM schema_migrations WHERE version=${appCfg.migration}";
-              in
-              lib.mkIf (appCfg.migration != null) (
-                lib.mkBefore ''
-                  echo "Validating database state for ${app}..."
-                  psql -U "${appCfg.user}" -d "${appCfg.database}" -c "${query}" | grep -q 1;
-                ''
-              );
           };
           # ...
-          services.mobilizon = {
-            enable = true;
-            inherit (appCfg) package;
-            nginx.enable = false;
-            settings.":mobilizon" = {
-              "Mobilizon.Web.Endpoint".http = {
-                port = org.app.${appCfg.entity}.port;
-                ip = (settingsFormat appCfg).lib.mkTuple [
-                  0
-                  0
-                  0
-                  0
-                ];
+          services.mobilizon =
+            let
+              elixirConf = pkgs.formats.elixirConf { elixir = app.package.elixirPackage; };
+            in
+            {
+              enable = true;
+              inherit (app) package;
+              nginx.enable = false;
+              settings.":mobilizon" = {
+                "Mobilizon.Web.Endpoint".http = {
+                  inherit (app) port;
+                  ip = elixirConf.lib.mkRaw ''elem(:inet.parse_address(~c"${app.bindAddress}"), 1)'';
+                };
+                "Mobilizon.Storage.Repo" = {
+                  inherit (app) database;
+                  socket_dir = "/run/postgresql";
+                  username = app.user;
+                };
+                ":instance" = {
+                  inherit (app) name;
+                  hostname = app.endpoint;
+                };
               };
-              "Mobilizon.Storage.Repo" = {
-                inherit (appCfg) database;
-                socket_dir = "/run/postgresql";
-                username = appCfg.user;
-              };
-              ":instance" = {
-                name = app;
-                hostname = appCfg.endpoint;
-              };
-            };
 
-          };
+            };
         };
 
       })

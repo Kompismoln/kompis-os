@@ -12,7 +12,7 @@ let
 in
 {
   imports = [
-    ./org.nix
+    ./org
     inputs.home-manager.flakeModules.home-manager
   ]
   ++ (importDir "roles");

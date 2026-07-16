@@ -24,6 +24,9 @@
 
     preservation.url = "github:nix-community/preservation";
 
+    org-toml.url = "path:./org.toml";
+    org-toml.flake = false;
+
     sverigesval.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
     sverigesval.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -56,9 +59,7 @@
     inputs:
     inputs.flake-parts.lib.mkFlake
       {
-        inputs = inputs // {
-          org = fromTOML (builtins.readFile ./org.toml);
-        };
+        inherit inputs;
       }
       {
         systems = [ "x86_64-linux" ];

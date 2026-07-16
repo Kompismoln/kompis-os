@@ -1,5 +1,4 @@
 # kompis-os/roles/inference-server.nix
-{ org, ... }:
 {
   flake.nixosModules.inference-server =
     {
@@ -54,7 +53,7 @@
         vllm.servers.qwen3-8b = {
           model = "Qwen/Qwen3-8B-AWQ";
           host = "::";
-          port = org.service.vllm.port;
+          port = 12009;
           extraArgs = [
             "--enforce-eager"
             "--gpu-memory-utilization=0.95"

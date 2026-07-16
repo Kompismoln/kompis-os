@@ -12,6 +12,7 @@
   };
 
   home.packages = with pkgs; [
+    discordo
     kooha
     signal-desktop
     thunderbird

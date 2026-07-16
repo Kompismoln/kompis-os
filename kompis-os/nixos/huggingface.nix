@@ -53,6 +53,5 @@ in
       "d '${cfg.repo}' 0750 huggingface huggingface - -"
       "Z '${cfg.repo}' 0750 huggingface huggingface - -"
     ];
-    kompis-os.principals.huggingface.class = "store";
   };
 }

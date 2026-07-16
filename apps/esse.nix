@@ -14,10 +14,6 @@ in
   kompis-os = {
     nginx.enable = true;
     mysql.enable = true;
-    principals.${name} = {
-      class = "app";
-      members = [ "nginx" ];
-    };
 
     redis.servers."${name}-redis" = {
       enable = true;

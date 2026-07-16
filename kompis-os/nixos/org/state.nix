@@ -7,7 +7,6 @@
   ...
 }:
 let
-  eachUser = lib.filterAttrs (user: userCfg: userCfg.stateful) config.kompis-os.principals;
   statePkg =
     user: userCfg:
     pkgs.runCommand "state"
@@ -41,7 +40,6 @@ let
   );
 in
 {
-  imports = [ ../principals.nix ];
   sops.secrets = lib.mapAttrs' (
     user: userCfg:
     lib.nameValuePair "${user}/restic-key" {

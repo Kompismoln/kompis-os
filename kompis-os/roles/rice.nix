@@ -95,7 +95,7 @@ in
   flake.homeModules.rice =
     { lib', lib, ... }:
     let
-      inherit (inputs.org.theme) fonts;
+      inherit (inputs.self.org.theme) fonts;
       colors = lib'.semantic-colors;
       unhashedHexes = lib.mapAttrs (_: c: lib.substring 1 6 c) colors;
     in

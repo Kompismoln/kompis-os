@@ -14,7 +14,6 @@
     imports = [
       ../nixos/org/home-manager.nix
       ../nixos/org/shell.nix
-      ../nixos/org/tls-certs.nix
     ];
   };
 }

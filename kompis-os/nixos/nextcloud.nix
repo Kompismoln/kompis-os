@@ -1,10 +1,7 @@
 {
   config,
-  host,
   lib,
-  lib',
   pkgs,
-  org,
   ...
 }:
 
@@ -13,9 +10,62 @@ let
 
   eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
 
-  appOpts = lib'.mkAppOpts host "nextcloud" {
+  appOpts = {
     options = {
-      collabora.endpoint = lib.mkOption {
+      enable = lib.mkEnableOption "nextcloud";
+      name = lib.mkOption {
+        description = "app name";
+        type = lib.types.str;
+      };
+      endpoint = lib.mkOption {
+        description = "app's endpoint";
+        type = lib.types.str;
+      };
+      home = lib.mkOption {
+        description = "app's home";
+        type = lib.types.str;
+      };
+      package = lib.mkOption {
+        description = "app package";
+        type = lib.types.package;
+      };
+      bindAddress = lib.mkOption {
+        description = "address this app should bind to";
+        type = lib.types.str;
+      };
+      uid = lib.mkOption {
+        description = "host user id for container mirroring";
+        type = lib.types.int;
+      };
+      gid = lib.mkOption {
+        description = "group id for container mirroring";
+        type = lib.types.int;
+      };
+      secretKeyPath = lib.mkOption {
+        description = "path to secret key file";
+        type = lib.types.str;
+      };
+      port = lib.mkOption {
+        description = "port";
+        type = lib.types.port;
+        default = 4000;
+      };
+      ssl = lib.mkOption {
+        description = "force encrypted connections";
+        type = lib.types.bool;
+        default = true;
+      };
+      database = lib.mkOption {
+        description = "database name";
+        type = lib.types.str;
+        default = config.name;
+      };
+      user = lib.mkOption {
+        description = "user name";
+        type = lib.types.str;
+        default = config.name;
+      };
+      collaboraEndpoint = lib.mkOption {
         description = "collabora endpoint";
         type = with lib.types; nullOr str;
       };
@@ -37,81 +87,30 @@ in
 
     systemd.tmpfiles.rules = lib.concatMap (app: [
       "d '${app.home}' 0750 ${app.user} ${app.user} - -"
-      "Z '${app.home}' 0750 ${app.user} ${app.user} - -"
     ]) (lib.attrValues eachApp);
 
-    sops.secrets = lib'.mergeAttrs (_app: appCfg: {
-      "${appCfg.entity}/secret-key" = {
-        inherit (org.app.${appCfg.entity}.secrets) sopsFile;
-        owner = appCfg.user;
-        group = appCfg.user;
-      };
-    }) eachApp;
-
-    systemd.services = lib'.mergeAttrs (app: appCfg: {
-
-      "container@${app}" = {
+    systemd.services = lib.mapAttrs' (
+      _: app:
+      lib.nameValuePair "container@${app.name}" {
         serviceConfig = {
           TimeoutStopSec = 10;
           KillMode = "mixed";
         };
-      };
-
-      "${app}-pgsql-dump" = {
-        description = "dump a snapshot of the postgresql database";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${lib.getExe pkgs.bash} -c '${pkgs.postgresql}/bin/pg_dump -U ${appCfg.user} ${appCfg.database} > ${appCfg.home}/dbdump.sql'";
-          User = appCfg.user;
-          Group = appCfg.user;
-        };
-      };
-
-      "${app}-pgsql-init" = {
-        description = "create database/user-pair";
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-init}/bin/pgsql-init ${app}";
-          User = "postgres";
-          Group = "postgres";
-        };
-      };
-      "${app}-pgsql-restore" = {
-        description = "restore postgresql database from snapshot";
-        after = [ "${app}-pgsql-init.service" ];
-        requires = [ "${app}-pgsql-init.service" ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.pgsql-restore}/bin/pgsql-restore ${app} ${appCfg.home}";
-          User = appCfg.user;
-          Group = appCfg.user;
-        };
-      };
-    }) eachApp;
-
-    systemd.timers = lib'.mergeAttrs (app: _appCfg: {
-      "${app}-pgsql-dump" = {
-        description = "scheduled database dump";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar = "daily";
-          Unit = "${app}-pgsql-dump.service";
-        };
-      };
-    }) eachApp;
+      }
+    ) eachApp;
 
     services.nginx.virtualHosts = lib.mapAttrs' (
-      _app: appCfg:
-      lib.nameValuePair appCfg.endpoint {
-        forceSSL = appCfg.ssl;
-        enableACME = appCfg.ssl;
+      _: app:
+      lib.nameValuePair app.endpoint {
+        forceSSL = app.ssl;
+        enableACME = app.ssl;
         extraConfig = ''
           client_max_body_size 1G;
         '';
 
         locations = {
           "/" = {
-            proxyPass = "http://127.0.0.1:${toString org.app.${appCfg.entity}.port}";
+            proxyPass = "http://[${app.bindAddress}]:${toString app.port}";
           };
           "/.well-known/carddav" = {
             return = "301 $scheme://$host/remote.php/dav";
@@ -124,45 +123,44 @@ in
       }
     ) eachApp;
 
-    containers = lib.mapAttrs (_app: appCfg: {
+    containers = lib.mapAttrs (_: app: {
       autoStart = true;
       ephemeral = true;
 
       bindMounts = {
         ${config.services.nextcloud.home} = {
           isReadOnly = false;
-          hostPath = appCfg.home;
+          hostPath = app.home;
         };
         "/run/secrets/db-password" = {
           isReadOnly = true;
-          hostPath = config.sops.secrets."${appCfg.entity}/secret-key".path;
+          hostPath = app.secretKeyPath;
         };
         "/run/secrets/admin-password" = {
           isReadOnly = true;
-          hostPath = config.sops.secrets."${appCfg.entity}/secret-key".path;
+          hostPath = app.secretKeyPath;
         };
       };
 
       config = {
         system.stateVersion = config.system.stateVersion;
 
-        users.users.nextcloud.uid = org.app.${appCfg.entity}.id;
-        users.groups.nextcloud.gid = org.app.${appCfg.entity}.id;
+        users.users.nextcloud.uid = app.uid;
+        users.groups.nextcloud.gid = app.gid;
 
         environment.systemPackages = [ pkgs.postgresql ];
 
         services.nginx = {
           virtualHosts.localhost = {
             extraConfig = ''
-              set_real_ip_from 127.0.0.1/32;
+              set_real_ip_from ${app.bindAddress}/128;
               real_ip_header X-Forwarded-For;
               real_ip_recursive on;
             '';
             listen = [
               {
-                addr = "127.0.0.1";
-                port = org.app.${appCfg.entity}.port;
-                ssl = false;
+                addr = "[${app.bindAddress}]";
+                inherit (app) port;
               }
             ];
           };
@@ -189,11 +187,11 @@ in
           };
           settings = {
             trusted_proxies = [
-              "127.0.0.1"
+              app.bindAddress
             ];
             trusted_domains = [
-              appCfg.endpoint
-              appCfg.collabora.endpoint
+              app.endpoint
+              app.collaboraEndpoint
             ];
             default_phone_region = "SE";
             overwriteprotocol = "https";
@@ -212,8 +210,8 @@ in
             dbtype = "pgsql";
             dbhost = "localhost";
             dbpassFile = "/run/secrets/db-password";
-            dbuser = appCfg.user;
-            dbname = appCfg.database;
+            dbuser = app.user;
+            dbname = app.database;
             adminpassFile = "/run/secrets/admin-password";
           };
         };

@@ -31,8 +31,6 @@ let
       '';
 in
 {
-  imports = [ ../principals.nix ];
-
   programs.ssh.knownHosts.github = {
     hostNames = [ "github.com" ];
     publicKeyFile = ../../../public-keys/unmanaged-github-ssh-key.pub;
@@ -81,24 +79,6 @@ in
   environment.etc = {
     "nix/inputs/self".source = "${inputs.self}";
     "nix/inputs/nixpkgs".source = "${inputs.nixpkgs}";
-  };
-
-  kompis-os.principals = {
-    nix-build = {
-      class = "service";
-      shell = true;
-      home = true;
-    };
-
-    nix-switch = {
-      class = "service";
-      shell = true;
-    };
-
-    nix-push = {
-      class = "service";
-      shell = true;
-    };
   };
 
   services.openssh = {

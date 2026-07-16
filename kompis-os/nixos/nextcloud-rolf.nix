@@ -1,28 +1,57 @@
 {
   config,
   lib,
-  lib',
   pkgs,
-  host,
   ...
 }:
 
 let
   cfg = config.kompis-os.nextcloud-rolf;
-  eachApp = lib.filterAttrs (app: appCfg: appCfg.enable) cfg.apps;
+  eachApp = lib.filterAttrs (_: app: app.enable) cfg.apps;
 
-  appOpts = lib'.mkAppOpts host "nextcloud-rolf" {
-    options = {
-      siteRoot = lib.mkOption {
-        description = "Path to serve";
-        type = lib.types.str;
-      };
-      sourceRoot = lib.mkOption {
-        description = "Where build files are gathered at runtime";
-        type = lib.types.str;
+  appOpts =
+    { config, ... }:
+    {
+      options = {
+        enable = lib.mkEnableOption "nextcloud-rolf";
+        name = lib.mkOption {
+          description = "app name";
+          type = lib.types.str;
+        };
+        endpoint = lib.mkOption {
+          description = "app's endpoint";
+          type = lib.types.str;
+        };
+        packages = lib.mkOption {
+          description = "app package";
+          type = with lib.types; attrsOf package;
+        };
+        home = lib.mkOption {
+          description = "app's home";
+          type = lib.types.str;
+        };
+        ssl = lib.mkOption {
+          description = "force encrypted connections";
+          type = lib.types.bool;
+          default = true;
+        };
+        user = lib.mkOption {
+          description = "user name";
+          type = lib.types.str;
+          default = config.name;
+        };
+        siteRoot = lib.mkOption {
+          description = "Path to serve";
+          type = lib.types.str;
+          default = "${config.home}/_site";
+        };
+        sourceRoot = lib.mkOption {
+          description = "Where build files are gathered at runtime";
+          type = lib.types.str;
+          default = "${config.home}/_src";
+        };
       };
     };
-  };
 in
 {
   options = {
@@ -38,36 +67,36 @@ in
   config =
     let
       sync-commands = lib.mapAttrs (
-        app: appCfg:
-        pkgs.runCommand app
+        _: app:
+        pkgs.runCommand app.name
           {
-            src = appCfg.package;
-            nativeBuildInputs = with pkgs; [ makeWrapper ];
+            src = app.packages.default;
+            nativeBuildInputs = [ pkgs.makeWrapper ];
           }
           ''
             mkdir -p $out/bin
 
             makeWrapper \
               $src/bin/rolf \
-              $out/bin/${app} \
-                --append-flags ${appCfg.sourceRoot} \
-                --append-flags ${appCfg.sourceRoot}/_src \
-                --append-flags ${appCfg.siteRoot} \
+              $out/bin/${app.name} \
+                --append-flags ${app.home} \
+                --append-flags ${app.sourceRoot} \
+                --append-flags ${app.siteRoot} \
                 --append-flags --watch
           ''
       ) eachApp;
     in
     lib.mkIf (eachApp != { }) {
 
-      environment.systemPackages = lib.mapAttrsToList (app: pkg: pkg) sync-commands;
+      environment.systemPackages = lib.attrValues sync-commands;
 
       services.nginx.virtualHosts = lib.mapAttrs' (
-        app: appCfg:
-        lib.nameValuePair appCfg.endpoint {
-          forceSSL = appCfg.ssl;
-          enableACME = appCfg.ssl;
+        _: app:
+        lib.nameValuePair app.endpoint {
+          forceSSL = app.ssl;
+          enableACME = app.ssl;
 
-          root = appCfg.siteRoot;
+          root = app.siteRoot;
           locations."/" = {
             index = "index.html";
             tryFiles = "$uri $uri/ /404.html";
@@ -76,39 +105,35 @@ in
       ) eachApp;
 
       systemd.timers = lib.mapAttrs' (
-        app: appCfg:
-        lib.nameValuePair "${app}-build" {
+        _: app:
+        lib.nameValuePair "${app.name}-build" {
           description = "Scheduled building of todays articles";
           wantedBy = [ "timers.target" ];
           timerConfig = {
             OnCalendar = "01:00";
-            Unit = "${app}-build.service";
+            Unit = "${app.name}-build.service";
           };
         }
       ) eachApp;
 
-      systemd.services = lib'.mergeAttrs (app: appCfg: {
-        "${app}-build" = {
-          description = "run ${app}-build";
+      systemd.services = lib.concatMapAttrs (_: app: {
+        "${app.name}-build" = {
+          description = "run ${app.name}-build";
           serviceConfig = {
             Type = "oneshot";
-            ExecStart =
-              let
-                inherit (appCfg.packages) gems;
-              in
-              "${gems}/bin/jekyll build -s ${appCfg.sourceRoot}/_src -d ${appCfg.siteRoot} --disable-disk-cache";
-            WorkingDirectory = "${appCfg.sourceRoot}/_src";
-            User = appCfg.user;
-            Group = appCfg.user;
+            ExecStart = "${app.packages.gems}/bin/jekyll build -s ${app.sourceRoot} -d ${app.siteRoot} --disable-disk-cache";
+            WorkingDirectory = app.sourceRoot;
+            User = app.user;
+            Group = app.user;
           };
         };
-        ${app} = {
-          description = "run ${app}";
+        ${app.name} = {
+          description = "run ${app.name}";
           serviceConfig = {
-            ExecStart = "${sync-commands.${app}}/bin/${app}";
-            WorkingDirectory = appCfg.sourceRoot;
-            User = appCfg.user;
-            Group = appCfg.user;
+            ExecStart = "${sync-commands.${app.name}}/bin/${app.name}";
+            WorkingDirectory = app.home;
+            User = app.user;
+            Group = app.user;
           };
           wantedBy = [ "multi-user.target" ];
         };

@@ -110,6 +110,12 @@ keys = [
   "restic-key",
 ]
 
+[class.store]
+keys = [
+  "age-key",
+  "ssh-key",
+]
+
 [ops.rebuild]
 "*" = ["rebuild:age-key"]
 
@@ -348,6 +354,7 @@ vpns = [
 system = "x86_64-linux"
 stateVersion = "25.11"
 network.eth = { interface = "enp5s0", mode = "dhcp" }
+network.wifi = { interface = "wlp4s0", mode = "dhcp" }
 
 [host.pelle.home]
 alex.roles = ["cli-devstation"]
@@ -379,10 +386,10 @@ users = ["alex"]
 roles = ["home-manager", "workstation"]
 
 [user.admin]
-id = 1000
+id = 0
 description = "Administrator"
 mail = true
-groups = ["wheel"]
+principal.groups = ["wheel"]
 email = "admin@kompismoln.se"
 grants = ["host-*"]
 inboxes = [
@@ -392,14 +399,14 @@ inboxes = [
 ]
 
 [user.ami]
-id = 1104
+id = 104
 description = "AMI"
 grants = ["host-adele"]
 
 [user.alex]
-id = 1001
+id = 1
 mail = true
-groups = ["wheel"]
+principal.groups = ["wheel"]
 description = "Alexander Holmbäck"
 email = "alex@kompismoln.se"
 inboxes = ["alex@ahbk.se", "alex@klimatkalendern.nu"]
@@ -411,48 +418,103 @@ grants = [
 ]
 
 [user.johanna]
-id = 1102
+id = 102
 description = "Johanna"
 grants = ["host-friday"]
+
+[role.nixos]
+services = [
+  "rescue",
+]
+
+[role.peer]
+services = [
+  "rescue",
+  "locksmith",
+  "nix-build",
+  "nix-push",
+  "nix-switch",
+]
+
+[role.comfy-root]
+services = []
+
+[role.server]
+services = [
+  "egress-proxy",
+  "reverse-tunnel",
+]
+
+[role.inference-server]
+services = [
+  "vllm",
+]
+stores = [
+  "huggingface",
+]
+
+[role.home-manager]
+services = []
+
+[role.workstation]
+services = []
+
+[role.mailserver]
+services = [
+  "dmarc-reports",
+]
+
+[role.app-scheduler]
+services = []
+
+[role.substituter]
+services = ["nix-serve"]
+
+[role.hypr-devstation]
+services = []
+
+[role.archive]
+services = ["backup"]
 
 [service.backup]
 grants = ["host-*"]
 
-[service.domain-km]
-grants = ["host-*"]
-
-[service.domain-km1]
-grants = ["host-*"]
-
-[service."domain-kompismoln.se"]
-grants = ["host-*"]
-
 [service.locksmith]
-id = 2000
+id = 0
+principal.hasBash = true
+
 grants = ["host-*"]
 
 [service.egress-proxy]
-id = 2007
+id = 7
 grants = ["host:server"]
 
 [service.reverse-tunnel]
-id = 2001
+id = 1
+principal.hasPasswd = true
 grants = ["host:server"]
 
 [service.vllm]
-id = 2009
+id = 9
 grants = ["host:inference-server"]
+principal.hasHome = true
+principal.groups = ["video", "render", "huggingface"]
 
 [service.nix-build]
-id = 2002
+id = 2
+principal.hasHome = true
+principal.hasBash = true
+
 grants = ["host-*"]
 
 [service.nix-push]
-id = 2004
+id = 4
+principal.hasBash = true
 grants = ["host-*"]
 
 [service.nix-switch]
-id = 2003
+id = 3
+principal.hasBash = true
 grants = ["host-*"]
 
 [service.nix-serve]
@@ -470,17 +532,19 @@ endpoint = "https://api.glesys.com"
 grants = ["host-stationary", "host-pelle"]
 
 [app.esse]
-id = 3000
+id = 0
 endpoint = "www.esse.nu"
 altpoints = ["esse.nu"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
+principal.members = ["nginx"]
 
 [app.esse-dev]
-id = 3002
+id = 2
 endpoint = "esse-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
+principal.members = ["nginx"]
 
 [app.sverigesval]
 endpoint = "sverigesval.org"
@@ -494,14 +558,14 @@ run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 
 [app.klimatkalendern]
-id = 3004
+id = 4
 endpoint = "klimatkalendern.nu"
 altpoints = ["www.klimatkalendern.nu"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.klimatkalendern-dev]
-id = 3005
+id = 5
 endpoint = "klimatkalendern-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
@@ -515,51 +579,55 @@ grants = ["host:app-scheduler"]
 # keep."host:archive" = { weekly = 7, monthly = 4 }
 
 [app.opencloud-kompismoln]
-id = 3020
+id = 20
 endpoint = "opencloud.kompismoln.se"
 run-on-hosts = []
 grants = ["host:app-scheduler"]
+principal.members = ["nginx"]
 
 [app.nextcloud-kompismoln]
-id = 3006
+id = 6
 endpoint = "nextcloud.kompismoln.se"
 altpoints = ["nc.kompismoln.se"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
+principal.members = ["nginx"]
 
 [app.nextcloud-kompismoln-dev]
-id = 3007
+id = 7
 endpoint = "nextcloud-kompismoln-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
+principal.members = ["nginx"]
 
 [app.collabora]
-id = 3015
+id = 15
 endpoint = "collabora.kompismoln.se"
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.collabora-dev]
-id = 3014
+id = 14
 endpoint = "collabora-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
+principal.hasPublicKey = false
 
 [app.chatddx]
-id = 3019
+id = 19
 endpoint = "chatddx.com"
 altpoints = ["www.chatddx.com"]
 run-on-hosts = ["helsinki"]
 grants = ["host:app-scheduler"]
 
 [app.chatddx-dev]
-id = 3017
+id = 17
 endpoint = "chatddx-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 
 [store.huggingface]
-id = 4000
+id = 0
 
 [theme]
 wallpaper = "assets/wallpaper.jpg"

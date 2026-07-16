@@ -1,4 +1,5 @@
 {
+  config,
   host,
   #lib,
   ...
@@ -21,6 +22,19 @@
       ];
     };
   };
+
+  sops.secrets.wifi-keys = {
+    owner = "wpa_supplicant";
+    group = "wpa_supplicant";
+  };
+
+  networking.wireless = {
+    enable = true;
+    interfaces = [ "wlp4s0" ];
+    secretsFile = config.sops.secrets."wifi-keys".path;
+    networks."staple".pskRaw = "ext:psk_staple";
+  };
+
   kompis-os = {
     glesys.updaterecord = {
       enable = false;

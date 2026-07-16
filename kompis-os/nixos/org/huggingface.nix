@@ -10,9 +10,6 @@ let
   HF_HUB_CACHE = "/srv/models/huggingface/hub";
 in
 {
-  imports = [ ../principals.nix ];
-  kompis-os.principals.huggingface.class = "store";
-
   environment.systemPackages =
     let
       huggingface-cli = pkgs.writeShellScriptBin "huggingface-cli" ''

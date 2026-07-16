@@ -18,12 +18,6 @@ in
   kompis-os = {
     postgresql.enable = true;
     nginx.enable = true;
-    principals.${name} = {
-      class = "app";
-      members = [
-        "nginx"
-      ];
-    };
     nextcloud.apps.${name} = {
       enable = true;
       user = name;

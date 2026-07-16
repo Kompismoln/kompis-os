@@ -1,9 +1,13 @@
 # apps/sverigesval-dev.nix
-{ org, ... }:
+{
+  app,
+  inputs,
+  org,
+  host,
+  ...
+}:
 let
-  name = "sverigesval-dev";
-  nextcloud = "nextcloud-kompismoln-dev";
-  cfg = org.app.${name};
+  nextcloud = org.app.nextcloud-kompismoln-dev;
 in
 {
   imports = [
@@ -12,13 +16,12 @@ in
   ];
   kompis-os = {
     nginx.enable = true;
-    principals.${nextcloud}.members = [ "nginx" ];
-    nextcloud-rolf.apps.${name} = {
+    nextcloud-rolf.apps.${app.name} = {
       enable = true;
-      inherit (cfg) endpoint;
-      user = nextcloud;
-      siteRoot = "/var/lib/${nextcloud}/nextcloud/data/rolf/files/+pub/_site";
-      sourceRoot = "/var/lib/${nextcloud}/nextcloud/data/rolf/files/+pub";
+      inherit (app) endpoint name;
+      packages = inputs.${app.name}.packages.${host.system};
+      user = nextcloud.name;
+      home = "${nextcloud.principal.home}/nextcloud/data/rolf/files/+pub";
     };
   };
 }

@@ -282,7 +282,4 @@ in
     };
   };
 
-  kompis-os.principals.loki = {
-    class = "system";
-  };
 }

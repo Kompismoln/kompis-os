@@ -343,6 +343,19 @@
         "type": "github"
       }
     },
+    "org-toml": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1,
+        "narHash": "sha256-iIWNvRaCg742w0Aca4ANBpKCKFgtxq5DIHe4zkeWy7Y=",
+        "path": "./org.toml",
+        "type": "path"
+      },
+      "original": {
+        "path": "./org.toml",
+        "type": "path"
+      }
+    },
     "preservation": {
       "locked": {
         "lastModified": 1757436102,
@@ -571,6 +584,7 @@
         "nixos-mailserver": "nixos-mailserver",
         "nixpkgs": "nixpkgs",
         "nixvim": "nixvim",
+        "org-toml": "org-toml",
         "preservation": "preservation",
         "sops-nix": "sops-nix",
         "sverigesval": "sverigesval",

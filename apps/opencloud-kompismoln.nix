@@ -14,12 +14,6 @@ in
 
   kompis-os = {
     nginx.enable = true;
-    principals.${name} = {
-      class = "app";
-      members = [
-        "nginx"
-      ];
-    };
     opencloud.apps.${name} = {
       enable = true;
       user = name;

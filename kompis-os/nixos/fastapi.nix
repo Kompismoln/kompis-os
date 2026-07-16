@@ -82,14 +82,6 @@ in
       };
     }) eachSite;
 
-    kompis-os.principals = lib.mapAttrs' (
-      name: cfg:
-      lib.nameValuePair "${cfg.appname}-fastapi" {
-        class = "service";
-        publicKey = false;
-      }
-    ) eachSite;
-
     systemd.tmpfiles.rules = lib.flatten (
       lib.mapAttrsToList (name: cfg: [
         "d '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
