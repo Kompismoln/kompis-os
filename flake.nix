@@ -1,6 +1,6 @@
 # flake.nix
 {
-  description = "Kompismoln";
+  description = "build kompismoln";
 
   inputs = {
     nixpkgs.url = "github:kompismoln/nixpkgs/nixos-unstable";
@@ -57,34 +57,38 @@
 
   outputs =
     inputs:
-    inputs.flake-parts.lib.mkFlake
-      {
-        inherit inputs;
-      }
-      {
-        systems = [ "x86_64-linux" ];
-        imports = [ ./kompis-os/outputs.nix ];
-        flake = {
-          src = inputs.self.outPath;
-        };
-        perSystem =
-          { pkgs, ... }:
+    let
+      flakeParts =
+        inputs.flake-parts.lib.mkFlake
           {
-            devShells.default = pkgs.mkShell {
-              buildInputs = with pkgs; [
-                toml2json
-                bats
-              ];
-              shellHook = ''
-                export SOPS_AGE_KEY_FILE=/keys/root-1
-                export FLAKE=.
-                export BUILD_HOST=pelle
-                export BUILD_WORKING_TREE=true
-                export RESTIC_REPOSITORY="$HOME/.restic"
-                export RESTIC_PASSWORD_FILE="/run/secrets/alex/restic-key"
-                PATH=$(pwd)/kompis-os/tools/bin:$PATH
-              '';
+            inherit inputs;
+          }
+          {
+            systems = [ "x86_64-linux" ];
+            imports = [ ./kompis-os/outputs.nix ];
+            flake = {
+              src = inputs.self.outPath;
             };
+            perSystem =
+              { pkgs, ... }:
+              {
+                devShells.default = pkgs.mkShell {
+                  buildInputs = with pkgs; [
+                    toml2json
+                    bats
+                  ];
+                  shellHook = ''
+                    export SOPS_AGE_KEY_FILE=/keys/root-1
+                    export FLAKE=.
+                    export BUILD_HOST=pelle
+                    export BUILD_WORKING_TREE=true
+                    export RESTIC_REPOSITORY="$HOME/.restic"
+                    export RESTIC_PASSWORD_FILE="/run/secrets/alex/restic-key"
+                    PATH=$(pwd)/kompis-os/tools/bin:$PATH
+                  '';
+                };
+              };
           };
-      };
+    in
+    flakeParts // (flakeParts.mkOutputs ./org.toml);
 }

@@ -1,9 +1,4 @@
 # kompis-os/roles/rice.nix
-{
-  inputs,
-  org,
-  ...
-}:
 let
   nmtui-themed =
     { pkgs, lib }:
@@ -94,9 +89,9 @@ in
       environment.systemPackages = [ (pkgs.callPackage nmtui-themed { }) ];
     };
   flake.homeModules.rice =
-    { lib, ... }:
+    { lib, org, ... }:
     let
-      inherit (inputs.self.org.theme) fonts colors;
+      inherit (org.theme) fonts colors;
       unhashedHexes = lib.mapAttrs (_: c: lib.substring 1 6 c) colors;
     in
     with colors;

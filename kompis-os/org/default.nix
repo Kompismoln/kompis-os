@@ -1,4 +1,4 @@
-# kompis-os/org.nix
+# org/default.nix
 {
   lib,
   config,
@@ -18,6 +18,10 @@ let
 
   orgModule = {
     options = {
+      asdf = lib.mkOption {
+        description = "canonical name on internet";
+        type = lib.types.str;
+      };
       endpoint = lib.mkOption {
         description = "canonical name on internet";
         type = lib.types.str;

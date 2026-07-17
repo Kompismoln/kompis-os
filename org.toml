@@ -8,7 +8,7 @@ prefix = "fd17:9247:d916"
 prefix4 = "10.0"
 build-hosts = ["pelle", "stationary"]
 root-identities = ["root-1"]
-namespaces = ["km", "km1", "kompismoln.se"]
+namespaces = ["km", "km1", "km2", "kompismoln.se"]
 
 [vpn.wg0]
 id = 0
