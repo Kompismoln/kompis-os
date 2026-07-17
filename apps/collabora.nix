@@ -1,9 +1,5 @@
 # apps/collabora.nix
-{ org, ... }:
-let
-  name = "collabora";
-  cfg = org.app.${name};
-in
+{ app, ... }:
 {
   imports = [
     ../kompis-os/nixos/collabora.nix
@@ -11,9 +7,9 @@ in
 
   kompis-os = {
     collabora = {
-      app = name;
       enable = true;
-      inherit (cfg) endpoint;
+      inherit (app) endpoint;
+      inherit (app.principal) bindAddress;
       allowedHosts = [ ];
     };
   };

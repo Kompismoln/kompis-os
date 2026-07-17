@@ -545,6 +545,7 @@ endpoint = "esse-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 principal.members = ["nginx"]
+configurationFile = "apps/esse.nix"
 
 [app.sverigesval]
 endpoint = "sverigesval.org"
@@ -556,6 +557,7 @@ grants = ["host:app-scheduler"]
 endpoint = "sverigesval-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
+configurationFile = "apps/sverigesval.nix"
 
 [app.klimatkalendern]
 id = 4
@@ -569,6 +571,8 @@ id = 5
 endpoint = "klimatkalendern-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
+configurationFile = "apps/klimatkalendern.nix"
+settings.mailServer = "helsinki.km"
 
 # [app.klimatkalendern-dev.state]
 # capture = "hourly"
@@ -599,11 +603,13 @@ endpoint = "nextcloud-kompismoln-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 principal.members = ["nginx"]
+configurationFile = "apps/nextcloud-kompismoln.nix"
 
 [app.collabora]
 id = 15
 endpoint = "collabora.kompismoln.se"
 run-on-hosts = ["helsinki"]
+principal.hasPublicKey = false
 grants = ["host:app-scheduler"]
 
 [app.collabora-dev]
@@ -612,6 +618,7 @@ endpoint = "collabora-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
 principal.hasPublicKey = false
+configurationFile = "apps/collabora.nix"
 
 [app.chatddx]
 id = 19
@@ -625,12 +632,14 @@ id = 17
 endpoint = "chatddx-dev.kompismoln.se"
 run-on-hosts = ["stationary"]
 grants = ["host:app-scheduler"]
+configurationFile = "apps/chatddx.nix"
 
 [store.huggingface]
 id = 0
 
 [theme]
 wallpaper = "assets/wallpaper.jpg"
+vim-colorscheme = "cyberdream"
 
 [theme.fonts]
 emoji = { package = "noto-fonts-color-emoji", name = "Noto Color Emoji" }

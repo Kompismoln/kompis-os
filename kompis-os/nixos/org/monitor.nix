@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib',
   ...
 }:
 let
@@ -232,7 +231,7 @@ in
       };
 
       server = {
-        http_listen_port = lib'.ids.loki.port;
+        http_listen_port = 0;
         grpc_listen_port = 0;
       };
 

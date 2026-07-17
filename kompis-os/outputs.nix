@@ -7,7 +7,6 @@
 }:
 let
   inherit (self) org;
-  lib' = (import ./lib) lib inputs org;
   importDir = dir: (lib.mapAttrsToList (name: _: ./${dir}/${name}) (builtins.readDir ./${dir}));
 in
 {
@@ -18,7 +17,7 @@ in
   ++ (importDir "roles");
 
   _module.args = {
-    inherit lib' org;
+    inherit org;
   };
 
   flake = {
@@ -60,7 +59,6 @@ in
                 inherit
                   home
                   inputs
-                  lib'
                   org
                   ;
               };
@@ -83,7 +81,6 @@ in
               inherit
                 host
                 inputs
-                lib'
                 org
                 ;
             };

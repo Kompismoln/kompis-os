@@ -20,6 +20,7 @@
             host,
             pkgs,
             org,
+            lib,
             ...
           }:
           (import app.configurationFile) {
@@ -30,6 +31,7 @@
               host
               pkgs
               org
+              lib
               ;
           }
         )

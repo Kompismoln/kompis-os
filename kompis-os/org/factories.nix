@@ -42,15 +42,19 @@ rec {
         type = with lib.types; nullOr (submodule (principalModule config));
         default = if config.id == null || class == "host" then null else { };
       };
-
       ids = lib.mkOption {
         description = "entity id in various formats";
         type = with lib.types; nullOr (submodule (idsModule config.id));
         default = if config.id == null then null else { };
       };
-
+      settings = lib.mkOption {
+        description = "entity-specific options, passed through as-is to the entity's configuration";
+        type = lib.types.attrsOf lib.types.anything;
+        default = { };
+      };
       public-artifacts = mkPublicArtifacts config.class config.name;
       secrets = mkSecrets config.class config.name;
+
     };
 
   principalModule =

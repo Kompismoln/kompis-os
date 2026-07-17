@@ -1,8 +1,5 @@
-{ org, ... }:
-let
-  name = "esse";
-  cfg = org.app.${name};
-in
+# apps/esse.nix
+{ app, ... }:
 {
   imports = [
     ../kompis-os/nixos/nginx.nix
@@ -13,17 +10,22 @@ in
 
   kompis-os = {
     nginx.enable = true;
-    mysql.enable = true;
-
-    redis.servers."${name}-redis" = {
+    mysql = {
       enable = true;
-      entity = name;
-      port = org.app.${name}.port;
     };
 
-    wordpress.apps.${name} = {
+    redis.servers.${app.name} = {
       enable = true;
-      inherit (cfg) endpoint;
+      user = app.name;
+      home = "${app.principal.home}/redis";
+      bind = app.principal.bindAddress;
+    };
+
+    wordpress.apps.${app.name} = {
+      enable = true;
+      home = "${app.principal.home}/wordpress";
+      inherit (app) endpoint name;
+      inherit (app.principal) bindAddress;
     };
   };
 }

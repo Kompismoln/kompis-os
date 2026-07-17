@@ -3,7 +3,6 @@
   host,
   inputs,
   lib,
-  lib',
   org,
   pkgs,
   ...
@@ -17,7 +16,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = {
-      inherit inputs lib' org;
+      inherit inputs org;
     };
     users = lib.mapAttrs (_: home: {
       _module.args.home = home;

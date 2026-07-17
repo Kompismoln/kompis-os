@@ -1,13 +1,12 @@
-# kompis-os/apps/klimatkalendern.nix
+# apps/klimatkalendern.nix
 {
-  config,
-  org,
+  app,
+  pkgs,
+  lib,
+  inputs,
+  host,
   ...
 }:
-let
-  name = "klimatkalendern";
-  app = org.app.${name};
-in
 {
   imports = [
     ../kompis-os/nixos/mobilizon.nix
@@ -17,14 +16,24 @@ in
 
   kompis-os = {
     nginx.enable = true;
-    postgresql.databases.${name} = {
+    postgresql.databases.${app.database} = {
       enable = true;
-      dumpPath = "${config.users.users.${name}.home}/dbdump.sql";
+      dumpPath = "${app.principal.home}/dbdump.sql";
     };
 
-    mobilizon.apps.${name} = {
+    mobilizon.apps.${app.name} = {
       enable = true;
-      inherit (app) endpoint;
+      inherit (app) endpoint name;
+      inherit (app.principal) bindAddress uid gid;
+      home = "${app.principal.home}/mobilizon";
+      package = inputs.${app.name}.packages.${host.system}.default;
+      database = app.name;
+      user = app.name;
     };
+  };
+
+  services.mobilizon.settings."Mobilizon.Web.Email.Mailer" = lib.mkIf (app.settings ? mailServer) {
+    adapter = (pkgs.formats.elixirConf { }).lib.mkAtom "Swoosh.Adapters.SMTP";
+    relay = app.mailServer;
   };
 }

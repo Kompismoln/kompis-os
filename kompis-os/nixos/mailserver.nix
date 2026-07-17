@@ -3,7 +3,6 @@
   config,
   inputs,
   lib,
-  lib',
   org,
   ...
 }:
@@ -85,7 +84,7 @@ in
       };
 
       sops.secrets =
-        lib'.mergeAttrs (user: _: {
+        lib.concatMapAttrs (user: _: {
           "${user}/mail-sha512" = {
             inherit (org.user.${user}.secrets) sopsFile;
             restartUnits = [

@@ -1,9 +1,7 @@
 # kompis-os/nixos/svelte.nix
 {
   config,
-  host,
   lib,
-  lib',
   pkgs,
   org,
   ...
@@ -13,7 +11,9 @@ let
   cfg = config.kompis-os.svelte;
   eachApp = lib.filterAttrs (_: cfg: cfg.enable) cfg.apps;
 
-  appOpts = lib'.mkAppOpts host "svelte" (
+  envToList = env: lib.mapAttrsToList (name: value: "${name}=${toString value}") env;
+
+  appOpts =
     { config, ... }:
     {
       options = {
@@ -27,8 +27,7 @@ let
           type = lib.types.str;
         };
       };
-    }
-  );
+    };
 
   sveltePkgs =
     app: appCfg:
@@ -72,7 +71,7 @@ in
       description = "serve ${app}";
       serviceConfig = {
         ExecStart = "${pkgs.nodejs_20}/bin/node ${sveltePkgs app appCfg}/build";
-        Environment = lib'.envToList envs.${app};
+        Environment = envToList envs.${app};
         User = appCfg.user;
         Group = appCfg.user;
       };

@@ -423,7 +423,7 @@ in
     );
 
     boot.kernel.sysctl = lib.mkIf cfg.vmOverCommit {
-      "vm.overcommit_memory" = "1";
+      "vm.overcommit_memory" = lib.mkDefault "1";
     };
 
     environment.systemPackages = [ cfg.package ];

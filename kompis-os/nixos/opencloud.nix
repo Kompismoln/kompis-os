@@ -1,8 +1,6 @@
 {
   config,
-  host,
   lib,
-  lib',
   org,
   ...
 }:
@@ -10,7 +8,6 @@
 let
   cfg = config.kompis-os.opencloud;
   eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
-  appOpts = lib'.mkAppOpts host "opencloud" { };
 in
 {
   options = {
@@ -34,7 +31,7 @@ in
       ]) (lib.attrValues eachApp)
     );
 
-    systemd.services = lib'.mergeAttrs (app: _appCfg: {
+    systemd.services = lib.concatMapAttrs (app: _appCfg: {
       "container@${app}" = {
         serviceConfig = {
           TimeoutStopSec = 10;

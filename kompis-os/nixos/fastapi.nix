@@ -3,7 +3,6 @@
   host,
   inputs,
   lib,
-  lib',
   pkgs,
   ...
 }:
@@ -11,8 +10,9 @@
 let
   cfg = config.kompis-os.fastapi;
 
-  eachSite = lib.filterAttrs (hostname: cfg: cfg.enable) cfg.sites;
+  eachSite = lib.filterAttrs (_: cfg: cfg.enable) cfg.sites;
   stateDir = hostname: "/var/lib/${hostname}/fastapi";
+  envToList = env: lib.mapAttrsToList (name: value: "${name}=${toString value}") env;
 
   siteOpts = {
     options = {
@@ -41,20 +41,20 @@ let
 
   fastapiPkgs = appname: inputs.${appname}.packages.${host.system}.fastapi;
 
-  envs = lib.mapAttrs (name: cfg: {
+  envs = lib.mapAttrs (_: cfg: {
     ALLOW_ORIGINS = "'[\"${if cfg.ssl then "https" else "http"}://${cfg.hostname}\"]'";
     DB_DSN = "postgresql+psycopg2://${cfg.appname}@:5432/${cfg.appname}";
     ENV = "production";
     HOSTNAME = cfg.hostname;
     LOG_LEVEL = "error";
-    SECRETS_DIR = builtins.dirOf config.sops.secrets."${cfg.appname}/secret_key".path;
+    SECRETS_DIR = dirOf config.sops.secrets."${cfg.appname}/secret_key".path;
     SSL = if cfg.ssl then "true" else "false";
     STATE_DIR = stateDir cfg.appname;
     ALEMBIC_CONFIG = "${(fastapiPkgs cfg.appname).alembic}/alembic.ini";
   }) eachSite;
 
   bins = lib.mapAttrs (
-    name: cfg:
+    _: cfg:
     ((fastapiPkgs cfg.appname).bin.overrideAttrs {
       env = envs.${cfg.appname};
       name = "${cfg.appname}-manage";
@@ -73,9 +73,9 @@ in
 
   config = lib.mkIf (eachSite != { }) {
 
-    environment.systemPackages = lib.mapAttrsToList (name: bin: bin) bins;
+    environment.systemPackages = lib.mapAttrsToList (_: bin: bin) bins;
 
-    sops.secrets = lib'.mergeAttrs (name: cfg: {
+    sops.secrets = lib.concatMapAttrs (_: cfg: {
       "${cfg.appname}/secret_key" = {
         owner = cfg.appname;
         group = cfg.appname;
@@ -83,13 +83,13 @@ in
     }) eachSite;
 
     systemd.tmpfiles.rules = lib.flatten (
-      lib.mapAttrsToList (name: cfg: [
+      lib.mapAttrsToList (_: cfg: [
         "d '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
         "Z '${stateDir cfg.appname}' 0750 ${cfg.appname} ${cfg.appname} - -"
       ]) eachSite
     );
 
-    services.nginx.virtualHosts = lib.mapAttrs (name: cfg: {
+    services.nginx.virtualHosts = lib.mapAttrs (_: cfg: {
       serverName = cfg.hostname;
       forceSSL = cfg.ssl;
       enableACME = cfg.ssl;
@@ -99,14 +99,14 @@ in
       };
     }) eachSite;
 
-    systemd.services = lib'.mergeAttrs (name: cfg: {
+    systemd.services = lib.concatMapAttrs (_: cfg: {
       "${cfg.appname}-fastapi" = {
         description = "serve ${cfg.appname}-fastapi";
         serviceConfig = {
           ExecStart = "${(fastapiPkgs cfg.appname).app}/bin/uvicorn app.main:fastapi --host localhost --port ${toString cfg.port}";
           User = cfg.appname;
           Group = cfg.appname;
-          Environment = lib'.envToList envs.${cfg.appname};
+          Environment = envToList envs.${cfg.appname};
         };
         wantedBy = [ "multi-user.target" ];
       };
@@ -119,7 +119,7 @@ in
           ExecStart = "${bins.${cfg.appname}}/bin/${cfg.appname}-manage migrate";
           User = cfg.appname;
           Group = cfg.appname;
-          Environment = lib'.envToList envs.${cfg.appname};
+          Environment = envToList envs.${cfg.appname};
         };
       };
 
@@ -143,7 +143,7 @@ in
       };
     }) eachSite;
 
-    systemd.timers = lib'.mergeAttrs (name: cfg: {
+    systemd.timers = lib.concatMapAttrs (_: cfg: {
       "${cfg.appname}-pgsql-dump" = {
         description = "Scheduled PostgreSQL database dump";
         wantedBy = [ "timers.target" ];

@@ -1,6 +1,7 @@
 # kompis-os/roles/rice.nix
 {
   inputs,
+  org,
   ...
 }:
 let
@@ -93,10 +94,9 @@ in
       environment.systemPackages = [ (pkgs.callPackage nmtui-themed { }) ];
     };
   flake.homeModules.rice =
-    { lib', lib, ... }:
+    { lib, ... }:
     let
-      inherit (inputs.self.org.theme) fonts;
-      colors = lib'.semantic-colors;
+      inherit (inputs.self.org.theme) fonts colors;
       unhashedHexes = lib.mapAttrs (_: c: lib.substring 1 6 c) colors;
     in
     with colors;
@@ -361,16 +361,21 @@ in
           };
         };
         nixvim = {
-          colorschemes.cyberdream.enable = true;
-          colorschemes.cyberdream.settings.highlights = lib.mapAttrs (
-            _group: groupCfg:
-            groupCfg
-            // lib.genAttrs (lib.filter (f: groupCfg ? ${f}) [
-              "fg"
-              "bg"
-              "sp"
-            ]) (f: colors.${groupCfg.${f}})
-          ) (fromTOML (builtins.readFile ../lib/vim-highlights.toml));
+          colorschemes.${org.theme.vim-colorscheme} = {
+            enable = true;
+            settings.highlights =
+              lib.mapAttrs
+                (
+                  _group: groupCfg:
+                  groupCfg
+                  // lib.genAttrs (lib.filter (f: groupCfg ? ${f}) [
+                    "fg"
+                    "bg"
+                    "sp"
+                  ]) (f: colors.${groupCfg.${f}})
+                )
+                (fromTOML (builtins.readFile ../../overrides/neovim/${org.theme.vim-colorscheme}/highlights.toml));
+          };
         };
       };
     };

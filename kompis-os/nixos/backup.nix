@@ -1,14 +1,13 @@
 {
   config,
   lib,
-  lib',
   org,
   ...
 }:
 
 let
   cfg = config.kompis-os.backup;
-  eachTarget = lib.filterAttrs (user: cfg: cfg.enable) cfg;
+  eachTarget = lib.filterAttrs (_: cfg: cfg.enable) cfg;
   repoOptions =
     { config, ... }:
     {
@@ -58,7 +57,7 @@ in
         OnCalendar = "*-*-* 01:00:00";
         Persistent = true;
       };
-      repository = "rest:http://${cfg.km.target}:${toString lib'.ids.restic.port}/repository";
+      repository = "rest:http://${cfg.km.target}:asdf/repository";
       passwordFile = config.sops.secrets."backup/secret-key".path;
     };
   };
