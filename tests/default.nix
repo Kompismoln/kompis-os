@@ -55,11 +55,17 @@ lib.runTests {
       "stationary"
     ];
   };
-  test_nixos_kompismoln_lenovo = {
+  test_nixos_kompismoln_chatddx = {
     expr =
       (o11nLib.mkNixosConfigurations kompismolnOrg.flake.inputs kompismolnOrg.org)
       .stationary.config.kompis-os.django.apps.chatddx-dev.package.name;
     expected = "chatddx-django-de86a39";
+  };
+  test_nixos_kompismoln_vim_highlights = {
+    expr =
+      (o11nLib.mkHomeConfigurations kompismolnOrg.flake.inputs kompismolnOrg.org)
+      ."alex@lenovo".config.programs.nixvim.colorschemes.cyberdream.settings.highlights.Normal.bg;
+    expected = "#0a0a0a";
   };
   test_org_min = {
     expr = baseOrg.org.endpoint;
