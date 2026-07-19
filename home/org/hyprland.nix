@@ -80,7 +80,7 @@ in
       monitorv2 = host.monitors;
 
       exec-once = [
-        "${lib.getExe pkgs.swaybg} -i /${org.inventoryRoot}/${org.theme.wallpaper}}"
+        "${lib.getExe pkgs.swaybg} -i ${org.inventoryRoot}/${org.theme.wallpaper}}"
         "${lib.getExe pkgs.waybar}"
       ];
 

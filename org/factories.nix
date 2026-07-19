@@ -173,7 +173,7 @@ rec {
       type = lib.types.submodule {
         options = {
           sopsFile = lib.mkOption {
-            default = /${org.inventoryRoot}/enc/${class}-${entity}.yaml;
+            default = org.inventoryRoot + "/enc/${class}-${entity}.yaml";
             type = lib.types.path;
           };
           decryptionKey = lib.mkOption {
@@ -196,7 +196,7 @@ rec {
           };
           ext = exts.${key} or exts.default;
         in
-        /${org.inventoryRoot}/public-keys/${class}-${entity}-${key}.${ext};
+        org.inventoryRoot + "/public-keys/${class}-${entity}-${key}.${ext}";
     in
     lib.mkOption {
       description = "registry for key files";
