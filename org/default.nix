@@ -686,7 +686,7 @@ let
         metric = lib.mkOption {
           description = "ipv6 metric for routing: lower takes priority";
           type = with lib.types; nullOr int;
-          default = null;
+          default = 1024;
         };
         address4 = lib.mkOption {
           description = "ipv4 host address";

@@ -68,10 +68,15 @@ lib.runTests {
     expected = "#0a0a0a";
   };
   test_nixos_kompismoln_nix_self_path = {
+    expr = builtins.pathExists (o11nLib.mkNixosConfigurations kompismolnOrg.inputs kompismolnOrg.org)
+      .lenovo.config.nix.registry.self.flake.outPath;
+    expected = true;
+  };
+  test_nixos_kompismoln_pelle_wifi = {
     expr =
       (o11nLib.mkNixosConfigurations kompismolnOrg.inputs kompismolnOrg.org)
-      .lenovo.config.nix.registry.self.flake.outPath;
-    expected = "/nix/store/ap5n20df0zfzhw0qjnip7s4ybcn94wyi-source";
+      .pelle.config.systemd.network.networks."10-wlp4s0".dhcpV4Config.RouteMetric;
+    expected = 2048;
   };
   test_org_min = {
     expr = baseOrg.org.endpoint;

@@ -15,6 +15,9 @@ let
 
   mkDhcp = network: {
     matchConfig.Name = network.interface;
+    dhcpV4Config = {
+      RouteMetric = network.metric4;
+    };
     networkConfig = {
       DHCP = "yes";
     }
