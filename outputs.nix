@@ -16,21 +16,24 @@ in
   ++ (importDir ./roles);
 
   flake = {
-    mkOutputs =
+    fromPath =
       path:
       let
-        orgFlake = o11nLib.mkOrgFlake path;
+        orgFlake = o11nLib.mkOrgFlake { inherit path; };
         inherit (orgFlake) inputs org;
       in
-      {
-        inherit org;
+      o11nLib.mkConfigurations inputs org;
 
-        diskoConfigurations = o11nLib.mkDiskoConfigurations inputs org;
-
-        homeConfigurations = o11nLib.mkHomeConfigurations inputs org;
-
-        nixosConfigurations = o11nLib.mkNixosConfigurations inputs org;
-      };
+    fromFlake =
+      flake:
+      let
+        orgFlake = o11nLib.mkOrgFlake {
+          inherit flake;
+          path = flake.outPath;
+        };
+        inherit (orgFlake) inputs org;
+      in
+      o11nLib.mkConfigurations inputs org;
 
     nixosModules = {
       django = nixos/django.nix;

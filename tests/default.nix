@@ -5,8 +5,16 @@
 }:
 let
   inherit (pkgs) lib;
-  baseOrg = o11nLib.mkOrgFlake ./inventories/base;
-  kompismolnOrg = o11nLib.mkOrgFlake /home/alex/Desktop/org;
+  baseOrg = o11nLib.mkOrgFlake { path = ./inventories/base; };
+  kompismolnOrg = o11nLib.mkOrgFlake (
+    let
+      flake = builtins.getFlake (toString /home/alex/Desktop/org);
+    in
+    {
+      inherit flake;
+      path = flake.outPath;
+    }
+  );
 in
 lib.runTests {
   test_org_kompismoln = {

@@ -5,18 +5,26 @@
 }:
 rec {
   mkOrgFlake =
-    path:
+    args:
     let
       module = lib.evalModules {
         modules = [
           ../org
-          {
-            inherit path;
-          }
+          args
         ];
       };
     in
     module.config;
+
+  mkConfigurations = inputs: org: {
+    inherit org;
+
+    diskoConfigurations = mkDiskoConfigurations inputs org;
+
+    homeConfigurations = mkHomeConfigurations inputs org;
+
+    nixosConfigurations = mkNixosConfigurations inputs org;
+  };
 
   mkNixosConfigurations =
     inputs: org:
