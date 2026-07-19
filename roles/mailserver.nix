@@ -6,7 +6,7 @@
       imports = [
         ../nixos/mailserver.nix
       ];
-      kompis-os.mailserver =
+      o11n.mailserver =
         let
           domains = lib.attrValues org.domain;
           relayDomains = builtins.filter (domain: !domain.mailbox) domains;

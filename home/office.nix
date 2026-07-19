@@ -6,11 +6,11 @@
   ...
 }:
 {
-  options.kompis-os-hm.office = {
+  options.o11n-hm.office = {
     enable = lib.mkEnableOption "office";
   };
 
-  config = lib.mkIf config.kompis-os-hm.office.enable {
+  config = lib.mkIf config.o11n-hm.office.enable {
     programs.firefox = {
       enable = true;
       configPath = ".mozilla/firefox";

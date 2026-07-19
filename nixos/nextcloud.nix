@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.kompis-os.nextcloud;
+  cfg = config.o11n.nextcloud;
 
   eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
 
@@ -74,7 +74,7 @@ let
 in
 {
   options = {
-    kompis-os.nextcloud = {
+    o11n.nextcloud = {
       apps = lib.mkOption {
         type = with lib.types; attrsOf (submodule appOpts);
         default = { };

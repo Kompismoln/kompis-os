@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.kompis-os.backup;
+  cfg = config.o11n.backup;
   eachTarget = lib.filterAttrs (_: cfg: cfg.enable) cfg;
   repoOptions =
     { config, ... }:
@@ -30,7 +30,7 @@ let
     };
 in
 {
-  options.kompis-os.backup = {
+  options.o11n.backup = {
     km = lib.mkOption {
       type = lib.types.submodule repoOptions;
       default = { };

@@ -6,15 +6,15 @@
 }:
 
 let
-  cfg = config.kompis-os.mysql;
+  cfg = config.o11n.mysql;
 in
 {
-  options.kompis-os.mysql = {
+  options.o11n.mysql = {
     enable = lib.mkEnableOption "mysql";
   };
 
   config = lib.mkIf (cfg.enable) {
-    kompis-os.preserve.databases = [
+    o11n.preserve.databases = [
       {
         directory = "/var/lib/mysql";
         user = "mysql";

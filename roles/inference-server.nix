@@ -43,7 +43,7 @@
 
       services.xserver.videoDrivers = [ "nvidia" ];
 
-      kompis-os = {
+      o11n = {
         huggingface = {
           enable = true;
           repo = "/srv/models/huggingface";

@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.kompis-os.django;
+  cfg = config.o11n.django;
 
   eachApp = lib.filterAttrs (_: appCfg: appCfg.enable) cfg.apps;
 
@@ -158,7 +158,7 @@ let
 in
 {
 
-  options.kompis-os.django = {
+  options.o11n.django = {
     apps = lib.mkOption {
       type = with lib.types; attrsOf (submodule djangoOpts);
       default = { };

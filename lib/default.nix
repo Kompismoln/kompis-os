@@ -24,12 +24,12 @@ rec {
     mkConfigurations inputs org;
 
   mkOrgFlake =
-    args:
+    config:
     let
       module = lib.evalModules {
         modules = [
           ../org
-          args
+          config
         ];
       };
     in

@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.kompis-os.react;
+  cfg = config.o11n.react;
 
   eachSite = lib.filterAttrs (name: cfg: cfg.enable) cfg.sites;
 
@@ -52,7 +52,7 @@ in
 {
 
   options = {
-    kompis-os.react = {
+    o11n.react = {
       sites = lib.mkOption {
         type = with lib.types; attrsOf (submodule siteOpts);
         default = { };

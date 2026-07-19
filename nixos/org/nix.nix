@@ -40,9 +40,9 @@ in
     package = lib.mkDefault pkgs.lix;
     registry = {
       self.flake = inputs.self;
-      kompis-os = {
+      o11n = {
         from = {
-          id = "kompis-os";
+          id = "o11n";
           type = "indirect";
         };
         to = org.flake;

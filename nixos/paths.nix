@@ -1,7 +1,7 @@
 # nixos/paths.nix
 { config, lib, ... }:
 {
-  options.kompis-os.paths = lib.mkOption {
+  options.o11n.paths = lib.mkOption {
     default = { };
     type =
       with lib.types;
@@ -35,7 +35,7 @@
       lib.mapAttrsToList (_: pathCfg: [
         "d '${pathCfg.path}' ${pathCfg.mode} ${pathCfg.user} ${pathCfg.group} - -"
         "Z '${pathCfg.path}' ${pathCfg.mode} ${pathCfg.user} ${pathCfg.group} - -"
-      ]) config.kompis-os.paths
+      ]) config.o11n.paths
     );
   };
 }

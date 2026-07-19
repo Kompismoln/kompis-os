@@ -4,7 +4,7 @@
   ...
 }:
 let
-  app = config.kompis-os.collabora;
+  app = config.o11n.collabora;
   appOpts = {
     options = {
       enable = lib.mkEnableOption "nextcloud";
@@ -35,7 +35,7 @@ let
 in
 {
   options = {
-    kompis-os.collabora = lib.mkOption {
+    o11n.collabora = lib.mkOption {
       type = lib.types.submodule appOpts;
     };
   };

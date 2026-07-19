@@ -10,7 +10,7 @@
 
   networking.networkmanager.enable = true;
 
-  kompis-os.preserve = {
+  o11n.preserve = {
     directories = lib.optionals config.networking.networkmanager.enable [
       "/etc/NetworkManager"
     ];

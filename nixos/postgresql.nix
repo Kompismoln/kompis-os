@@ -8,11 +8,11 @@
 }:
 
 let
-  cfg = config.kompis-os.postgresql;
+  cfg = config.o11n.postgresql;
   eachDatabase = lib.filterAttrs (_db: dbCfg: dbCfg.enable) cfg.databases;
 in
 {
-  options.kompis-os.postgresql = {
+  options.o11n.postgresql = {
     enable = lib.mkEnableOption "postgresql";
     databases = lib.mkOption {
       description = "databases to manage";
@@ -43,7 +43,7 @@ in
   };
 
   config = lib.mkIf (cfg.databases != { }) {
-    kompis-os.preserve.databases = [
+    o11n.preserve.databases = [
       {
         directory = "/var/lib/postgresql";
         user = "postgres";

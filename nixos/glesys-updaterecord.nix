@@ -7,11 +7,11 @@
 }:
 
 let
-  cfg = config.kompis-os.glesys.updaterecord;
+  cfg = config.o11n.glesys.updaterecord;
 in
 {
 
-  options.kompis-os.glesys.updaterecord = {
+  options.o11n.glesys.updaterecord = {
     enable = lib.mkEnableOption "updating DNS-record on glesys";
     recordid = lib.mkOption {
       description = "The glesys id of the record";

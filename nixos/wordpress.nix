@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.kompis-os.wordpress;
+  cfg = config.o11n.wordpress;
   webserver = config.services.nginx;
   eachApp = lib.filterAttrs (_: appCfg: appCfg.enable) cfg.apps;
 
@@ -77,7 +77,7 @@ let
 in
 {
   options = {
-    kompis-os.wordpress = {
+    o11n.wordpress = {
       apps = lib.mkOption {
         type = with lib.types; attrsOf (submodule wordpressOpts);
         default = { };

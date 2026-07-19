@@ -6,7 +6,7 @@
   ...
 }:
 {
-  kompis-os = {
+  o11n = {
     preserve = {
       enable = true;
       database = "/srv/zfs_vol";

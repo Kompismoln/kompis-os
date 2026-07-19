@@ -8,14 +8,14 @@
 }:
 
 let
-  cfg = config.kompis-os.mailserver;
+  cfg = config.o11n.mailserver;
 in
 {
   imports = [
     inputs.nixos-mailserver.nixosModules.default
   ];
 
-  options.kompis-os.mailserver = {
+  options.o11n.mailserver = {
     enable = lib.mkEnableOption "mailserver on this host";
     endpoint = lib.mkOption {
       description = "The fqdn of this mailserver.";
@@ -68,7 +68,7 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
 
-      kompis-os.preserve.directories = with config.mailserver; [
+      o11n.preserve.directories = with config.mailserver; [
         dkim.keyDirectory
         storage.path
       ];

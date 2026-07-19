@@ -10,7 +10,7 @@
     ];
 
     config = {
-      kompis-os-hm = {
+      o11n-hm = {
         home.enable = true;
         nix-conf.enable = true;
         office.enable = true;
@@ -42,7 +42,7 @@
           enable = true;
         };
 
-        kompis-os = {
+        o11n = {
           cinnamon.enable = true;
           home-manager.enable = true;
           networkmanager.enable = true;

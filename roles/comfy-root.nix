@@ -7,7 +7,7 @@ _: {
     ];
 
     config = {
-      kompis-os = {
+      o11n = {
         shell.enable = true;
       };
     };

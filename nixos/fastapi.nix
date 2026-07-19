@@ -8,7 +8,7 @@
 }:
 
 let
-  cfg = config.kompis-os.fastapi;
+  cfg = config.o11n.fastapi;
 
   eachSite = lib.filterAttrs (_: cfg: cfg.enable) cfg.sites;
   stateDir = hostname: "/var/lib/${hostname}/fastapi";
@@ -63,7 +63,7 @@ let
 in
 {
 
-  options.kompis-os.fastapi = {
+  options.o11n.fastapi = {
     sites = lib.mkOption {
       type = with lib.types; attrsOf (submodule siteOpts);
       default = { };

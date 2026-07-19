@@ -54,7 +54,7 @@ lib.runTests {
     ];
   };
   test_nixos_kompismoln_chatddx = {
-    expr = nixosCfgs.stationary.config.kompis-os.django.apps.chatddx-dev.package.name;
+    expr = nixosCfgs.stationary.config.o11n.django.apps.chatddx-dev.package.name;
     expected = "chatddx-django-de86a39";
   };
   test_nixos_kompismoln_vim_highlights = {

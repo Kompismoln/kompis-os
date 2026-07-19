@@ -6,14 +6,13 @@
 }:
 let
   orgFlake = config;
-  cfg = config.org;
+  inherit (config) org;
+
   types = import ./types.nix {
-    inherit lib;
-    org = cfg;
+    inherit lib org;
   };
   factories = import ./factories.nix {
-    inherit lib;
-    org = cfg;
+    inherit lib org;
   };
 
   orgModule = {
@@ -33,7 +32,7 @@ let
       };
       contact = lib.mkOption {
         description = "contact";
-        default = "info@${cfg.endpoint}";
+        default = "info@${org.endpoint}";
         type = lib.types.str;
       };
       timezone = lib.mkOption {
@@ -69,12 +68,12 @@ let
       loPrefix = lib.mkOption {
         description = "ULA reserved for host-local service addresses on lo";
         type = types.subnetPrefix6;
-        default = "${cfg.prefix}:ffff";
+        default = "${org.prefix}:ffff";
       };
       loCidr = lib.mkOption {
         description = "CIDR route of loPrefix";
         type = types.subnetCidr6;
-        default = "${cfg.loPrefix}::/${toString cfg.prefixLength}";
+        default = "${org.loPrefix}::/${toString org.prefixLength}";
       };
       build-hosts = lib.mkOption {
         description = "list of designated build hosts";
@@ -83,7 +82,7 @@ let
       };
       namespaces = lib.mkOption {
         description = "namespaces for hosts in the organisation";
-        default = [ cfg.endpoint ];
+        default = [ org.endpoint ];
         type = with lib.types; listOf str;
       };
       vpn = lib.mkOption {
@@ -195,8 +194,8 @@ let
         };
         configurationFile = lib.mkOption {
           description = "path to specific configuration";
-          type = lib.types.coercedTo lib.types.str (s: cfg.inventoryRoot + "/${s}") lib.types.path;
-          default = cfg.inventoryRoot + "/apps/${config.name}.nix";
+          type = lib.types.coercedTo lib.types.str (s: org.inventoryRoot + "/${s}") lib.types.path;
+          default = org.inventoryRoot + "/apps/${config.name}.nix";
         };
         altpoints = lib.mkOption {
           description = "alternative access points that should be redirected to endpoint";
@@ -295,12 +294,12 @@ let
         prefix4 = lib.mkOption {
           description = "ipv4 prefix for peers in vpn";
           type = types.subnetPrefix4;
-          default = "${cfg.prefix4}.${toString vpn.id}";
+          default = "${org.prefix4}.${toString vpn.id}";
         };
         prefixLength4 = lib.mkOption {
           description = "ipv4 prefix length for peers in vpn";
           type = lib.types.int;
-          default = cfg.prefixLength4;
+          default = org.prefixLength4;
         };
         address = lib.mkOption {
           description = "ipv6 vpn address";
@@ -316,12 +315,12 @@ let
         prefix = lib.mkOption {
           description = "ipv6 prefix for peers in vpn";
           type = types.subnetPrefix6;
-          default = "${cfg.prefix}:${vpn.ids.hex4}";
+          default = "${org.prefix}:${vpn.ids.hex4}";
         };
         prefixLength = lib.mkOption {
           description = "ipv6 prefix length for peers in vpn";
           type = lib.types.int;
-          default = cfg.prefixLength;
+          default = org.prefixLength;
         };
         interface = lib.mkOption {
           description = "interface for the vpn";
@@ -439,7 +438,7 @@ let
         configurationFile = lib.mkOption {
           description = "path to specific configuration";
           type = lib.types.path;
-          default = cfg.inventoryRoot + "/hosts/${host.name}/configuration.nix";
+          default = org.inventoryRoot + "/hosts/${host.name}/configuration.nix";
         };
         boot = lib.mkOption {
           description = "boot method";
@@ -459,7 +458,7 @@ let
         };
         facterFile = lib.mkOption {
           description = "facter report path";
-          default = cfg.inventoryRoot + "/hosts/${host.name}/facter.json";
+          default = org.inventoryRoot + "/hosts/${host.name}/facter.json";
           type = lib.types.path;
         };
         luksKeyFile = lib.mkOption {
@@ -518,7 +517,7 @@ let
           description = "ledger of users on host";
           readOnly = true;
           default = lib.listToAttrs (
-            map (user: lib.nameValuePair cfg.user.${user}.name cfg.user.${user}) host.users
+            map (user: lib.nameValuePair org.user.${user}.name org.user.${user}) host.users
           );
           type = lib.types.attrsOf (lib.types.submodule userModule);
         };
@@ -527,7 +526,7 @@ let
           readOnly = true;
           type = lib.types.attrsOf (lib.types.submodule appModule);
           default = lib.mapAttrs' (_: app: lib.nameValuePair app.name app) (
-            lib.filterAttrs (_: app: (lib.elem host.name app.run-on-hosts)) cfg.app
+            lib.filterAttrs (_: app: (lib.elem host.name app.run-on-hosts)) org.app
           );
         };
         service = lib.mkOption {
@@ -535,8 +534,8 @@ let
           readOnly = true;
           type = lib.types.attrsOf (lib.types.submodule serviceModule);
           default = lib.listToAttrs (
-            map (service: lib.nameValuePair cfg.service.${service}.name cfg.service.${service}) (
-              builtins.concatMap (role: cfg.role.${role}.services) host.roles
+            map (service: lib.nameValuePair org.service.${service}.name org.service.${service}) (
+              builtins.concatMap (role: org.role.${role}.services) host.roles
             )
           );
         };
@@ -545,8 +544,8 @@ let
           readOnly = true;
           type = lib.types.attrsOf (lib.types.submodule storeModule);
           default = lib.listToAttrs (
-            map (store: lib.nameValuePair cfg.store.${store}.name cfg.store.${store}) (
-              builtins.concatMap (role: cfg.role.${role}.stores) host.roles
+            map (store: lib.nameValuePair org.store.${store}.name org.store.${store}) (
+              builtins.concatMap (role: org.role.${role}.stores) host.roles
             )
           );
         };
@@ -586,8 +585,8 @@ let
             inherit (vpn) interface;
             mode = null;
             dns = lib.concatMap (dnsHost: [
-              cfg.host.${dnsHost}.network.${vpnName}.address
-              cfg.host.${dnsHost}.network.${vpnName}.address4
+              org.host.${dnsHost}.network.${vpnName}.address
+              org.host.${dnsHost}.network.${vpnName}.address4
             ]) vpn.dns;
             address = "${vpn.prefix}::${host.ids.hex4}";
             destination = vpn.address;
@@ -595,7 +594,7 @@ let
             destination4 = vpn.address4;
             inherit (vpn) prefixLength prefixLength4;
           }
-        ) cfg.vpn;
+        ) org.vpn;
       };
     };
 
@@ -619,7 +618,7 @@ let
         configurationFile = lib.mkOption {
           description = "path to specific configuration";
           type = lib.types.path;
-          default = cfg.inventoryRoot + "/homes/${config.name}.nix";
+          default = org.inventoryRoot + "/homes/${config.name}.nix";
         };
         roles = lib.mkOption {
           type = with lib.types; listOf str;
@@ -767,7 +766,7 @@ let
           type = with lib.types; attrsOf str;
           default =
             let
-              paletteFile = cfg.inventoryRoot + "/palette.json";
+              paletteFile = org.inventoryRoot + "/palette.json";
               palette =
                 if builtins.pathExists paletteFile then builtins.fromJSON (builtins.readFile paletteFile) else null;
               colorNames = builtins.attrNames palette;

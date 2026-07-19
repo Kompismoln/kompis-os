@@ -7,7 +7,7 @@
 }:
 
 let
-  cfg = config.kompis-os.vllm;
+  cfg = config.o11n.vllm;
   enabledServers = lib.filterAttrs (_: serverCfg: serverCfg.enable) cfg.servers;
 
   vllmOpts =
@@ -60,7 +60,7 @@ let
     };
 in
 {
-  options.kompis-os.vllm = {
+  options.o11n.vllm = {
     enable = lib.mkEnableOption "vLLM inference server environment";
     user = lib.mkOption {
       type = lib.types.str;
@@ -76,8 +76,8 @@ in
   config = lib.mkIf cfg.enable {
     assertions = [
       {
-        assertion = config.kompis-os.huggingface.enable;
-        message = "kompis-os.vllm requires kompis-os.huggingface to be enabled";
+        assertion = config.o11n.huggingface.enable;
+        message = "o11n.vllm requires o11n.huggingface to be enabled";
       }
     ];
 
@@ -89,8 +89,8 @@ in
         wantedBy = [ "multi-user.target" ];
 
         environment = {
-          HF_HOME = config.kompis-os.huggingface.home;
-          HF_HUB_CACHE = config.kompis-os.huggingface.repo;
+          HF_HOME = config.o11n.huggingface.home;
+          HF_HUB_CACHE = config.o11n.huggingface.repo;
           HF_HUB_OFFLINE = "1";
           CUDA_VISIBLE_DEVICES = lib.concatMapStringsSep "," toString serverCfg.allowedGPUs;
         }

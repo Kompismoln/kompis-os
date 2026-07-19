@@ -6,7 +6,7 @@
 
 let
   inherit (lib) mkEnableOption mkIf types;
-  cfg = config.kompis-os.tracking;
+  cfg = config.o11n.tracking;
 
   nginxJsonLogFormatContent = ''
     {
@@ -30,7 +30,7 @@ let
 
 in
 {
-  options.kompis-os.tracking = {
+  options.o11n.tracking = {
     enable = mkEnableOption "website visitor tracking";
 
     nginxJsonLogFormatName = lib.mkOption {

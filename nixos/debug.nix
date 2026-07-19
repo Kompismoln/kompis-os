@@ -11,11 +11,11 @@ let
     ;
 
   #debug = options.preservation.preserveAt.type.nestedTypes;
-  cfg = config.kompis-os.debug;
+  cfg = config.o11n.debug;
   debug = options.nix.settings.type.nestedTypes.freeformType.getSubModules;
 in
 {
-  options.kompis-os.debug = {
+  options.o11n.debug = {
     enable = mkOption {
       description = ''Enable this debugging module'';
       type = types.bool;

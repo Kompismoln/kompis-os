@@ -6,12 +6,12 @@
 }:
 
 let
-  cfg = config.kompis-os.opencloud;
+  cfg = config.o11n.opencloud;
   eachApp = lib.filterAttrs (_app: appCfg: appCfg.enable) cfg.apps;
 in
 {
   options = {
-    kompis-os.opencloud = {
+    o11n.opencloud = {
       apps = lib.mkOption {
         type = with lib.types; attrsOf (submodule appOpts);
         default = { };

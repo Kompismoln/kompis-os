@@ -5,7 +5,7 @@
   ...
 }:
 let
-  cfg = config.kompis-os.redis;
+  cfg = config.o11n.redis;
 
   mkValueString =
     value:
@@ -34,7 +34,7 @@ in
 
   options = {
 
-    kompis-os.redis = {
+    o11n.redis = {
       package = lib.mkPackageOption pkgs "redis" { };
 
       vmOverCommit =

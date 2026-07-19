@@ -35,6 +35,7 @@
         { lib, ... }:
         let
           importDir = dir: (lib.mapAttrsToList (name: _: /${dir}/${name}) (builtins.readDir dir));
+
           o11nLib = import ./lib {
             inherit lib;
             o11nInputs = inputs;
@@ -43,10 +44,7 @@
         {
           systems = [ "x86_64-linux" ];
 
-          imports = [
-            inputs.home-manager.flakeModules.home-manager
-          ]
-          ++ (importDir ./roles);
+          imports = [ inputs.home-manager.flakeModules.home-manager ] ++ (importDir ./roles);
 
           _module.args.o11nLib = o11nLib;
 
@@ -55,10 +53,7 @@
           };
 
           perSystem =
-            {
-              pkgs,
-              ...
-            }:
+            { pkgs, ... }:
             {
               checks = import ./tests { inherit pkgs o11nLib; };
 

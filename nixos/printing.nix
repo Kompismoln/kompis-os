@@ -6,7 +6,7 @@
   ...
 }:
 {
-  options.kompis-os.printing = {
+  options.o11n.printing = {
     enable = lib.mkEnableOption "avahi printer discovery";
   };
   config = {

@@ -22,7 +22,7 @@
     nixpkgs.overlays = [
       (import ../overlays/webserver.nix { inherit inputs; })
     ];
-    kompis-os = {
+    o11n = {
       reverse-tunnel.enable = true;
       egress-proxy.enable = true;
       fail2ban.enable = true;

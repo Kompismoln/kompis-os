@@ -8,7 +8,7 @@
 }:
 
 let
-  cfg = config.kompis-os.svelte;
+  cfg = config.o11n.svelte;
   eachApp = lib.filterAttrs (_: cfg: cfg.enable) cfg.apps;
 
   envToList = env: lib.mapAttrsToList (name: value: "${name}=${toString value}") env;
@@ -45,7 +45,7 @@ in
 {
 
   options = {
-    kompis-os.svelte = {
+    o11n.svelte = {
       apps = lib.mkOption {
         type = with lib.types; attrsOf (submodule appOpts);
         default = { };

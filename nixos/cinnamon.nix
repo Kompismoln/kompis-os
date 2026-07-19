@@ -6,11 +6,11 @@
   ...
 }:
 {
-  options.kompis-os.cinnamon = {
+  options.o11n.cinnamon = {
     enable = lib.mkEnableOption "cinnamon desktop environment";
   };
 
-  config = lib.mkIf config.kompis-os.cinnamon.enable {
+  config = lib.mkIf config.o11n.cinnamon.enable {
     security = {
       polkit.enable = true;
     };

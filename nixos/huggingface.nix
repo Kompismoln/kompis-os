@@ -7,10 +7,10 @@
 }:
 
 let
-  cfg = config.kompis-os.huggingface;
+  cfg = config.o11n.huggingface;
 in
 {
-  options.kompis-os.huggingface = {
+  options.o11n.huggingface = {
     enable = lib.mkEnableOption "the Hugging Face Hub CLI with configured cache directories";
     home = lib.mkOption {
       type = lib.types.str;

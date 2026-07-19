@@ -13,12 +13,12 @@ let
     optionalString
     ;
 
-  cfg = config.kompis-os.nginx;
+  cfg = config.o11n.nginx;
   vpn = org.vpn.wg0;
   hostname = "${host.name}.${vpn.namespace}";
 in
 {
-  options.kompis-os.nginx = {
+  options.o11n.nginx = {
     enable = mkEnableOption "nginx web server.";
     monitor = mkEnableOption "nginx web server.";
   };

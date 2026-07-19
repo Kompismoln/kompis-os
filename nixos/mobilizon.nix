@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.kompis-os.mobilizon;
+  cfg = config.o11n.mobilizon;
 
   mobilizonOpts =
     { config, ... }:
@@ -70,7 +70,7 @@ let
 in
 {
   options = {
-    kompis-os.mobilizon = {
+    o11n.mobilizon = {
       apps = lib.mkOption {
         type = lib.types.attrsOf (lib.types.submodule mobilizonOpts);
         default = { };

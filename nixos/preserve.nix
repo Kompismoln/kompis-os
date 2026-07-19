@@ -9,7 +9,7 @@
 }:
 
 let
-  cfg = config.kompis-os.preserve;
+  cfg = config.o11n.preserve;
 
   # Piggyback on preservation's options for files and directories
   preserveAtOptions = options.preservation.preserveAt.type.nestedTypes.elemType.getSubOptions [ ];
@@ -19,7 +19,7 @@ in
     o11nInputs.preservation.nixosModules.preservation
   ];
 
-  options.kompis-os.preserve = rec {
+  options.o11n.preserve = rec {
     inherit (preserveAtOptions) files directories;
     databases = directories;
     enable = lib.mkEnableOption "ephemeral root on this host";

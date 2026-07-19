@@ -5,7 +5,7 @@
     zfs.devNodes = "/dev/disk/by-uuid";
     zfs.forceImportRoot = false;
   };
-  kompis-os = {
+  o11n = {
     preserve.enable = true;
   };
 

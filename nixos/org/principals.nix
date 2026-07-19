@@ -62,7 +62,7 @@ in
     ) principals;
   };
 
-  kompis-os.preserve.directories = map (entity: {
+  o11n.preserve.directories = map (entity: {
     directory = entity.principal.home;
     user = entity.name;
     group = entity.name;
