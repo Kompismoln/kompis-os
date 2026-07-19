@@ -40,13 +40,13 @@ let
         Destination = network.destination4;
         Gateway = network.gateway4;
         GatewayOnLink = network.gatewayOnLink;
-        Metric = network.metric;
+        Metric = network.metric4;
       }
       {
         Destination = network.destination;
         Gateway = network.gateway;
         GatewayOnLink = network.gatewayOnLink;
-        Metric = network.metric4;
+        Metric = network.metric;
       }
     ];
   };
