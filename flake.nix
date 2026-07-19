@@ -34,6 +34,7 @@
       (
         { lib, ... }:
         let
+          importDir = dir: (lib.mapAttrsToList (name: _: /${dir}/${name}) (builtins.readDir dir));
           o11nLib = import ./lib {
             inherit lib;
             o11nInputs = inputs;
@@ -41,8 +42,17 @@
         in
         {
           systems = [ "x86_64-linux" ];
-          imports = [ ./outputs.nix ];
+
+          imports = [
+            inputs.home-manager.flakeModules.home-manager
+          ]
+          ++ (importDir ./roles);
+
           _module.args.o11nLib = o11nLib;
+
+          flake = {
+            inherit (o11nLib) fromFlake fromPath;
+          };
 
           perSystem =
             {
@@ -50,24 +60,8 @@
               ...
             }:
             {
-              checks = {
-                unit-tests =
-                  let
-                    testResults = import ./tests { inherit pkgs o11nLib; };
-                  in
-                  if testResults == [ ] then
-                    pkgs.emptyFile
-                  else
-                    pkgs.runCommand "test-results"
-                      {
-                        buildInputs = [ pkgs.jq ];
-                        results = builtins.toJSON testResults;
-                      }
-                      ''
-                        echo "$results" | jq .
-                        exit 1
-                      '';
-              };
+              checks = import ./tests { inherit pkgs o11nLib; };
+
               devShells.default = pkgs.mkShell {
                 buildInputs = [ ];
                 shellHook = "";

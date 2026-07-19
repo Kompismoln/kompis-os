@@ -4,6 +4,25 @@
   o11nInputs,
 }:
 rec {
+  fromPath =
+    path:
+    let
+      orgFlake = mkOrgFlake { inherit path; };
+      inherit (orgFlake) inputs org;
+    in
+    mkConfigurations inputs org;
+
+  fromFlake =
+    flake:
+    let
+      orgFlake = mkOrgFlake {
+        inherit flake;
+        path = flake.outPath;
+      };
+      inherit (orgFlake) inputs org;
+    in
+    mkConfigurations inputs org;
+
   mkOrgFlake =
     args:
     let
