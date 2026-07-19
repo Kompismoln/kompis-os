@@ -1,0 +1,27 @@
+# roles/mailserver.nix
+{
+  flake.nixosModules.mailserver =
+    { org, lib, ... }:
+    {
+      imports = [
+        ../nixos/mailserver.nix
+      ];
+      kompis-os.mailserver =
+        let
+          domains = lib.attrValues org.domain;
+          relayDomains = builtins.filter (domain: !domain.mailbox) domains;
+          mailboxDomains = builtins.filter (domain: domain.mailbox) domains;
+        in
+        {
+          enable = true;
+          inherit (org) endpoint;
+          inherit (org.mailserver) dkimSelector;
+          relayDomains = map (domain: domain.name) relayDomains;
+          mailboxDomains = map (domain: domain.name) mailboxDomains;
+
+          users = lib.mapAttrs (user: _: { aliases = org.user.${user}.inboxes; }) (
+            lib.filterAttrs (_: userCfg: lib.hasAttr "mail" userCfg && userCfg.mail) org.user
+          );
+        };
+    };
+}

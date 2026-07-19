@@ -1,6 +1,6 @@
 # flake.nix
 {
-  description = "build kompismoln";
+  description = "o11n nixos fleet manager";
 
   inputs = {
     nixpkgs.url = "github:kompismoln/nixpkgs/nixos-unstable";
@@ -23,72 +23,56 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
     preservation.url = "github:nix-community/preservation";
-
-    org-toml.url = "path:./org.toml";
-    org-toml.flake = false;
-
-    sverigesval.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
-    sverigesval.inputs.nixpkgs.follows = "nixpkgs";
-
-    sverigesval-dev.url = "git+ssh://git@github.com/ahbk/sverigesval.org";
-    sverigesval-dev.inputs.nixpkgs.follows = "nixpkgs";
-
-    chatddx.url = "git+ssh://git@github.com/LigninDDX/chatddx";
-    chatddx.inputs.nixpkgs.follows = "nixpkgs";
-
-    chatddx-dev.url = "git+ssh://git@github.com/LigninDDX/chatddx";
-    chatddx-dev.inputs.nixpkgs.follows = "nixpkgs";
-
-    swift.url = "github:Kompismoln/swift-dx-guide";
-    swift.inputs.nixpkgs.follows = "nixpkgs";
-
-    swift-dev.url = "github:Kompismoln/swift-dx-guide";
-    swift-dev.inputs.nixpkgs.follows = "nixpkgs";
-
-    kompismoln-site.url = "github:Kompismoln/site";
-    kompismoln-site.inputs.nixpkgs.follows = "nixpkgs";
-
-    klimatkalendern.url = "github:Kompismoln/klimatkalendern";
-    klimatkalendern.inputs.nixpkgs.follows = "nixpkgs";
-
-    klimatkalendern-dev.url = "github:Kompismoln/klimatkalendern/dev";
-    klimatkalendern-dev.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
     inputs:
-    let
-      flakeParts =
-        inputs.flake-parts.lib.mkFlake
-          {
-            inherit inputs;
-          }
-          {
-            systems = [ "x86_64-linux" ];
-            imports = [ ./kompis-os/outputs.nix ];
-            flake = {
-              src = inputs.self.outPath;
-            };
-            perSystem =
-              { pkgs, ... }:
-              {
-                devShells.default = pkgs.mkShell {
-                  buildInputs = with pkgs; [
-                    toml2json
-                    bats
-                  ];
-                  shellHook = ''
-                    export SOPS_AGE_KEY_FILE=/keys/root-1
-                    export FLAKE=.
-                    export BUILD_HOST=pelle
-                    export BUILD_WORKING_TREE=true
-                    export RESTIC_REPOSITORY="$HOME/.restic"
-                    export RESTIC_PASSWORD_FILE="/run/secrets/alex/restic-key"
-                    PATH=$(pwd)/kompis-os/tools/bin:$PATH
-                  '';
-                };
-              };
+    inputs.flake-parts.lib.mkFlake
+      {
+        inherit inputs;
+      }
+      (
+        { lib, ... }:
+        let
+          o11nLib = import ./lib {
+            inherit lib;
+            o11nInputs = inputs;
           };
-    in
-    flakeParts // (flakeParts.mkOutputs ./org.toml);
+        in
+        {
+          systems = [ "x86_64-linux" ];
+          imports = [ ./outputs.nix ];
+          _module.args.o11nLib = o11nLib;
+
+          perSystem =
+            {
+              pkgs,
+              ...
+            }:
+            {
+              checks = {
+                unit-tests =
+                  let
+                    testResults = import ./tests { inherit pkgs o11nLib; };
+                  in
+                  if testResults == [ ] then
+                    pkgs.emptyFile
+                  else
+                    pkgs.runCommand "test-results"
+                      {
+                        buildInputs = [ pkgs.jq ];
+                        results = builtins.toJSON testResults;
+                      }
+                      ''
+                        echo "$results" | jq .
+                        exit 1
+                      '';
+              };
+              devShells.default = pkgs.mkShell {
+                buildInputs = [ ];
+                shellHook = "";
+              };
+            };
+        }
+      );
 }
