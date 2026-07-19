@@ -67,6 +67,12 @@ lib.runTests {
       ."alex@lenovo".config.programs.nixvim.colorschemes.cyberdream.settings.highlights.Normal.bg;
     expected = "#0a0a0a";
   };
+  test_nixos_kompismoln_nix_self_path = {
+    expr =
+      (o11nLib.mkNixosConfigurations kompismolnOrg.inputs kompismolnOrg.org)
+      .lenovo.config.nix.registry.self.flake.outPath;
+    expected = "/nix/store/ap5n20df0zfzhw0qjnip7s4ybcn94wyi-source";
+  };
   test_org_min = {
     expr = baseOrg.org.endpoint;
     expected = "example.com";

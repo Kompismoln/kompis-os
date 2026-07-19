@@ -880,7 +880,9 @@ in
     inputs = lib.mkOption {
       description = "inputs";
       type = lib.types.attrsOf lib.types.anything;
-      default = config.flake.inputs;
+      default = config.flake.inputs // {
+        self = config.flake;
+      };
     };
     org = lib.mkOption {
       description = "org";
