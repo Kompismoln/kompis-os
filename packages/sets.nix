@@ -101,6 +101,10 @@ pkgs: with pkgs; rec {
   ];
 
   nix-tools = [
+    nh
+    dix
+    nix-output-monitor
+    nix-fast-build
     nvd
     nixos-facter
     nixos-anywhere
