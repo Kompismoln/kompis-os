@@ -513,7 +513,7 @@ in
           RuntimeDirectory = redisName name;
           RuntimeDirectoryMode = "0750";
           # State directory and mode
-          StateDirectory = redisName name;
+          StateDirectory = "${name}/redis";
           StateDirectoryMode = "0700";
           # Access write directories
           UMask = "0077";

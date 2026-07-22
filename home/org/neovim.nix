@@ -107,11 +107,6 @@
         };
       }
       {
-        key = "<leader>/";
-        action = ":noh<cr>";
-        options.desc = "Clear search highlight";
-      }
-      {
         key = "-";
         action = "<cmd>Oil<cr>";
         options.desc = "Open parent directory";
@@ -125,15 +120,6 @@
         key = "S";
         action = "<Plug>(leap-backward)";
         options.desc = "Open parent directory";
-      }
-      {
-        key = "gs";
-        action = "<Plug>(leap-from-window)";
-        options.desc = "Open parent directory";
-      }
-      {
-        key = "<F2>";
-        action = "<cmd>NvimTreeToggle<cr>";
       }
       {
         key = "<leader>f";

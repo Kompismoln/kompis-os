@@ -195,7 +195,7 @@ let
         configurationFile = lib.mkOption {
           description = "path to specific configuration";
           type = lib.types.coercedTo lib.types.str (s: org.inventoryRoot + "/${s}") lib.types.path;
-          default = org.inventoryRoot + "/apps/${config.name}.nix";
+          default = "apps/${config.name}.nix";
         };
         altpoints = lib.mkOption {
           description = "alternative access points that should be redirected to endpoint";

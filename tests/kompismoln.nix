@@ -53,21 +53,25 @@ lib.runTests {
       "stationary"
     ];
   };
-  test_nixos_kompismoln_chatddx = {
+  test_chatddx = {
     expr = nixosCfgs.stationary.config.o11n.django.apps.chatddx-dev.package.name;
     expected = "chatddx-django-de86a39";
   };
-  test_nixos_kompismoln_vim_highlights = {
+  test_vim_highlights = {
     expr =
       homeCfgs."alex@lenovo".config.programs.nixvim.colorschemes.cyberdream.settings.highlights.Normal.bg;
     expected = "#0a0a0a";
   };
-  test_nixos_kompismoln_nix_self_path = {
+  test_nix_self_path = {
     expr = builtins.pathExists nixosCfgs.lenovo.config.nix.registry.self.flake.outPath;
     expected = true;
   };
-  test_nixos_kompismoln_pelle_wifi = {
+  test_pelle_wifi = {
     expr = nixosCfgs.pelle.config.systemd.network.networks."10-wlp4s0".dhcpV4Config.RouteMetric;
     expected = 2048;
+  };
+  test_helsinki_mailserver = {
+    expr = lib.attrNames nixosCfgs.helsinki.config.o11n.mailserver.endpoint;
+    expected = "kompismoln.se";
   };
 }

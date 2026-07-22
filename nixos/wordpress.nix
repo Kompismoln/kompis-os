@@ -68,6 +68,7 @@ let
   wpConfig =
     app:
     pkgs.writeText "wp-config-override.php" ''
+      <?php
       define( 'WP_DEBUG', false );
       define( 'DB_NAME', '${app.database}' );
       define( 'DB_USER', '${app.name}' );

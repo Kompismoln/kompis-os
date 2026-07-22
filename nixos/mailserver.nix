@@ -1,7 +1,7 @@
 # nixos/mailserver.nix
 {
   config,
-  inputs,
+  o11nInputs,
   lib,
   org,
   ...
@@ -12,7 +12,7 @@ let
 in
 {
   imports = [
-    inputs.nixos-mailserver.nixosModules.default
+    o11nInputs.nixos-mailserver.nixosModules.default
   ];
 
   options.o11n.mailserver = {
