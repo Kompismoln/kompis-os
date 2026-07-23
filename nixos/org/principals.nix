@@ -32,7 +32,7 @@ in
     ../preserve.nix
   ];
 
-  sops.secrets = lib.genAttrs' entities (
+  sops.secrets = lib.genAttrs' (lib.filter (entity: entity.principal.hasPasswd) entities) (
     entity:
     lib.nameValuePair "${entity.name}/passwd-sha512" {
       neededForUsers = true;

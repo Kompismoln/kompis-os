@@ -90,5 +90,12 @@ lib.runTests {
     expr = builtins.pathExists outputs.org.service.rescue.publicKeys.passwd;
     expected = true;
   };
-
+  test_locksmith_passwd = {
+    expr = nixosCfgs.lenovo.config.users.users.locksmith.hashedPasswordFile;
+    expected = null;
+  };
+  test_locksmith_sops = {
+    expr = nixosCfgs.lenovo.config.sops.secrets."locksmith/passwd-sha512" or null;
+    expected = null;
+  };
 }
