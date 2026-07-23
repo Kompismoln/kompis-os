@@ -1,6 +1,6 @@
-{ lib, org, ... }:
+lib: context:
 let
-  regexes = rec {
+  ipRegexes = rec {
     octet = "[0-9]{1,3}";
 
     hextet = "[0-9a-f]{1,4}";
@@ -33,13 +33,76 @@ let
     subnetCidrBracketed6 = "[[]${subnetPrefix6}::[]]/${prefixLength6}";
     hostCidrBracketed6 = "[[]${host6}[]]/${prefixLength6}";
   };
+
+  entities = lib.genAttrs (lib.attrNames context.classes) (class: {
+    ref = lib.types.enum (lib.attrNames context.spec.${class});
+    module = lib.types.submoduleWith {
+      modules = [ ./${class}.nix ];
+      specialArgs = {
+        inherit context;
+      };
+    };
+  });
+
+  ip = lib.mapAttrs (_: regex: lib.types.strMatching "^${regex}$") ipRegexes;
 in
-{
-  host = with lib.types; enum (lib.attrNames org.host);
-  user = with lib.types; enum (lib.attrNames org.user);
-  service = with lib.types; enum (lib.attrNames org.service);
-  store = with lib.types; enum (lib.attrNames org.store);
-  class = with lib.types; enum (lib.attrNames org.class);
-  flake = lib.types.attrsOf lib.types.str;
+entities
+// ip
+// {
+  class = with lib.types; enum (lib.attrNames context.classes);
+  flake = lib.types.lazyAttrsOf lib.types.anything;
+
+  domain.module = lib.types.submodule ./domain.nix;
+  disk.module = lib.types.submodule ./disk.nix;
+
+  ids.module = lib.types.submoduleWith {
+    modules = [ ./ids.nix ];
+    specialArgs = {
+      inherit context;
+    };
+  };
+
+  role.module = lib.types.submoduleWith {
+    modules = [ ./role.nix ];
+    specialArgs = {
+      inherit context;
+    };
+  };
+
+  vpn.module = lib.types.submoduleWith {
+    modules = [ ./vpn.nix ];
+    specialArgs = {
+      inherit context;
+    };
+  };
+
+  home.module =
+    host:
+    lib.types.submoduleWith {
+      modules = [ ./home.nix ];
+      specialArgs = {
+        inherit context host;
+      };
+    };
+
+  network.module = lib.types.submoduleWith {
+    modules = [ ./network.nix ];
+    specialArgs = {
+      inherit context;
+    };
+  };
+
+  mailserver.module = lib.types.submoduleWith {
+    modules = [ ./mailserver.nix ];
+    specialArgs = {
+      inherit context;
+    };
+  };
+
+  theme.module = lib.types.submoduleWith {
+    modules = [ ./theme.nix ];
+    specialArgs = {
+      inherit context;
+    };
+  };
 }
-// (lib.mapAttrs (_: regex: lib.types.strMatching "^${regex}$") regexes)

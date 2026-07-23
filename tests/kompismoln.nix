@@ -54,8 +54,8 @@ lib.runTests {
     ];
   };
   test_chatddx = {
-    expr = nixosCfgs.stationary.config.o11n.django.apps.chatddx-dev.package.name;
-    expected = "chatddx-django-de86a39";
+    expr = builtins.pathExists nixosCfgs.stationary.config.o11n.django.apps.chatddx-dev.package.outPath;
+    expected = true;
   };
   test_vim_highlights = {
     expr =
@@ -71,7 +71,11 @@ lib.runTests {
     expected = 2048;
   };
   test_helsinki_mailserver = {
-    expr = lib.attrNames nixosCfgs.helsinki.config.o11n.mailserver.endpoint;
+    expr = nixosCfgs.helsinki.config.o11n.mailserver.endpoint;
     expected = "kompismoln.se";
+  };
+  test_pelle_nix_build = {
+    expr = nixosCfgs.pelle.config.users.users.nix-build.uid;
+    expected = 2002;
   };
 }

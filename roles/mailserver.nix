@@ -8,13 +8,13 @@
       ];
       o11n.mailserver =
         let
-          domains = lib.attrValues org.domain;
+          domains = lib.attrValues org.mailserver.domain;
           relayDomains = builtins.filter (domain: !domain.mailbox) domains;
           mailboxDomains = builtins.filter (domain: domain.mailbox) domains;
         in
         {
           enable = true;
-          inherit (org) endpoint;
+          inherit (org.mailserver) endpoint;
           inherit (org.mailserver) dkimSelector;
           relayDomains = map (domain: domain.name) relayDomains;
           mailboxDomains = map (domain: domain.name) mailboxDomains;

@@ -371,9 +371,7 @@ in
                 )
                 (
                   fromTOML (
-                    builtins.readFile (
-                      org.inventoryRoot + "/overrides/neovim/${org.theme.vim-colorscheme}/highlights.toml"
-                    )
+                    builtins.readFile (org.storePath + "/overrides/neovim/${org.theme.vim-colorscheme}/highlights.toml")
                   )
                 );
           };

@@ -6,75 +6,57 @@
 rec {
   fromPath =
     path:
-    let
-      orgFlake = mkOrgFlake { inherit path; };
-      inherit (orgFlake) inputs org;
-    in
-    mkConfigurations inputs org;
+    mkConfigurations (evalContext {
+      inherit path;
+    });
 
   fromFlake =
     flake:
-    let
-      orgFlake = mkOrgFlake {
-        inherit flake;
-        path = flake.outPath;
-      };
-      inherit (orgFlake) inputs org;
-    in
-    mkConfigurations inputs org;
+    mkConfigurations (evalContext {
+      inherit flake;
+    });
 
-  mkOrgFlake =
+  evalContext =
     config:
-    let
-      module = lib.evalModules {
-        modules = [
-          ../org
-          config
-        ];
-      };
-    in
-    module.config;
+    (lib.evalModules {
+      modules = [
+        { inherit config; }
+        ./context.nix
+      ];
+    }).config;
 
-  mkConfigurations = inputs: org: {
-    inherit org;
+  mkConfigurations = context: {
+    inherit (context) org;
 
-    diskoConfigurations = mkDiskoConfigurations inputs org;
-
-    homeConfigurations = mkHomeConfigurations inputs org;
-
-    nixosConfigurations = mkNixosConfigurations inputs org;
+    diskoConfigurations = mkDiskoConfigurations context;
+    homeConfigurations = mkHomeConfigurations context;
+    nixosConfigurations = mkNixosConfigurations context;
   };
 
   mkNixosConfigurations =
-    inputs: org:
-    lib.listToAttrs (
-      map (
-        host:
-        lib.nameValuePair host.name (
-          o11nInputs.nixpkgs.lib.nixosSystem {
-            specialArgs = {
-              inherit
-                host
-                inputs
-                o11nInputs
-                org
-                ;
-              diskoConfigurations = lib.filterAttrs (name: _: lib.hasPrefix "${host.name}-" name) (
-                mkDiskoConfigurations inputs org
-              );
-            };
-            modules =
-              (lib.optionals (host.disk-layouts != { }) [ ../nixos/disko.nix ])
-              ++ map (role: o11nInputs.self.nixosModules.${role}) (
-                lib.unique (host.roles ++ (lib.concatMap (home: home.roles) (lib.attrValues host.home)))
-              );
-          }
-        )
-      ) (lib.filter (host: lib.elem "nixos" host.roles) (lib.attrValues org.host))
+    context:
+    lib.genAttrs' (lib.filter (host: lib.elem "nixos" host.roles) (lib.attrValues context.org.host)) (
+      host:
+      lib.nameValuePair host.name (
+        o11nInputs.nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit (context) inputs org;
+            inherit host o11nInputs;
+            diskoConfigurations = lib.filterAttrs (name: _: lib.hasPrefix "${host.name}-" name) (
+              mkDiskoConfigurations context
+            );
+          };
+          modules =
+            (lib.optionals (host.disk-layouts != { }) [ ../nixos/disko.nix ])
+            ++ map (role: o11nInputs.self.nixosModules.${role}) (
+              lib.unique (host.roles ++ (lib.concatMap (home: home.roles) (lib.attrValues host.home)))
+            );
+        }
+      )
     );
 
   mkHomeConfigurations =
-    inputs: org:
+    context:
     lib.listToAttrs (
       lib.concatMap (
         host:
@@ -89,11 +71,10 @@ rec {
                 ];
               };
               extraSpecialArgs = {
+                inherit (context) inputs org;
                 inherit
                   home
-                  inputs
                   o11nInputs
-                  org
                   ;
               };
               modules = [
@@ -103,11 +84,11 @@ rec {
             }
           )
         ) (lib.attrValues host.home))
-      ) (lib.attrValues org.host)
+      ) (lib.attrValues context.org.host)
     );
 
   mkDiskoConfigurations =
-    _: org:
+    context:
     lib.listToAttrs (
       lib.concatMap (
         host:
@@ -116,16 +97,16 @@ rec {
           lib.nameValuePair "${host.name}-${disk.name}" (
 
             (import ../disk-layouts/${disk.layout}.nix) {
+              inherit (context) org;
               inherit
                 host
                 disk
                 lib
-                org
                 ;
               pkgs = o11nInputs.nixpkgs.legacyPackages.${host.system};
             }
           )
         ) (lib.attrValues host.disk-layouts))
-      ) (lib.attrValues org.host)
+      ) (lib.attrValues context.org.host)
     );
 }
