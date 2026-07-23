@@ -74,6 +74,22 @@ lib.runTests {
     expr = nixosCfgs.helsinki.config.o11n.mailserver.endpoint;
     expected = "kompismoln.se";
   };
+  test_helsinki_mailserver_relay_domains = {
+    expr = nixosCfgs.helsinki.config.o11n.mailserver.relayDomains;
+    expected = [
+      "esse.nu"
+      "klimatkalendern.nu"
+    ];
+  };
+  test_helsinki_mailserver_mailboxes = {
+    expr = nixosCfgs.helsinki.config.o11n.mailserver.mailboxDomains;
+    expected = [
+      "ahbk.se"
+      "chatddx.com"
+      "kompismoln.se"
+      "sverigesval.org"
+    ];
+  };
   test_pelle_nix_build_uid = {
     expr = nixosCfgs.pelle.config.users.users.nix-build.uid;
     expected = 2002;

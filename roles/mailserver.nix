@@ -8,7 +8,7 @@
       ];
       o11n.mailserver =
         let
-          domains = lib.attrValues org.mailserver.domain;
+          domains = lib.attrValues org.domain;
           relayDomains = builtins.filter (domain: !domain.mailbox) domains;
           mailboxDomains = builtins.filter (domain: domain.mailbox) domains;
         in
