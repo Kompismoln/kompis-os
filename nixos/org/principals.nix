@@ -47,7 +47,7 @@ in
       lib.nameValuePair entity.name (
         let
           isNormalUser = entity.class == "user";
-          publicKey = entity.public-artifacts.ssh-key;
+          publicKey = entity.publicKeys.ssh-key;
           passwordFile = config.sops.secrets."${entity.name}/passwd-sha512".path;
         in
         rec {
@@ -69,13 +69,13 @@ in
       )
     );
 
-    groups = lib.mapAttrs' (
-      _: entity:
+    groups = lib.genAttrs' entities (
+      entity:
       lib.nameValuePair entity.name {
         inherit (entity.principal) gid;
         members = [ entity.name ] ++ entity.principal.members;
       }
-    ) entities;
+    );
   };
 
   o11n.preserve.directories = map (entity: {

@@ -70,7 +70,7 @@ in
       trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         "cache.lix.systems:aBnZUw8zA7H35Cz2RyKFVs3H4PlGTLawyY5KRbvJR8o="
-        (builtins.readFile org.service.nix-serve.public-artifacts.nix-sign)
+        (builtins.readFile org.service.nix-serve.publicKeys.nix-sign)
       ];
       use-xdg-base-directories = true;
     };

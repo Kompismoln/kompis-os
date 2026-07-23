@@ -8,7 +8,7 @@
 {
   config = lib.mkIf (org.namespaces != [ ]) {
     security.pki.certificates = map (
-      name: builtins.readFile org.service.${"domain-${name}"}.public-artifacts.tls-cert
+      name: builtins.readFile org.service.${"domain-${name}"}.publicKeys.tls-cert
     ) org.namespaces;
 
     users.groups.tls-cert = {

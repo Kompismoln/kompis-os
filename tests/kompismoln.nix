@@ -74,8 +74,21 @@ lib.runTests {
     expr = nixosCfgs.helsinki.config.o11n.mailserver.endpoint;
     expected = "kompismoln.se";
   };
-  test_pelle_nix_build = {
+  test_pelle_nix_build_uid = {
     expr = nixosCfgs.pelle.config.users.users.nix-build.uid;
     expected = 2002;
   };
+  test_nix_build_ssh_key = {
+    expr = builtins.pathExists outputs.org.service.nix-build.publicKeys.ssh-key;
+    expected = true;
+  };
+  test_vpn_key = {
+    expr = nixosCfgs.helsinki.config.systemd.network.netdevs."20-wg1".wireguardConfig.PrivateKeyFile;
+    expected = "/run/secrets/wg1-key";
+  };
+  test_rescue = {
+    expr = builtins.pathExists outputs.org.service.rescue.publicKeys.passwd;
+    expected = true;
+  };
+
 }

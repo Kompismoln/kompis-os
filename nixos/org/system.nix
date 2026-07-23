@@ -18,9 +18,9 @@
 // lib.optionalAttrs host.rescueMode {
   users.mutableUsers = false;
   users.users.root = {
-    hashedPassword = "$6$TeS3rgBzEDTxk7eb$PN0BjGcoZa1cb29HQJrOHGqVzIhUIs115eP01k.CkenNpi0fTnfxwHK9bFSXUC2zavxi5sEt.pwqcTy1rpCas1";
+    hashedPasswordFile = org.service.rescue.publicKeys.passwd;
     openssh.authorizedKeys.keyFiles = [
-      org.service.rescue.public-artifacts.ssh-key
+      org.service.rescue.publicKeys.ssh-key
     ];
   };
   services.openssh = {
